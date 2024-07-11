@@ -1,0 +1,21 @@
+@font-face {
+  font-family: 'DINNextLTArabic';
+  src: 
+       url('../fonts/DINNextLTArabic-Regular-4.ttf') format('truetype');
+       
+  font-weight: normal;
+  font-style: normal;
+}
+
+body {
+  font-family: 'DINNextLTArabic', sans-serif;
+}
+
+
+html, body, #app, .view, .page, .page-content {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: 'DINNextLTArabic', sans-serif;
+
+  }
