@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- List View -->
+    <record id="view_uni_internship_certificate_list" model="ir.ui.view">
+        <field name="name">uni.internship.certificate.list</field>
+        <field name="model">uni.internship.certificate</field>
+        <field name="arch" type="xml">
+            <list string="Internship Certificates"
+                  decoration-success="state == 'verified'"
+                  decoration-info="state == 'issued'"
+                  decoration-danger="state == 'revoked'"
+                  decoration-muted="state == 'draft'">
+                <field name="name"/>
+                <field name="certificate_number"/>
+                <field name="student_id"/>
+                <field name="internship_id"/>
+                <field name="training_entity_id"/>
+                <field name="issue_date"/>
+                <field name="expiry_date" optional="hide"/>
+                <field name="grade" widget="badge"/>
+                <field name="grade_percentage"/>
+                <field name="hours_completed" optional="hide"/>
+                <field name="is_verified" optional="hide"/>
+                <field name="verification_code" optional="hide"/>
+                <field name="state" widget="badge"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_uni_internship_certificate_form" model="ir.ui.view">
+        <field name="name">uni.internship.certificate.form</field>
+        <field name="model">uni.internship.certificate</field>
+        <field name="arch" type="xml">
+            <form string="Internship Certificate">
+                <header>
+                    <button name="action_issue" type="object" string="Issue"
+                            class="oe_highlight"
+                            invisible="state != 'draft'"/>
+                    <button name="action_verify" type="object" string="Verify"
+                            class="oe_highlight"
+                            invisible="state != 'issued'"/>
+                    <button name="action_revoke" type="object" string="Revoke"
+                            invisible="state in ('draft', 'revoked')"
+                            confirm="Are you sure you want to revoke this certificate?"/>
+                    <button name="action_draft" type="object" string="Back to Draft"
+                            invisible="state not in ('issued', 'verified', 'revoked')"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,issued,verified"/>
+                </header>
+                <sheet>
+                    <widget name="web_ribbon" title="Verified" bg_color="bg-success"
+                            invisible="state != 'verified'"/>
+                    <widget name="web_ribbon" title="Revoked" bg_color="bg-danger"
+                            invisible="state != 'revoked'"/>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" readonly="1"/></h1>
+                        <h3><field name="certificate_number" readonly="1"/></h3>
+                    </div>
+                    <group>
+                        <group string="Student &amp; Internship">
+                            <field name="student_id"/>
+                            <field name="student_name" invisible="1"/>
+                            <field name="internship_id"/>
+                            <field name="completion_id"/>
+                            <field name="training_entity_id"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                        <group string="Dates">
+                            <field name="issue_date"/>
+                            <field name="expiry_date"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Grade">
+                            <field name="grade"/>
+                            <field name="grade_percentage"/>
+                            <field name="hours_completed"/>
+                        </group>
+                        <group string="Verification">
+                            <field name="is_verified"/>
+                            <field name="verification_code"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Signatures" name="signatures">
+                            <group>
+                                <field name="signature_ids" widget="many2many_tags"/>
+                                <field name="entity_signature_id"/>
+                            </group>
+                        </page>
+                        <page string="Description" name="description">
+                            <field name="description" placeholder="Certificate description..."/>
+                        </page>
+                        <page string="File" name="file">
+                            <group>
+                                <field name="certificate_file" filename="certificate_filename"/>
+                                <field name="certificate_filename" invisible="1"/>
+                            </group>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="notes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_uni_internship_certificate_search" model="ir.ui.view">
+        <field name="name">uni.internship.certificate.search</field>
+        <field name="model">uni.internship.certificate</field>
+        <field name="arch" type="xml">
+            <search string="Search Certificates">
+                <field name="name"/>
+                <field name="certificate_number"/>
+                <field name="verification_code"/>
+                <field name="student_id"/>
+                <field name="internship_id"/>
+                <field name="training_entity_id"/>
+                <separator/>
+                <filter name="filter_verified" string="Verified"
+                        domain="[('is_verified', '=', True)]"/>
+                <filter name="filter_issued" string="Issued"
+                        domain="[('state', '=', 'issued')]"/>
+                <filter name="filter_revoked" string="Revoked"
+                        domain="[('state', '=', 'revoked')]"/>
+                <separator/>
+                <group expand="0" string="Group By">
+                    <filter name="group_student" string="Student"
+                            context="{'group_by': 'student_id'}"/>
+                    <filter name="group_internship" string="Internship"
+                            context="{'group_by': 'internship_id'}"/>
+                    <filter name="group_entity" string="Training Entity"
+                            context="{'group_by': 'training_entity_id'}"/>
+                    <filter name="group_grade" string="Grade"
+                            context="{'group_by': 'grade'}"/>
+                    <filter name="group_state" string="Status"
+                            context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_uni_internship_certificate" model="ir.actions.act_window">
+        <field name="name">Certificates</field>
+        <field name="res_model">uni.internship.certificate</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_internship_certificate_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new internship certificate
+            </p>
+            <p>
+                Issue certificates to students who completed their internship.
+                Each certificate has a unique number and verification code.
+            </p>
+        </field>
+    </record>
+</odoo>

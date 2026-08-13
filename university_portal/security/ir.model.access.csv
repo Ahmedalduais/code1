@@ -1,0 +1,13 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_uni_portal_student_user,uni.portal.student.user,model_uni_portal_student,university_core.group_university_user,1,0,0,0
+access_uni_portal_student_manager,uni.portal.student.manager,model_uni_portal_student,university_core.group_university_manager,1,1,1,1
+access_uni_portal_student_portal,uni.portal.student.portal,model_uni_portal_student,group_university_portal_student,1,0,0,0
+access_uni_portal_faculty_user,uni.portal.faculty.user,model_uni_portal_faculty,university_core.group_university_user,1,0,0,0
+access_uni_portal_faculty_manager,uni.portal.faculty.manager,model_uni_portal_faculty,university_core.group_university_manager,1,1,1,1
+access_uni_portal_faculty_portal,uni.portal.faculty.portal,model_uni_portal_faculty,group_university_portal_faculty,1,0,0,0
+access_uni_portal_dashboard_user,uni.portal.dashboard.user,model_uni_portal_dashboard,university_core.group_university_user,1,0,0,0
+access_uni_portal_dashboard_manager,uni.portal.dashboard.manager,model_uni_portal_dashboard,university_core.group_university_manager,1,1,1,1
+access_uni_portal_dashboard_portal,uni.portal.dashboard.portal,model_uni_portal_dashboard,base.group_portal,1,1,1,0
+access_uni_portal_notification_user,uni.portal.notification.user,model_uni_portal_notification,university_core.group_university_user,1,1,1,0
+access_uni_portal_notification_manager,uni.portal.notification.manager,model_uni_portal_notification,university_core.group_university_manager,1,1,1,1
+access_uni_portal_notification_portal,uni.portal.notification.portal,model_uni_portal_notification,base.group_portal,1,1,0,0

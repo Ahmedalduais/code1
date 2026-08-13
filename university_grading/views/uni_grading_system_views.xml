@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Grading System List -->
+    <record id="view_uni_grading_system_list" model="ir.ui.view">
+        <field name="name">uni.grading.system.list</field>
+        <field name="model">uni.grading.system</field>
+        <field name="arch" type="xml">
+            <list string="Grading Systems" decoration-success="is_default">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="system_type"/>
+                <field name="scale_max"/>
+                <field name="gpa_scale"/>
+                <field name="passing_grade"/>
+                <field name="is_default" widget="boolean_toggle"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Grading System Form -->
+    <record id="view_uni_grading_system_form" model="ir.ui.view">
+        <field name="name">uni.grading.system.form</field>
+        <field name="model">uni.grading.system</field>
+        <field name="arch" type="xml">
+            <form string="Grading System">
+                <header>
+                    <button name="action_set_default" type="object" string="Set as Default"
+                            class="btn-primary" invisible="is_default == True"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="toggle_active" type="object"
+                                class="oe_stat_button" icon="fa-archive">
+                            <field name="active" widget="boolean_button"
+                                   options='{"terminology": "archive"}'/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" string="System Name"/>
+                        <h1><field name="name" placeholder="e.g. Standard 4.0 GPA System"/></h1>
+                        <h3><field name="code" placeholder="e.g. GPA4"/></h3>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="system_type"/>
+                            <field name="scale_max"/>
+                            <field name="passing_grade"/>
+                            <field name="gpa_scale"/>
+                        </group>
+                        <group>
+                            <field name="is_default"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Grading Scale">
+                            <field name="scale_line_ids">
+                                <list editable="bottom">
+                                    <field name="grade_letter_id"/>
+                                    <field name="grade_letter_code"/>
+                                    <field name="percentage_min"/>
+                                    <field name="percentage_max"/>
+                                    <field name="gpa_value"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Available Grades">
+                            <field name="grade_letter_ids">
+                                <list>
+                                    <field name="code"/>
+                                    <field name="name"/>
+                                    <field name="gpa_value"/>
+                                    <field name="percentage_min"/>
+                                    <field name="percentage_max"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Description">
+                            <field name="description"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Grading System Search -->
+    <record id="view_uni_grading_system_search" model="ir.ui.view">
+        <field name="name">uni.grading.system.search</field>
+        <field name="model">uni.grading.system</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="code"/>
+                <filter string="Default" name="filter_default"
+                        domain="[('is_default', '=', True)]"/>
+                <filter string="Active" name="filter_active"
+                        domain="[('active', '=', True)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Type" name="group_type"
+                            context="{'group_by': 'system_type'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_uni_grading_system" model="ir.actions.act_window">
+        <field name="name">Grading Systems</field>
+        <field name="res_model">uni.grading.system</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_grading_system_search"/>
+        <field name="context">{'search_default_filter_active': 1}</field>
+    </record>
+</odoo>

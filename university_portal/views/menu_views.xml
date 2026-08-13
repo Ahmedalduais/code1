@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- Backend menu — Portal submenu under university_core root      -->
+    <!-- ============================================================ -->
+    <menuitem id="menu_university_portal_root"
+              name="Portal"
+              parent="university_core.menu_university_root"
+              sequence="80"/>
+
+    <!-- Student Portals -->
+    <menuitem id="menu_uni_portal_student"
+              name="Student Portals"
+              parent="menu_university_portal_root"
+              action="action_uni_portal_student"
+              sequence="10"/>
+
+    <!-- Faculty Portals -->
+    <menuitem id="menu_uni_portal_faculty"
+              name="Faculty Portals"
+              parent="menu_university_portal_root"
+              action="action_uni_portal_faculty"
+              sequence="20"/>
+
+    <!-- Dashboards -->
+    <menuitem id="menu_uni_portal_dashboard"
+              name="Dashboards"
+              parent="menu_university_portal_root"
+              action="action_uni_portal_dashboard"
+              sequence="30"/>
+
+    <!-- Notifications -->
+    <menuitem id="menu_uni_portal_notification"
+              name="Notifications"
+              parent="menu_university_portal_root"
+              action="action_uni_portal_notification"
+              sequence="40"/>
+
+    <!-- Send Notification (quick action) -->
+    <menuitem id="menu_uni_portal_notification_send"
+              name="Send Notification"
+              parent="menu_university_portal_root"
+              action="action_uni_portal_notification_send"
+              sequence="50"
+              groups="university_core.group_university_manager"/>
+
+    <!-- ============================================================ -->
+    <!-- Website menu — visible on the public website (auth='user')   -->
+    <!-- ============================================================ -->
+    <record id="menu_website_portal" model="website.menu">
+        <field name="name">University Portal</field>
+        <field name="url">/university/portal/student</field>
+        <field name="parent_id" ref="website.main_menu"/>
+        <field name="sequence">20</field>
+        <field name="user_logged" eval="True"/>
+    </record>
+
+    <record id="menu_website_portal_notifications" model="website.menu">
+        <field name="name">Notifications</field>
+        <field name="url">/university/portal/notifications</field>
+        <field name="parent_id" ref="menu_website_portal"/>
+        <field name="sequence">30</field>
+        <field name="user_logged" eval="True"/>
+    </record>
+</odoo>

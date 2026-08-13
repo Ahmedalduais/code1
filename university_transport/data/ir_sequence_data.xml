@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- ============================================================ -->
+    <!-- Transport sequences                                           -->
+    <!-- ============================================================ -->
+
+    <!-- Transport pass references (TPS = Transport Pass Sequence) -->
+    <record id="seq_uni_transport_pass" model="ir.sequence">
+        <field name="name">Transport Pass Sequence</field>
+        <field name="code">uni.transport.pass</field>
+        <field name="prefix">TPS/%(year)s/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <!-- Transport attendance references (TRA = Transport Attendance) -->
+    <record id="seq_uni_transport_attendance" model="ir.sequence">
+        <field name="name">Transport Attendance Sequence</field>
+        <field name="code">uni.transport.attendance</field>
+        <field name="prefix">TRA/%(year)s/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+</odoo>

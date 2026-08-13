@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- uni.exam.room — List View                                     -->
+    <!-- ============================================================ -->
+    <record id="view_uni_exam_room_list" model="ir.ui.view">
+        <field name="name">uni.exam.room.list</field>
+        <field name="model">uni.exam.room</field>
+        <field name="arch" type="xml">
+            <list string="Exam Rooms"
+                  decoration-success="state == 'available'"
+                  decoration-warning="state == 'maintenance'"
+                  decoration-danger="state == 'occupied'">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="university_id"/>
+                <field name="branch_id"/>
+                <field name="building"/>
+                <field name="floor"/>
+                <field name="capacity"/>
+                <field name="has_surveillance" widget="boolean_toggle"/>
+                <field name="has_ac" widget="boolean_toggle"/>
+                <field name="exam_count"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'available'"
+                       decoration-warning="state == 'maintenance'"
+                       decoration-danger="state == 'occupied'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.exam.room — Form View                                     -->
+    <!-- ============================================================ -->
+    <record id="view_uni_exam_room_form" model="ir.ui.view">
+        <field name="name">uni.exam.room.form</field>
+        <field name="model">uni.exam.room</field>
+        <field name="arch" type="xml">
+            <form string="Exam Room">
+                <header>
+                    <button name="action_available" type="object"
+                            string="Mark Available" class="oe_highlight"
+                            invisible="state == 'available'"/>
+                    <button name="action_maintenance" type="object"
+                            string="Under Maintenance"
+                            invisible="state in ('maintenance', 'occupied')"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="available,maintenance,occupied"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_open_exams" type="object"
+                                class="oe_stat_button" icon="fa-file-text-o">
+                            <field name="exam_count" widget="statinfo"
+                                   string="Exams"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" string="Exam Room"/>
+                        <h1><field name="name" placeholder="e.g. Main Sports Hall"/></h1>
+                        <h3><field name="code" placeholder="e.g. ROOM-001"/></h3>
+                    </div>
+                    <group>
+                        <group string="Location">
+                            <field name="university_id"
+                                   options="{'no_create': True}"/>
+                            <field name="branch_id"
+                                   options="{'no_create': True}"/>
+                            <field name="building"/>
+                            <field name="floor"/>
+                        </group>
+                        <group string="Capacity &amp; Facilities">
+                            <field name="capacity"/>
+                            <field name="has_surveillance"/>
+                            <field name="has_clock"/>
+                            <field name="has_ac"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="facilities"/>
+                    </group>
+                    <notebook>
+                        <page string="Assigned Exams" name="exams">
+                            <field name="exam_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="course_id"/>
+                                    <field name="exam_date"/>
+                                    <field name="total_students"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.exam.room — Search View                                   -->
+    <!-- ============================================================ -->
+    <record id="view_uni_exam_room_search" model="ir.ui.view">
+        <field name="name">uni.exam.room.search</field>
+        <field name="model">uni.exam.room</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="university_id"/>
+                <field name="branch_id"/>
+                <field name="building"/>
+                <filter string="Available" name="filter_available"
+                        domain="[('state', '=', 'available')]"/>
+                <filter string="Under Maintenance" name="filter_maintenance"
+                        domain="[('state', '=', 'maintenance')]"/>
+                <filter string="Occupied" name="filter_occupied"
+                        domain="[('state', '=', 'occupied')]"/>
+                <filter string="Has Surveillance" name="filter_surveillance"
+                        domain="[('has_surveillance', '=', True)]"/>
+                <filter string="Has AC" name="filter_ac"
+                        domain="[('has_ac', '=', True)]"/>
+                <separator/>
+                <filter string="Archived" name="filter_archived"
+                        domain="[('active', '=', False)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="State" name="group_state"
+                            context="{'group_by': 'state'}"/>
+                    <filter string="University" name="group_university"
+                            context="{'group_by': 'university_id'}"/>
+                    <filter string="Branch" name="group_branch"
+                            context="{'group_by': 'branch_id'}"/>
+                    <filter string="Building" name="group_building"
+                            context="{'group_by': 'building'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.exam.room — Action                                        -->
+    <!-- ============================================================ -->
+    <record id="action_uni_exam_room" model="ir.actions.act_window">
+        <field name="name">Exam Rooms</field>
+        <field name="res_model">uni.exam.room</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_exam_room_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new exam room
+            </p>
+            <p>Exam rooms are dedicated spaces for conducting exams. They may
+               differ from regular classrooms and may include specific facilities
+               such as surveillance cameras, wall clocks, or air conditioning.</p>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- ============================================================ -->
+    <!-- Default fee types                                             -->
+    <!-- ============================================================ -->
+
+    <!-- Tuition -->
+    <record id="fee_type_tuition" model="uni.fee.type">
+        <field name="name">Tuition Fee</field>
+        <field name="code">TUITION</field>
+        <field name="fee_category">tuition</field>
+        <field name="is_recurring">True</field>
+        <field name="default_amount">5000.00</field>
+        <field name="sequence">10</field>
+        <field name="description">Standard academic tuition charged per term.</field>
+    </record>
+
+    <!-- Lab Fee -->
+    <record id="fee_type_lab" model="uni.fee.type">
+        <field name="name">Lab Fee</field>
+        <field name="code">LAB</field>
+        <field name="fee_category">lab</field>
+        <field name="is_recurring">True</field>
+        <field name="default_amount">200.00</field>
+        <field name="sequence">20</field>
+        <field name="description">Covers consumable materials and lab maintenance.</field>
+    </record>
+
+    <!-- Library Fee -->
+    <record id="fee_type_library" model="uni.fee.type">
+        <field name="name">Library Fee</field>
+        <field name="code">LIBRARY</field>
+        <field name="fee_category">library</field>
+        <field name="is_recurring">True</field>
+        <field name="default_amount">150.00</field>
+        <field name="sequence">30</field>
+        <field name="description">Library services and borrowing privileges.</field>
+    </record>
+
+    <!-- Activity Fee -->
+    <record id="fee_type_activity" model="uni.fee.type">
+        <field name="name">Activity Fee</field>
+        <field name="code">ACTIVITY</field>
+        <field name="fee_category">activity</field>
+        <field name="is_recurring">True</field>
+        <field name="default_amount">100.00</field>
+        <field name="sequence">40</field>
+        <field name="description">Student activities and clubs.</field>
+    </record>
+
+    <!-- Registration Fee -->
+    <record id="fee_type_registration" model="uni.fee.type">
+        <field name="name">Registration Fee</field>
+        <field name="code">REGISTRATION</field>
+        <field name="fee_category">registration</field>
+        <field name="is_recurring">False</field>
+        <field name="default_amount">250.00</field>
+        <field name="sequence">50</field>
+        <field name="description">One-time registration fee charged at enrollment.</field>
+    </record>
+
+    <!-- Graduation Fee -->
+    <record id="fee_type_graduation" model="uni.fee.type">
+        <field name="name">Graduation Fee</field>
+        <field name="code">GRADUATION</field>
+        <field name="fee_category">graduation</field>
+        <field name="is_recurring">False</field>
+        <field name="default_amount">300.00</field>
+        <field name="sequence">60</field>
+        <field name="description">One-time fee charged before graduation.</field>
+    </record>
+
+    <!-- Late Payment Penalty -->
+    <record id="fee_type_late_penalty" model="uni.fee.type">
+        <field name="name">Late Payment Penalty</field>
+        <field name="code">LATE_PENALTY</field>
+        <field name="fee_category">late_penalty</field>
+        <field name="is_recurring">False</field>
+        <field name="default_amount">50.00</field>
+        <field name="sequence">70</field>
+        <field name="description">Penalty charged when a payment is made after the due date.</field>
+    </record>
+</odoo>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- ============================================================ -->
+    <!-- Housing sequences                                              -->
+    <!-- ============================================================ -->
+
+    <!-- Allocation records -->
+    <record id="seq_uni_housing_allocation" model="ir.sequence">
+        <field name="name">Housing Allocation Sequence</field>
+        <field name="code">uni.housing.allocation</field>
+        <field name="prefix">HAL/%(year)s/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <!-- Contract records -->
+    <record id="seq_uni_housing_contract" model="ir.sequence">
+        <field name="name">Housing Contract Sequence</field>
+        <field name="code">uni.housing.contract</field>
+        <field name="prefix">HCT/%(year)s/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <!-- Maintenance records -->
+    <record id="seq_uni_housing_maintenance" model="ir.sequence">
+        <field name="name">Housing Maintenance Sequence</field>
+        <field name="code">uni.housing.maintenance</field>
+        <field name="prefix">HMN/%(year)s/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+</odoo>

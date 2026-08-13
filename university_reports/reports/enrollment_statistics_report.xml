@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- Paper format — A4 landscape for enrollment statistics        -->
+    <!-- ============================================================ -->
+    <record id="paper_format_enrollment_stats" model="report.paperformat">
+        <field name="name">Enrollment Statistics A4 Landscape</field>
+        <field name="default" eval="False"/>
+        <field name="format">A4</field>
+        <field name="orientation">Landscape</field>
+        <field name="margin_top">15</field>
+        <field name="margin_bottom">20</field>
+        <field name="margin_left">8</field>
+        <field name="margin_right">8</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">10</field>
+        <field name="dpi">90</field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- QWeb PDF report action                                       -->
+    <!-- ============================================================ -->
+    <record id="action_report_uni_enrollment_stats" model="ir.actions.report">
+        <field name="name">Enrollment Statistics Report</field>
+        <field name="model">uni.report.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">university_reports.report_enrollment_statistics_document</field>
+        <field name="report_file">university_reports.report_enrollment_statistics_document</field>
+        <field name="paperformat_id" ref="paper_format_enrollment_stats"/>
+        <field name="print_report_name">'ENR-STATS-%s' % (fields.Date.today().strftime('%Y%m%d'))</field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- Wizard action — pre-binds the enrollment stats template      -->
+    <!-- ============================================================ -->
+    <record id="action_report_uni_enrollment_stats_wizard" model="ir.actions.act_window">
+        <field name="name">Enrollment Statistics</field>
+        <field name="res_model">uni.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{
+            'default_template_id': ref('university_reports.template_enrollment_statistics'),
+            'default_output_format': 'pdf',
+        }</field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- QWeb template — enrollment statistics                         -->
+    <!-- ============================================================ -->
+    <template id="report_enrollment_statistics_document">
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <div class="page">
+                    <h2 class="text-center">Enrollment Statistics Report</h2>
+                    <div class="text-center text-muted mb-3">
+                        <t t-if="object.university_id">
+                            <span t-field="object.university_id"/>
+                        </t>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <strong>Generated:</strong>
+                            <span t-esc="time.strftime('%Y-%m-%d %H:%M')"/>
+                        </div>
+                        <div class="col-6 text-right">
+                            <strong>Output:</strong>
+                            <span t-esc="object.output_format"/>
+                        </div>
+                    </div>
+
+                    <!-- Build enrollment domain -->
+                    <t t-set="domain" t-value="[]"/>
+                    <t t-if="object.university_id">
+                        <t t-set="domain" t-value="domain + [('university_id', '=', object.university_id.id)]"/>
+                    </t>
+                    <t t-if="object.academic_term_id">
+                        <t t-set="domain" t-value="domain + [('academic_term_id', '=', object.academic_term_id.id)]"/>
+                    </t>
+                    <t t-if="object.program_id">
+                        <t t-set="domain" t-value="domain + [('program_id', '=', object.program_id.id)]"/>
+                    </t>
+
+                    <t t-set="enrollments" t-value="object.env['ir.attachment'].browse()"/>
+                    <t t-if="'uni.student.enrollment' in object.env">
+                        <t t-set="enrollments" t-value="object.env['uni.student.enrollment'].search(domain)"/>
+                    </t>
+
+                    <!-- Compute statistics (guarded for empty recordsets) -->
+                    <t t-set="total_enrollments" t-value="len(enrollments)"/>
+                    <t t-set="total_credits" t-value="0.0"/>
+                    <t t-set="total_credits_earned" t-value="0.0"/>
+                    <t t-set="active_count" t-value="0"/>
+                    <t t-set="completed_count" t-value="0"/>
+                    <t t-set="cancelled_count" t-value="0"/>
+                    <t t-if="enrollments">
+                        <t t-set="total_credits" t-value="sum(enrollments.mapped('total_credits'))"/>
+                        <t t-set="total_credits_earned" t-value="sum(enrollments.mapped('total_credits_earned'))"/>
+                        <t t-set="active_count" t-value="len(enrollments.filtered(lambda e: e.state == 'enrolled'))"/>
+                        <t t-set="completed_count" t-value="len(enrollments.filtered(lambda e: e.state == 'completed'))"/>
+                        <t t-set="cancelled_count" t-value="len(enrollments.filtered(lambda e: e.state == 'cancelled'))"/>
+                    </t>
+
+                    <!-- Filters summary -->
+                    <table class="table table-sm table-bordered mb-3">
+                        <tbody>
+                            <tr>
+                                <th class="table-light">University</th>
+                                <td><span t-field="object.university_id"/></td>
+                                <th class="table-light">Program</th>
+                                <td><span t-field="object.program_id"/></td>
+                            </tr>
+                            <tr>
+                                <th class="table-light">Academic Term</th>
+                                <td><span t-field="object.academic_term_id"/></td>
+                                <th class="table-light">Academic Year</th>
+                                <td><span t-field="object.academic_year_id"/></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- Summary cards -->
+                    <div class="row mb-4">
+                        <div class="col-3 text-center">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h5 class="card-title mb-0">
+                                        <span t-esc="total_enrollments"/>
+                                    </h5>
+                                    <small class="text-muted">Total Enrollments</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-3 text-center">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h5 class="card-title mb-0">
+                                        <span t-esc="active_count"/>
+                                    </h5>
+                                    <small class="text-muted">Active</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-3 text-center">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h5 class="card-title mb-0">
+                                        <span t-esc="completed_count"/>
+                                    </h5>
+                                    <small class="text-muted">Completed</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-3 text-center">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h5 class="card-title mb-0">
+                                        <span t-esc="cancelled_count"/>
+                                    </h5>
+                                    <small class="text-muted">Cancelled</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Per-program breakdown -->
+                    <h4 class="mt-4">Enrollments by Program</h4>
+                    <t t-set="programs" t-value="enrollments.mapped('program_id') if enrollments else object.env['uni.program'].browse()"/>
+                    <t t-if="not enrollments and 'uni.student.enrollment' not in object.env">
+                        <div class="alert alert-danger">
+                            <strong>Module not installed:</strong>
+                            The <code>university_student</code> module is required
+                            to produce this report. Please install it and try again.
+                        </div>
+                    </t>
+                    <t t-elif="not programs">
+                        <div class="alert alert-warning">
+                            No enrollments match the selected filters.
+                        </div>
+                    </t>
+                    <t t-else="">
+                        <table class="table table-sm table-bordered">
+                            <thead>
+                                <tr class="active">
+                                    <th>Program</th>
+                                    <th class="text-center">Enrollments</th>
+                                    <th class="text-right">Total Credits</th>
+                                    <th class="text-right">Credits Earned</th>
+                                    <th class="text-center">Active</th>
+                                    <th class="text-center">Completed</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="programs" t-as="prog">
+                                    <t t-set="prog_enrs" t-value="enrollments.filtered(lambda e: e.program_id == prog)"/>
+                                    <td><span t-field="prog"/></td>
+                                    <td class="text-center"><t t-esc="len(prog_enrs)"/></td>
+                                    <td class="text-right"><t t-esc="sum(prog_enrs.mapped('total_credits'))"/></td>
+                                    <td class="text-right"><t t-esc="sum(prog_enrs.mapped('total_credits_earned'))"/></td>
+                                    <td class="text-center"><t t-esc="len(prog_enrs.filtered(lambda e: e.state == 'enrolled'))"/></td>
+                                    <td class="text-center"><t t-esc="len(prog_enrs.filtered(lambda e: e.state == 'completed'))"/></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </t>
+
+                    <!-- Footer -->
+                    <div class="row mt-4">
+                        <div class="col-12 text-center text-muted">
+                            <small>Page <span class="page"/> of <span class="topage"/></small>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>

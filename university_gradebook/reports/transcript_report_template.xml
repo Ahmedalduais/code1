@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        QWeb template for the transcript report.
+
+        Renders an official-looking academic transcript including:
+            * University name and header
+            * Student identity (name, code, program)
+            * Period covered and issue metadata
+            * Cumulative GPA, credits earned / required, academic standing
+            * Final grades grouped by academic term (course, grade letter,
+              GPA value, credit hours, passing flag)
+            * Footer with stamp placeholder when official_stamp is set
+    -->
+    <template id="report_transcript_document">
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <div class="page">
+                    <!-- Header -->
+                    <h2 class="text-center">
+                        Academic Transcript
+                    </h2>
+                    <div class="text-center text-muted mb-3">
+                        <span t-field="object.university_id"/>
+                    </div>
+
+                    <!-- Reference & code -->
+                    <div class="row mt-3 mb-3">
+                        <div class="col-6">
+                            <strong>Reference:</strong>
+                            <span t-field="object.name"/>
+                        </div>
+                        <div class="col-6 text-right">
+                            <strong>Code:</strong>
+                            <span t-field="object.code"/>
+                        </div>
+                    </div>
+
+                    <!-- Student info -->
+                    <div class="row mb-2">
+                        <div class="col-6">
+                            <strong>Student:</strong>
+                            <span t-field="object.student_id"/>
+                        </div>
+                        <div class="col-6 text-right">
+                            <strong>Student Code:</strong>
+                            <span t-field="object.student_id.student_code"/>
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-6">
+                            <strong>Program:</strong>
+                            <span t-field="object.program_id"/>
+                        </div>
+                        <div class="col-6 text-right">
+                            <strong>University:</strong>
+                            <span t-field="object.university_id"/>
+                        </div>
+                    </div>
+
+                    <!-- Period covered -->
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <strong>From Year:</strong>
+                            <span t-field="object.academic_year_from"/>
+                        </div>
+                        <div class="col-6 text-right">
+                            <strong>To Year:</strong>
+                            <span t-field="object.academic_year_to"/>
+                        </div>
+                    </div>
+
+                    <!-- Academic summary -->
+                    <div class="row mb-4">
+                        <div class="col-3 text-center">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h5 class="card-title mb-0">
+                                        <span t-field="object.cumulative_gpa"/>
+                                    </h5>
+                                    <small class="text-muted">Cumulative GPA</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-3 text-center">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h5 class="card-title mb-0">
+                                        <span t-field="object.total_credits_earned"/>
+                                    </h5>
+                                    <small class="text-muted">Credits Earned</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-3 text-center">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h5 class="card-title mb-0">
+                                        <span t-field="object.total_credits_required"/>
+                                    </h5>
+                                    <small class="text-muted">Credits Required</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-3 text-center">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h5 class="card-title mb-0">
+                                        <span t-field="object.academic_standing"/>
+                                    </h5>
+                                    <small class="text-muted">Standing</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Final grades grouped by academic term -->
+                    <h4 class="mt-4">Course Grades</h4>
+                    <t t-set="finals" t-value="object.final_ids.sorted(key=lambda f: (f.academic_term_id.date_start if f.academic_term_id else False, f.course_id.code))"/>
+                    <t t-set="terms" t-value="[]"/>
+                    <t t-foreach="finals" t-as="f">
+                        <t t-if="f.academic_term_id and f.academic_term_id not in terms">
+                            <t t-set="dummy" t-value="terms.append(f.academic_term_id)"/>
+                        </t>
+                    </t>
+
+                    <t t-foreach="terms" t-as="term">
+                        <h5 class="mt-3 mb-1">
+                            <span t-field="term"/>
+                        </h5>
+                        <table class="table table-sm table-bordered">
+                            <thead>
+                                <tr class="active">
+                                    <th>Course</th>
+                                    <th class="text-center">Credit Hours</th>
+                                    <th class="text-center">Final %</th>
+                                    <th class="text-center">Grade</th>
+                                    <th class="text-center">GPA</th>
+                                    <th class="text-center">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-set="term_finals" t-value="finals.filtered(lambda x: x.academic_term_id == term)"/>
+                                <tr t-foreach="term_finals" t-as="tf">
+                                    <td>
+                                        <strong t-field="tf.course_id"/>
+                                        <t t-if="tf.course_id.code">
+                                            <small class="text-muted">
+                                                (<span t-field="tf.course_id.code"/>)
+                                            </small>
+                                        </t>
+                                    </td>
+                                    <td class="text-center">
+                                        <span t-field="tf.credit_hours"/>
+                                    </td>
+                                    <td class="text-center">
+                                        <span t-field="tf.final_percentage"/>
+                                    </td>
+                                    <td class="text-center">
+                                        <span t-field="tf.grade_letter_id"/>
+                                    </td>
+                                    <td class="text-center">
+                                        <span t-field="tf.gpa_value"/>
+                                    </td>
+                                    <td class="text-center">
+                                        <t t-if="tf.is_passing">
+                                            <span class="text-success">PASS</span>
+                                        </t>
+                                        <t t-else="">
+                                            <span class="text-danger">FAIL</span>
+                                        </t>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </t>
+
+                    <t t-if="not finals">
+                        <div class="alert alert-info">
+                            No final grades recorded for this transcript.
+                        </div>
+                    </t>
+
+                    <!-- Issue metadata -->
+                    <div class="row mt-5">
+                        <div class="col-6">
+                            <strong>Issue Date:</strong>
+                            <span t-field="object.issue_date"/>
+                        </div>
+                        <div class="col-6 text-right">
+                            <strong>Issued By:</strong>
+                            <span t-field="object.issued_by"/>
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-6">
+                            <strong>State:</strong>
+                            <span t-field="object.state"/>
+                        </div>
+                        <div class="col-6 text-right">
+                            <strong>Print Count:</strong>
+                            <span t-field="object.print_count"/>
+                        </div>
+                    </div>
+
+                    <!-- Official stamp -->
+                    <t t-if="object.official_stamp">
+                        <div class="text-center mt-5 mb-3">
+                            <div style="border: 3px double #333; padding: 10px 30px; display: inline-block; transform: rotate(-5deg);">
+                                <strong>OFFICIAL TRANSCRIPT</strong>
+                                <br/>
+                                <small>Verified by Registrar</small>
+                            </div>
+                        </div>
+                    </t>
+
+                    <!-- Notes -->
+                    <t t-if="object.notes">
+                        <div class="mt-4">
+                            <strong>Notes:</strong>
+                            <p t-field="object.notes"/>
+                        </div>
+                    </t>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>

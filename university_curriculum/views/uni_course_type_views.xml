@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============ uni.course.type — List View ============ -->
+    <record id="view_uni_course_type_list" model="ir.ui.view">
+        <field name="name">uni.course.type.list</field>
+        <field name="model">uni.course.type</field>
+        <field name="arch" type="xml">
+            <list string="Course Types"
+                  decoration-info="course_nature == 'theoretical'"
+                  decoration-success="course_nature == 'practical'"
+                  decoration-warning="course_nature == 'hybrid'"
+                  decoration-danger="course_nature in ('clinical', 'laboratory')">
+                <field name="sequence" widget="handle"/>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="course_nature" widget="badge"/>
+                <field name="default_credit_hours"/>
+                <field name="default_contact_hours" optional="hide"/>
+                <field name="default_weeks" optional="hide"/>
+                <field name="has_lab" optional="hide" widget="boolean_toggle"/>
+                <field name="has_clinical" optional="hide" widget="boolean_toggle"/>
+                <field name="has_field_work" optional="hide" widget="boolean_toggle"/>
+                <field name="has_research" optional="hide" widget="boolean_toggle"/>
+                <field name="grading_weight" optional="hide"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============ uni.course.type — Form View ============ -->
+    <record id="view_uni_course_type_form" model="ir.ui.view">
+        <field name="name">uni.course.type.form</field>
+        <field name="model">uni.course.type</field>
+        <field name="arch" type="xml">
+            <form string="Course Type">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" type="object"
+                                name="action_apply_defaults_to_courses"
+                                icon="fa-magic" string="Apply Defaults"/>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" string="Type Name"/>
+                        <h1><field name="name" placeholder="e.g. Theoretical Course"/></h1>
+                        <h3><field name="code" placeholder="e.g. TH"/></h3>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="course_nature" widget="badge"/>
+                            <field name="sequence"/>
+                            <field name="active" widget="boolean_toggle"/>
+                        </group>
+                        <group>
+                            <field name="default_credit_hours"/>
+                            <field name="default_contact_hours"/>
+                            <field name="default_weeks"/>
+                            <field name="grading_weight"/>
+                        </group>
+                    </group>
+                    <group string="Components">
+                        <group>
+                            <field name="has_lab"/>
+                            <field name="has_clinical"/>
+                            <field name="has_field_work"/>
+                            <field name="has_research"/>
+                        </group>
+                        <group>
+                            <field name="lab_hours"
+                                   invisible="not has_lab"/>
+                            <field name="theory_hours"/>
+                            <field name="practice_hours"
+                                   invisible="not has_lab"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Description" name="description">
+                            <field name="description"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============ uni.course.type — Search View ============ -->
+    <record id="view_uni_course_type_search" model="ir.ui.view">
+        <field name="name">uni.course.type.search</field>
+        <field name="model">uni.course.type</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="code"/>
+                <filter string="Active" name="filter_active"
+                        domain="[('active', '=', True)]"/>
+                <separator/>
+                <filter string="Theoretical" name="filter_theoretical"
+                        domain="[('course_nature', '=', 'theoretical')]"/>
+                <filter string="Practical" name="filter_practical"
+                        domain="[('course_nature', '=', 'practical')]"/>
+                <filter string="Hybrid" name="filter_hybrid"
+                        domain="[('course_nature', '=', 'hybrid')]"/>
+                <filter string="Clinical" name="filter_clinical"
+                        domain="[('course_nature', '=', 'clinical')]"/>
+                <filter string="Laboratory" name="filter_lab"
+                        domain="[('course_nature', '=', 'laboratory')]"/>
+                <separator/>
+                <filter string="Has Lab Component" name="filter_has_lab"
+                        domain="[('has_lab', '=', True)]"/>
+                <filter string="Has Clinical Component" name="filter_has_clinical"
+                        domain="[('has_clinical', '=', True)]"/>
+                <filter string="Has Research Component" name="filter_has_research"
+                        domain="[('has_research', '=', True)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Course Nature" name="group_nature"
+                            context="{'group_by': 'course_nature'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============ uni.course.type — Action ============ -->
+    <record id="action_uni_course_type" model="ir.actions.act_window">
+        <field name="name">Course Types</field>
+        <field name="res_model">uni.course.type</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_course_type_search"/>
+        <field name="context">{'search_default_filter_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new course type
+            </p>
+            <p>
+                Course Types classify courses by their pedagogical nature
+                (theoretical, practical, hybrid, clinical, laboratory, etc.).
+                This is distinct from the mandatory/elective dimension tracked
+                on the course itself.
+            </p>
+        </field>
+    </record>
+</odoo>

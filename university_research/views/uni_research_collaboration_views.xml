@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- uni.research.collaboration — List View                        -->
+    <!-- ============================================================ -->
+    <record id="view_uni_research_collaboration_list" model="ir.ui.view">
+        <field name="name">uni.research.collaboration.list</field>
+        <field name="model">uni.research.collaboration</field>
+        <field name="arch" type="xml">
+            <list string="Research Collaborations"
+                  decoration-info="state in ('draft', 'proposed')"
+                  decoration-success="state == 'active'"
+                  decoration-warning="state == 'suspended'"
+                  decoration-primary="state == 'completed'"
+                  decoration-danger="state == 'terminated'"
+                  decoration-muted="state == 'cancelled'">
+                <field name="name"/>
+                <field name="project_id"/>
+                <field name="project_title" optional="hide"/>
+                <field name="faculty_id" optional="hide"/>
+                <field name="collaborator_name"/>
+                <field name="collaborator_organization" optional="hide"/>
+                <field name="collaborator_type"/>
+                <field name="collaboration_role"/>
+                <field name="collaborator_country_id" optional="hide"/>
+                <field name="funding_amount" sum="Total Funding"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="start_date"/>
+                <field name="end_date" optional="hide"/>
+                <field name="is_active" optional="hide" widget="boolean_toggle"/>
+                <field name="state" widget="badge"
+                       decoration-info="state in ('draft', 'proposed')"
+                       decoration-success="state == 'active'"
+                       decoration-warning="state == 'suspended'"
+                       decoration-primary="state == 'completed'"
+                       decoration-danger="state == 'terminated'"
+                       decoration-muted="state == 'cancelled'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.research.collaboration — Form View                        -->
+    <!-- ============================================================ -->
+    <record id="view_uni_research_collaboration_form" model="ir.ui.view">
+        <field name="name">uni.research.collaboration.form</field>
+        <field name="model">uni.research.collaboration</field>
+        <field name="arch" type="xml">
+            <form string="Research Collaboration">
+                <header>
+                    <button name="action_propose" string="Propose"
+                            type="object" class="oe_highlight"
+                            invisible="state != 'draft'"/>
+                    <button name="action_activate" string="Activate"
+                            type="object" class="oe_highlight"
+                            invisible="state not in ('proposed', 'suspended')"/>
+                    <button name="action_suspend" string="Suspend"
+                            type="object"
+                            invisible="state != 'active'"/>
+                    <button name="action_complete" string="Complete"
+                            type="object" class="oe_highlight"
+                            invisible="state not in ('active', 'suspended')"/>
+                    <button name="action_terminate" string="Terminate"
+                            type="object"
+                            invisible="state not in ('active', 'suspended')"
+                            confirm="Are you sure you want to terminate this collaboration?"/>
+                    <button name="action_cancel" string="Cancel"
+                            type="object"
+                            invisible="state in ('completed', 'terminated', 'cancelled')"
+                            confirm="Are you sure you want to cancel this collaboration?"/>
+                    <button name="action_reset_to_draft" string="Back to Draft"
+                            type="object"
+                            invisible="state != 'cancelled'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,proposed,active,completed"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" string="Collaboration"/>
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group string="Project">
+                            <field name="project_id"
+                                   options="{'no_create': True}"/>
+                            <field name="project_title" readonly="1"/>
+                            <field name="faculty_id"
+                                   options="{'no_create': True}"
+                                   invisible="collaborator_type != 'internal'"/>
+                        </group>
+                        <group string="Collaborator Type">
+                            <field name="collaborator_type"/>
+                            <field name="collaboration_role"/>
+                            <field name="is_active"/>
+                        </group>
+                    </group>
+                    <group string="Collaborator Information">
+                        <group>
+                            <field name="collaborator_name"/>
+                            <field name="collaborator_organization"/>
+                            <field name="collaborator_department" optional="hide"/>
+                            <field name="collaborator_position" optional="hide"/>
+                        </group>
+                        <group>
+                            <field name="collaborator_email"/>
+                            <field name="collaborator_phone"/>
+                            <field name="collaborator_country_id"/>
+                            <field name="collaborator_website"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Timeline">
+                            <field name="start_date"/>
+                            <field name="end_date"/>
+                        </group>
+                        <group string="Financial">
+                            <field name="funding_amount"/>
+                            <field name="currency_id"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Scope &amp; Outcomes">
+                            <group>
+                                <field name="collaboration_scope"
+                                       placeholder="Description of what the collaboration entails..."/>
+                                <field name="expected_outcomes"/>
+                                <field name="contributions"/>
+                            </group>
+                        </page>
+                        <page string="Agreement">
+                            <group>
+                                <group>
+                                    <field name="has_agreement"/>
+                                    <field name="agreement_type"
+                                           invisible="not has_agreement"/>
+                                    <field name="agreement_date"
+                                           invisible="not has_agreement"/>
+                                </group>
+                                <group>
+                                    <field name="agreement_filename"
+                                           invisible="not agreement_file"/>
+                                    <field name="agreement_file"
+                                           filename="agreement_filename"
+                                           invisible="not has_agreement"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Termination" invisible="state != 'terminated'">
+                            <group>
+                                <field name="termination_reason"/>
+                            </group>
+                        </page>
+                        <page string="Notes">
+                            <field name="notes"
+                                   placeholder="Internal notes about this collaboration..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.research.collaboration — Search View                      -->
+    <!-- ============================================================ -->
+    <record id="view_uni_research_collaboration_search" model="ir.ui.view">
+        <field name="name">uni.research.collaboration.search</field>
+        <field name="model">uni.research.collaboration</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="project_id"/>
+                <field name="project_title"/>
+                <field name="faculty_id"/>
+                <field name="collaborator_name"/>
+                <field name="collaborator_organization"/>
+                <field name="collaborator_country_id"/>
+                <separator/>
+                <filter string="Draft" name="filter_draft"
+                        domain="[('state', '=', 'draft')]"/>
+                <filter string="Proposed" name="filter_proposed"
+                        domain="[('state', '=', 'proposed')]"/>
+                <filter string="Active" name="filter_active"
+                        domain="[('state', '=', 'active')]"/>
+                <filter string="Suspended" name="filter_suspended"
+                        domain="[('state', '=', 'suspended')]"/>
+                <filter string="Completed" name="filter_completed"
+                        domain="[('state', '=', 'completed')]"/>
+                <filter string="Terminated" name="filter_terminated"
+                        domain="[('state', '=', 'terminated')]"/>
+                <filter string="Cancelled" name="filter_cancelled"
+                        domain="[('state', '=', 'cancelled')]"/>
+                <separator/>
+                <filter string="Currently Active" name="filter_is_active"
+                        domain="[('is_active', '=', True)]"/>
+                <filter string="Has Agreement" name="filter_has_agreement"
+                        domain="[('has_agreement', '=', True)]"/>
+                <filter string="Has Funding" name="filter_has_funding"
+                        domain="[('funding_amount', '>', 0)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Status" name="group_state"
+                            context="{'group_by': 'state'}"/>
+                    <filter string="Collaborator Type" name="group_collaborator_type"
+                            context="{'group_by': 'collaborator_type'}"/>
+                    <filter string="Role" name="group_role"
+                            context="{'group_by': 'collaboration_role'}"/>
+                    <filter string="Project" name="group_project"
+                            context="{'group_by': 'project_id'}"/>
+                    <filter string="Internal Collaborator" name="group_faculty"
+                            context="{'group_by': 'faculty_id'}"/>
+                    <filter string="Country" name="group_country"
+                            context="{'group_by': 'collaborator_country_id'}"/>
+                    <filter string="Agreement Type" name="group_agreement_type"
+                            context="{'group_by': 'agreement_type'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.research.collaboration — Action                           -->
+    <!-- ============================================================ -->
+    <record id="action_uni_research_collaboration" model="ir.actions.act_window">
+        <field name="name">Research Collaborations</field>
+        <field name="res_model">uni.research.collaboration</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_research_collaboration_search"/>
+        <field name="context">{
+            'search_default_filter_draft': 1,
+            'search_default_filter_active': 1,
+        }</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new research collaboration
+            </p>
+            <p>Track collaborations between faculty and external or internal
+               partners: other institutions, industry partners, government
+               agencies, NGOs, etc. Each collaboration records the role,
+               scope, expected outcomes, agreement details, and funding
+               contributed. Workflow: draft → proposed → active → completed
+               / terminated / cancelled.</p>
+        </field>
+    </record>
+</odoo>

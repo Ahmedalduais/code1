@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- uni.report.wizard — Form View                                -->
+    <!-- ============================================================ -->
+    <record id="view_uni_report_wizard_form" model="ir.ui.view">
+        <field name="name">uni.report.wizard.form</field>
+        <field name="model">uni.report.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Generate Report">
+                <header>
+                    <button name="action_generate_pdf" string="Generate PDF"
+                            type="object" class="oe_highlight"/>
+                    <button name="action_generate_xlsx" string="Generate XLSX"
+                            type="object"/>
+                    <button name="action_generate" string="Generate"
+                            type="object"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="template_id"
+                                   options="{'no_create': True}"
+                                   required="1"
+                                   readonly="template_id"/>
+                            <field name="output_format" widget="radio"/>
+                        </group>
+                        <group>
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Filters">
+                            <group>
+                                <group>
+                                    <field name="university_id"
+                                           options="{'no_create': True}"/>
+                                    <field name="college_id"
+                                           options="{'no_create': True}"/>
+                                    <field name="department_id"
+                                           options="{'no_create': True}"/>
+                                    <field name="program_id"
+                                           options="{'no_create': True}"/>
+                                </group>
+                                <group>
+                                    <field name="academic_year_id"
+                                           options="{'no_create': True}"/>
+                                    <field name="academic_term_id"
+                                           options="{'no_create': True}"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Advanced">
+                            <group>
+                                <field name="columns_configuration"
+                                       widget="ace"
+                                       options="{'mode': 'json'}"
+                                       placeholder="[]"/>
+                                <field name="notes"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.report.wizard — Action                                   -->
+    <!-- ============================================================ -->
+    <record id="action_uni_report_wizard" model="ir.actions.act_window">
+        <field name="name">Generate Report</field>
+        <field name="res_model">uni.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{'default_output_format': 'pdf'}</field>
+    </record>
+</odoo>

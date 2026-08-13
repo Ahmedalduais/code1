@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============ uni.project.supervisor — List View ============ -->
+    <record id="view_uni_project_supervisor_list" model="ir.ui.view">
+        <field name="name">uni.project.supervisor.list</field>
+        <field name="model">uni.project.supervisor</field>
+        <field name="arch" type="xml">
+            <list string="Project Supervisors"
+                  decoration-success="is_active == True"
+                  decoration-muted="is_active == False">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="project_id"/>
+                <field name="faculty_id"/>
+                <field name="faculty_name" optional="show"/>
+                <field name="supervisor_role"/>
+                <field name="start_date" optional="show"/>
+                <field name="end_date" optional="hide"/>
+                <field name="workload_hours" optional="hide"/>
+                <field name="is_active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============ uni.project.supervisor — Form View ============ -->
+    <record id="view_uni_project_supervisor_form" model="ir.ui.view">
+        <field name="name">uni.project.supervisor.form</field>
+        <field name="model">uni.project.supervisor</field>
+        <field name="arch" type="xml">
+            <form string="Project Supervisor">
+                <header>
+                    <button name="action_end_supervision" type="object"
+                            string="End Supervision" class="btn-danger"
+                            invisible="is_active == False"/>
+                    <button name="action_reactivate" type="object"
+                            string="Reactivate" class="btn-primary"
+                            invisible="is_active == True"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" string="Reference"/>
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group string="Assignment">
+                            <field name="project_id" options="{'no_create': True}"/>
+                            <field name="faculty_id" options="{'no_create': True}"/>
+                            <field name="faculty_name"/>
+                            <field name="supervisor_role"/>
+                            <field name="sequence"/>
+                        </group>
+                        <group string="Lifecycle">
+                            <field name="start_date"/>
+                            <field name="end_date" readonly="is_active == True"/>
+                            <field name="is_active" widget="boolean_toggle"/>
+                            <field name="active" widget="boolean_toggle" optional="hide"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Workload">
+                            <field name="workload_hours"/>
+                            <field name="expertise_area"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Notes" name="notes">
+                            <field name="notes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============ uni.project.supervisor — Search View ============ -->
+    <record id="view_uni_project_supervisor_search" model="ir.ui.view">
+        <field name="name">uni.project.supervisor.search</field>
+        <field name="model">uni.project.supervisor</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="project_id"/>
+                <field name="faculty_id"/>
+                <field name="faculty_name"/>
+                <field name="supervisor_role"/>
+                <separator/>
+                <filter string="Active" name="filter_active"
+                        domain="[('is_active', '=', True)]"/>
+                <filter string="Inactive" name="filter_inactive"
+                        domain="[('is_active', '=', False)]"/>
+                <filter string="Archived" name="filter_archived"
+                        domain="[('active', '=', False)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Project" name="group_project"
+                            context="{'group_by': 'project_id'}"/>
+                    <filter string="Faculty" name="group_faculty"
+                            context="{'group_by': 'faculty_id'}"/>
+                    <filter string="Role" name="group_role"
+                            context="{'group_by': 'supervisor_role'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============ uni.project.supervisor — Action ============ -->
+    <record id="action_uni_project_supervisor" model="ir.actions.act_window">
+        <field name="name">Project Supervisors</field>
+        <field name="res_model">uni.project.supervisor</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_project_supervisor_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first project supervisor
+            </p>
+            <p>
+                Supervisors are faculty members assigned to a project with a
+                specific role (primary, co-supervisor, external, or advisor).
+            </p>
+        </field>
+    </record>
+</odoo>

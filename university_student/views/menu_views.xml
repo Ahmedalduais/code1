@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- Students menu — under university_core.menu_university_root    -->
+    <!-- ============================================================ -->
+    <menuitem id="menu_university_student_root"
+              name="Students"
+              parent="university_core.menu_university_root"
+              sequence="50"/>
+
+    <!-- Students -->
+    <menuitem id="menu_uni_student"
+              name="Students"
+              parent="menu_university_student_root"
+              action="action_uni_student"
+              sequence="10"/>
+
+    <!-- Enrollments -->
+    <menuitem id="menu_uni_student_enrollment"
+              name="Enrollments"
+              parent="menu_university_student_root"
+              action="action_uni_student_enrollment"
+              sequence="20"/>
+
+    <!-- Transfers -->
+    <menuitem id="menu_uni_student_transfer"
+              name="Transfers"
+              parent="menu_university_student_root"
+              action="action_uni_student_transfer"
+              sequence="30"/>
+
+    <!-- Documents -->
+    <menuitem id="menu_uni_student_document"
+              name="Documents"
+              parent="menu_university_student_root"
+              action="action_uni_student_document"
+              sequence="40"/>
+
+    <!-- Attendance -->
+    <menuitem id="menu_uni_attendance"
+              name="Attendance"
+              parent="menu_university_student_root"
+              action="action_uni_attendance"
+              sequence="50"/>
+
+    <!-- Advisors -->
+    <menuitem id="menu_uni_student_advisor"
+              name="Advisors"
+              parent="menu_university_student_root"
+              action="action_uni_student_advisor"
+              sequence="60"/>
+
+    <!-- Statuses (manager only) -->
+    <menuitem id="menu_uni_student_status"
+              name="Statuses"
+              parent="menu_university_student_root"
+              action="action_uni_student_status"
+              sequence="90"
+              groups="university_core.group_university_manager"/>
+</odoo>

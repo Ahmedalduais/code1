@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- uni.portal.notification — List View                           -->
+    <!-- ============================================================ -->
+    <record id="view_uni_portal_notification_list" model="ir.ui.view">
+        <field name="name">uni.portal.notification.list</field>
+        <field name="model">uni.portal.notification</field>
+        <field name="arch" type="xml">
+            <list string="Portal Notifications"
+                  decoration-muted="is_read == True"
+                  decoration-success="notification_type == 'success' and is_read == False"
+                  decoration-warning="notification_type == 'warning' and is_read == False"
+                  decoration-danger="notification_type in ('error', 'urgent') and is_read == False"
+                  decoration-info="notification_type == 'info' and is_read == False">
+                <field name="code"/>
+                <field name="title"/>
+                <field name="recipient_type"/>
+                <field name="user_id"/>
+                <field name="portal_student_id"/>
+                <field name="portal_faculty_id"/>
+                <field name="notification_type" widget="badge"
+                       decoration-success="notification_type == 'success'"
+                       decoration-warning="notification_type == 'warning'"
+                       decoration-danger="notification_type in ('error', 'urgent')"
+                       decoration-info="notification_type == 'info'"/>
+                <field name="priority" widget="badge"
+                       decoration-danger="priority == 'urgent'"
+                       decoration-warning="priority == 'high'"
+                       decoration-info="priority == 'normal'"
+                       decoration-muted="priority == 'low'"/>
+                <field name="send_date"/>
+                <field name="is_read" widget="boolean_toggle"/>
+                <field name="read_date"/>
+                <field name="expiry_date"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.portal.notification — Form View                           -->
+    <!-- ============================================================ -->
+    <record id="view_uni_portal_notification_form" model="ir.ui.view">
+        <field name="name">uni.portal.notification.form</field>
+        <field name="model">uni.portal.notification</field>
+        <field name="arch" type="xml">
+            <form string="Portal Notification">
+                <header>
+                    <button name="action_mark_read" string="Mark Read"
+                            type="object" class="oe_highlight"
+                            invisible="is_read == True"/>
+                    <button name="action_mark_unread" string="Mark Unread"
+                            type="object"
+                            invisible="is_read == False"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_archive" type="object"
+                                class="oe_stat_button" icon="fa-archive"
+                                invisible="not active"/>
+                        <button name="action_unarchive" type="object"
+                                class="oe_stat_button" icon="fa-undo"
+                                invisible="active"/>
+                    </div>
+                    <div class="oe_title">
+                        <label for="title" string="Notification"/>
+                        <h1><field name="title" placeholder="Notification title..."/></h1>
+                        <h3><field name="code" readonly="1"/></h3>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="recipient_type"
+                                   widget="radio"/>
+                            <field name="notification_type"
+                                   widget="badge"/>
+                            <field name="priority"
+                                   widget="badge"/>
+                        </group>
+                        <group>
+                            <field name="user_id"
+                                   options="{'no_create': True}"/>
+                            <field name="portal_student_id"
+                                   invisible="recipient_type != 'student'"
+                                   options="{'no_create': True}"/>
+                            <field name="portal_faculty_id"
+                                   invisible="recipient_type != 'faculty'"
+                                   options="{'no_create': True}"/>
+                            <field name="student_id"
+                                   invisible="recipient_type != 'student'"
+                                   options="{'no_create': True}"/>
+                            <field name="faculty_id"
+                                   invisible="recipient_type != 'faculty'"
+                                   options="{'no_create': True}"/>
+                        </group>
+                    </group>
+                    <group string="Content">
+                        <field name="message" placeholder="Notification body..."
+                               nolabel="1"/>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="send_date"/>
+                            <field name="expiry_date"/>
+                        </group>
+                        <group>
+                            <field name="is_read" widget="boolean_toggle"/>
+                            <field name="read_date" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Action Link">
+                            <group>
+                                <field name="action_url"
+                                       placeholder="e.g. /university/portal/notifications"/>
+                                <field name="action_model"
+                                       placeholder="e.g. uni.student"/>
+                                <field name="action_res_id"/>
+                                <field name="related_record" readonly="1"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.portal.notification — Search View                         -->
+    <!-- ============================================================ -->
+    <record id="view_uni_portal_notification_search" model="ir.ui.view">
+        <field name="name">uni.portal.notification.search</field>
+        <field name="model">uni.portal.notification</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="title"/>
+                <field name="code"/>
+                <field name="user_id"/>
+                <field name="portal_student_id"/>
+                <field name="portal_faculty_id"/>
+                <field name="student_id"/>
+                <field name="faculty_id"/>
+                <separator/>
+                <filter string="Unread" name="filter_unread"
+                        domain="[('is_read', '=', False)]"/>
+                <filter string="Read" name="filter_read"
+                        domain="[('is_read', '=', True)]"/>
+                <separator/>
+                <filter string="Info" name="filter_info"
+                        domain="[('notification_type', '=', 'info')]"/>
+                <filter string="Warning" name="filter_warning"
+                        domain="[('notification_type', '=', 'warning')]"/>
+                <filter string="Success" name="filter_success"
+                        domain="[('notification_type', '=', 'success')]"/>
+                <filter string="Error" name="filter_error"
+                        domain="[('notification_type', '=', 'error')]"/>
+                <filter string="Announcement" name="filter_announcement"
+                        domain="[('notification_type', '=', 'announcement')]"/>
+                <separator/>
+                <filter string="Urgent" name="filter_urgent"
+                        domain="[('priority', '=', 'urgent')]"/>
+                <filter string="High" name="filter_high"
+                        domain="[('priority', '=', 'high')]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Recipient Type" name="group_recipient"
+                            context="{'group_by': 'recipient_type'}"/>
+                    <filter string="Notification Type" name="group_type"
+                            context="{'group_by': 'notification_type'}"/>
+                    <filter string="Priority" name="group_priority"
+                            context="{'group_by': 'priority'}"/>
+                    <filter string="User" name="group_user"
+                            context="{'group_by': 'user_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.portal.notification — Action                              -->
+    <!-- ============================================================ -->
+    <record id="action_uni_portal_notification" model="ir.actions.act_window">
+        <field name="name">Portal Notifications</field>
+        <field name="res_model">uni.portal.notification</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_portal_notification_search"/>
+        <field name="context">{'search_default_filter_unread': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new portal notification
+            </p>
+            <p>Notifications are pushed to the recipient's portal page.
+               They can be addressed to a single student, a single faculty
+               member, or broadcast to all active portal accounts.</p>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.portal.notification — Send Wizard Action                 -->
+    <!-- ============================================================ -->
+    <record id="action_uni_portal_notification_send" model="ir.actions.act_window">
+        <field name="name">Send Notification</field>
+        <field name="res_model">uni.portal.notification</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{
+            'default_recipient_type': 'all',
+            'default_notification_type': 'announcement',
+            'default_priority': 'normal',
+        }</field>
+    </record>
+</odoo>

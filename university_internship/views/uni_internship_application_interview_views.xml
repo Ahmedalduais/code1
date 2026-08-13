@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ===== Application Interview: List View ===== -->
+    <record id="view_uni_internship_application_interview_list" model="ir.ui.view">
+        <field name="name">uni.internship.application.interview.list</field>
+        <field name="model">uni.internship.application.interview</field>
+        <field name="arch" type="xml">
+            <list string="Application Interviews"
+                  decoration-success="result == 'pass'"
+                  decoration-danger="result == 'fail'"
+                  decoration-warning="result == 'hold'"
+                  decoration-muted="state == 'cancelled'">
+                <field name="name"/>
+                <field name="application_id"/>
+                <field name="student_id" optional="show"/>
+                <field name="opportunity_id" optional="show"/>
+                <field name="interview_date"/>
+                <field name="interview_type"/>
+                <field name="interviewer_id" optional="show"/>
+                <field name="score" optional="show"/>
+                <field name="result" widget="badge"
+                       decoration-success="result == 'pass'"
+                       decoration-danger="result == 'fail'"
+                       decoration-warning="result == 'hold'"
+                       decoration-secondary="result == 'pending'"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'completed'"
+                       decoration-danger="state == 'cancelled'"
+                       decoration-warning="state == 'no_show'"
+                       decoration-info="state == 'scheduled'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ===== Application Interview: Form View ===== -->
+    <record id="view_uni_internship_application_interview_form" model="ir.ui.view">
+        <field name="name">uni.internship.application.interview.form</field>
+        <field name="model">uni.internship.application.interview</field>
+        <field name="arch" type="xml">
+            <form string="Application Interview">
+                <header>
+                    <button name="action_complete" type="object"
+                            string="Complete" class="oe_highlight"
+                            invisible="state != 'scheduled'"/>
+                    <button name="action_no_show" type="object"
+                            string="No Show"
+                            invisible="state != 'scheduled'"/>
+                    <button name="action_cancel" type="object"
+                            string="Cancel"
+                            invisible="state in ('cancelled', 'completed')"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="scheduled,completed"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="toggle_active" type="object"
+                                class="oe_stat_button" icon="fa-archive">
+                            <field name="active" widget="boolean_button"
+                                   string="Active"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" string="Reference"/>
+                        <h2><field name="name" readonly="1"/></h2>
+                    </div>
+                    <group>
+                        <group string="Application">
+                            <field name="application_id"/>
+                            <field name="student_id"/>
+                            <field name="opportunity_id"/>
+                        </group>
+                        <group string="Schedule">
+                            <field name="interview_date"/>
+                            <field name="start_time"/>
+                            <field name="end_time"/>
+                            <field name="duration"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Type &amp; Location">
+                            <field name="interview_type"/>
+                            <field name="location"/>
+                            <field name="meeting_url"
+                                   invisible="interview_type not in ('video', 'phone')"
+                                   widget="url"/>
+                        </group>
+                        <group string="Interviewer">
+                            <field name="interviewer_id"/>
+                            <field name="interviewer_name"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Questions &amp; Feedback" name="qa">
+                            <group string="Questions">
+                                <field name="questions" nolabel="1"
+                                       placeholder="List interview questions..."/>
+                            </group>
+                            <group string="Feedback">
+                                <field name="feedback" nolabel="1"
+                                       placeholder="Interviewer feedback..."/>
+                            </group>
+                        </page>
+                        <page string="Result &amp; Score" name="result">
+                            <group>
+                                <group>
+                                    <field name="result"/>
+                                    <field name="state"/>
+                                </group>
+                                <group>
+                                    <field name="score"/>
+                                    <field name="max_score"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="notes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ===== Application Interview: Calendar View ===== -->
+    <record id="view_uni_internship_application_interview_calendar" model="ir.ui.view">
+        <field name="name">uni.internship.application.interview.calendar</field>
+        <field name="model">uni.internship.application.interview</field>
+        <field name="arch" type="xml">
+            <calendar string="Interviews" date_start="interview_date"
+                      color="interview_type" event_open_popup="true">
+                <field name="application_id"/>
+                <field name="interview_type"/>
+                <field name="interviewer_id"/>
+            </calendar>
+        </field>
+    </record>
+
+    <!-- ===== Application Interview: Search View ===== -->
+    <record id="view_uni_internship_application_interview_search" model="ir.ui.view">
+        <field name="name">uni.internship.application.interview.search</field>
+        <field name="model">uni.internship.application.interview</field>
+        <field name="arch" type="xml">
+            <search string="Application Interviews">
+                <field name="name"/>
+                <field name="application_id"/>
+                <field name="student_id"/>
+                <field name="opportunity_id"/>
+                <field name="interviewer_id"/>
+                <separator/>
+                <filter name="filter_scheduled" string="Scheduled"
+                        domain="[('state', '=', 'scheduled')]"/>
+                <filter name="filter_completed" string="Completed"
+                        domain="[('state', '=', 'completed')]"/>
+                <filter name="filter_cancelled" string="Cancelled"
+                        domain="[('state', '=', 'cancelled')]"/>
+                <filter name="filter_no_show" string="No Show"
+                        domain="[('state', '=', 'no_show')]"/>
+                <separator/>
+                <filter name="filter_pass" string="Pass"
+                        domain="[('result', '=', 'pass')]"/>
+                <filter name="filter_fail" string="Fail"
+                        domain="[('result', '=', 'fail')]"/>
+                <filter name="filter_hold" string="On Hold"
+                        domain="[('result', '=', 'hold')]"/>
+                <separator/>
+                <group expand="0" string="Group By">
+                    <filter name="group_application" string="Application"
+                            context="{'group_by': 'application_id'}"/>
+                    <filter name="group_type" string="Interview Type"
+                            context="{'group_by': 'interview_type'}"/>
+                    <filter name="group_result" string="Result"
+                            context="{'group_by': 'result'}"/>
+                    <filter name="group_state" string="State"
+                            context="{'group_by': 'state'}"/>
+                    <filter name="group_interviewer" string="Interviewer"
+                            context="{'group_by': 'interviewer_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ===== Application Interview: Action ===== -->
+    <record id="action_uni_internship_application_interview" model="ir.actions.act_window">
+        <field name="name">Application Interviews</field>
+        <field name="res_model">uni.internship.application.interview</field>
+        <field name="view_mode">list,form,calendar</field>
+        <field name="search_view_id" ref="view_uni_internship_application_interview_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Schedule a new interview
+            </p>
+            <p>
+                Schedule and track interviews for internship applications.
+                Each interview has a type (phone, video, in-person, technical,
+                panel), an interviewer, and a recorded result with score.
+            </p>
+        </field>
+    </record>
+</odoo>

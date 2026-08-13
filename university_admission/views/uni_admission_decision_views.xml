@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- uni.admission.decision — List View                           -->
+    <!-- ============================================================ -->
+    <record id="view_uni_admission_decision_list" model="ir.ui.view">
+        <field name="name">uni.admission.decision.list</field>
+        <field name="model">uni.admission.decision</field>
+        <field name="arch" type="xml">
+            <list string="Decisions"
+                  decoration-success="decision_type in ('accept', 'conditional_accept') and state == 'finalized'"
+                  decoration-danger="decision_type == 'reject'"
+                  decoration-warning="decision_type == 'waitlist'"
+                  decoration-muted="state == 'draft'">
+                <field name="name"/>
+                <field name="application_id"/>
+                <field name="applicant_name"/>
+                <field name="program_id" optional="hide"/>
+                <field name="decision_type" widget="badge"
+                       decoration-success="decision_type == 'accept'"
+                       decoration-info="decision_type == 'conditional_accept'"
+                       decoration-warning="decision_type == 'waitlist'"
+                       decoration-danger="decision_type == 'reject'"/>
+                <field name="decision_date"/>
+                <field name="decided_by"/>
+                <field name="scholarship_offered" widget="boolean_toggle"/>
+                <field name="scholarship_amount" optional="hide"/>
+                <field name="enrollment_deadline" optional="hide"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'finalized'"
+                       decoration-muted="state == 'draft'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.admission.decision — Form View                           -->
+    <!-- ============================================================ -->
+    <record id="view_uni_admission_decision_form" model="ir.ui.view">
+        <field name="name">uni.admission.decision.form</field>
+        <field name="model">uni.admission.decision</field>
+        <field name="arch" type="xml">
+            <form string="Admission Decision">
+                <header>
+                    <button name="action_finalize" string="Finalize"
+                            type="object" class="oe_highlight"
+                            invisible="state != 'draft'"
+                            confirm="Finalizing will propagate the decision to the application. Proceed?"/>
+                    <button name="action_back_to_draft" string="Reopen"
+                            type="object"
+                            invisible="state != 'finalized'"
+                            groups="university_core.group_university_manager"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,finalized"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" string="Decision"/>
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group string="Application">
+                            <field name="application_id"
+                                   options="{'no_create': True}"/>
+                            <field name="applicant_name"/>
+                            <field name="program_id"/>
+                            <field name="university_id" invisible="1"/>
+                        </group>
+                        <group string="Decision">
+                            <field name="decision_type"/>
+                            <field name="decision_date"/>
+                            <field name="decided_by"
+                                   options="{'no_create': True}"/>
+                            <field name="enrollment_deadline"/>
+                        </group>
+                    </group>
+                    <group string="Conditions">
+                        <field name="conditions" nolabel="1"
+                               placeholder="Required conditions for conditional acceptance..."/>
+                    </group>
+                    <group string="Scholarship">
+                        <group>
+                            <field name="scholarship_offered"/>
+                            <field name="scholarship_amount"
+                                   invisible="not scholarship_offered"/>
+                            <field name="scholarship_currency_id"
+                                   invisible="not scholarship_offered"
+                                   options="{'no_create': True}"/>
+                        </group>
+                    </group>
+                    <group string="Notes">
+                        <field name="notes" nolabel="1"/>
+                    </group>
+                    <group string="Audit">
+                        <group>
+                            <field name="finalized_by" readonly="1"/>
+                            <field name="finalized_date" readonly="1"/>
+                        </group>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.admission.decision — Search View                         -->
+    <!-- ============================================================ -->
+    <record id="view_uni_admission_decision_search" model="ir.ui.view">
+        <field name="name">uni.admission.decision.search</field>
+        <field name="model">uni.admission.decision</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="application_id"/>
+                <field name="applicant_name"/>
+                <field name="decided_by"/>
+                <field name="university_id"/>
+                <field name="program_id"/>
+                <separator/>
+                <filter string="Draft" name="filter_draft"
+                        domain="[('state', '=', 'draft')]"/>
+                <filter string="Finalized" name="filter_finalized"
+                        domain="[('state', '=', 'finalized')]"/>
+                <filter string="Accept" name="filter_accept"
+                        domain="[('decision_type', '=', 'accept')]"/>
+                <filter string="Conditional Accept" name="filter_cond"
+                        domain="[('decision_type', '=', 'conditional_accept')]"/>
+                <filter string="Reject" name="filter_reject"
+                        domain="[('decision_type', '=', 'reject')]"/>
+                <filter string="Waitlist" name="filter_wait"
+                        domain="[('decision_type', '=', 'waitlist')]"/>
+                <filter string="With Scholarship" name="filter_scholarship"
+                        domain="[('scholarship_offered', '=', True)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Decision Type" name="group_type"
+                            context="{'group_by': 'decision_type'}"/>
+                    <filter string="State" name="group_state"
+                            context="{'group_by': 'state'}"/>
+                    <filter string="Decided By" name="group_decided"
+                            context="{'group_by': 'decided_by'}"/>
+                    <filter string="University" name="group_university"
+                            context="{'group_by': 'university_id'}"/>
+                    <filter string="Program" name="group_program"
+                            context="{'group_by': 'program_id'}"/>
+                    <filter string="Decision Month" name="group_month"
+                            context="{'group_by': 'decision_date:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.admission.decision — Action                              -->
+    <!-- ============================================================ -->
+    <record id="action_uni_admission_decision" model="ir.actions.act_window">
+        <field name="name">Decisions</field>
+        <field name="res_model">uni.admission.decision</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_admission_decision_search"/>
+        <field name="context">{
+            'default_decided_by': uid,
+        }</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Record a new admission decision
+            </p>
+            <p>Decisions formalise the admission outcome (accept, conditional
+               accept, reject, waitlist) and may carry scholarship offers and
+               enrollment deadlines. Finalising a decision propagates it to the
+               application.</p>
+        </field>
+    </record>
+</odoo>

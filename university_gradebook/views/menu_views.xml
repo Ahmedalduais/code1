@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- Gradebook menu — under university_core.menu_university_root -->
+    <!-- ============================================================ -->
+    <menuitem id="menu_university_gradebook_root"
+              name="Gradebook"
+              parent="university_core.menu_university_root"
+              sequence="60"
+              groups="university_core.group_university_user"/>
+
+    <!-- Gradebooks -->
+    <menuitem id="menu_uni_gradebook"
+              name="Gradebooks"
+              parent="menu_university_gradebook_root"
+              action="action_uni_gradebook"
+              sequence="10"/>
+
+    <!-- Gradebook Lines -->
+    <menuitem id="menu_uni_gradebook_line"
+              name="Student Lines"
+              parent="menu_university_gradebook_root"
+              action="action_uni_gradebook_line"
+              sequence="20"
+              groups="university_core.group_university_manager"/>
+
+    <!-- Entries -->
+    <menuitem id="menu_uni_gradebook_entry"
+              name="Entries"
+              parent="menu_university_gradebook_root"
+              action="action_uni_gradebook_entry"
+              sequence="30"/>
+
+    <!-- Final Grades -->
+    <menuitem id="menu_uni_gradebook_final"
+              name="Final Grades"
+              parent="menu_university_gradebook_root"
+              action="action_uni_gradebook_final"
+              sequence="40"/>
+
+    <!-- GPA Calculations -->
+    <menuitem id="menu_uni_gpa_calculation"
+              name="GPA Calculations"
+              parent="menu_university_gradebook_root"
+              action="action_uni_gpa_calculation"
+              sequence="50"/>
+
+    <!-- Transcripts -->
+    <menuitem id="menu_uni_transcript"
+              name="Transcripts"
+              parent="menu_university_gradebook_root"
+              action="action_uni_transcript"
+              sequence="60"/>
+
+    <!-- Approvals -->
+    <menuitem id="menu_uni_gradebook_approval"
+              name="Approvals"
+              parent="menu_university_gradebook_root"
+              action="action_uni_gradebook_approval"
+              sequence="70"/>
+</odoo>

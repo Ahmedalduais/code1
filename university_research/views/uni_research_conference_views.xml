@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- uni.research.conference — List View                           -->
+    <!-- ============================================================ -->
+    <record id="view_uni_research_conference_list" model="ir.ui.view">
+        <field name="name">uni.research.conference.list</field>
+        <field name="model">uni.research.conference</field>
+        <field name="arch" type="xml">
+            <list string="Conferences"
+                  decoration-info="state == 'announced'"
+                  decoration-success="state == 'ongoing'"
+                  decoration-muted="state == 'completed'"
+                  decoration-danger="state == 'cancelled'">
+                <field name="name"/>
+                <field name="acronym"/>
+                <field name="theme"/>
+                <field name="start_date"/>
+                <field name="end_date"/>
+                <field name="location"/>
+                <field name="country_id"/>
+                <field name="organizer"/>
+                <field name="is_indexed" widget="boolean_toggle"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'announced'"
+                       decoration-success="state == 'ongoing'"
+                       decoration-muted="state == 'completed'"
+                       decoration-danger="state == 'cancelled'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.research.conference — Form View                           -->
+    <!-- ============================================================ -->
+    <record id="view_uni_research_conference_form" model="ir.ui.view">
+        <field name="name">uni.research.conference.form</field>
+        <field name="model">uni.research.conference</field>
+        <field name="arch" type="xml">
+            <form string="Conference">
+                <header>
+                    <button name="action_start" string="Start"
+                            type="object" class="oe_highlight"
+                            invisible="state != 'announced'"/>
+                    <button name="action_complete" string="Complete"
+                            type="object" class="oe_highlight"
+                            invisible="state != 'ongoing'"/>
+                    <button name="action_cancel" string="Cancel"
+                            type="object"
+                            invisible="state in ('completed', 'cancelled')"
+                            confirm="Are you sure you want to cancel this conference?"/>
+                    <button name="action_reopen" string="Reopen"
+                            type="object"
+                            invisible="state != 'cancelled'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="announced,ongoing,completed"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_publications" type="object"
+                                class="oe_stat_button" icon="fa-file-text-o">
+                            <field name="publication_count" widget="statinfo"
+                                   string="Publications"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" string="Conference"/>
+                        <h1><field name="name" placeholder="Conference full name"/></h1>
+                        <h3>
+                            <field name="acronym" placeholder="Acronym (e.g. ICML)"/>
+                            <field name="code" placeholder="Optional code"
+                                   class="oe_inline"/>
+                        </h3>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="theme"/>
+                            <field name="organizer"/>
+                            <field name="location"/>
+                            <field name="country_id"/>
+                            <field name="website"/>
+                        </group>
+                        <group>
+                            <field name="start_date"/>
+                            <field name="end_date"/>
+                            <field name="call_for_papers_deadline"/>
+                            <field name="submission_deadline"/>
+                            <field name="acceptance_notification_date"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="is_indexed"/>
+                            <field name="indexing_databases"
+                                   invisible="not is_indexed"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="description"/>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.research.conference — Search View                         -->
+    <!-- ============================================================ -->
+    <record id="view_uni_research_conference_search" model="ir.ui.view">
+        <field name="name">uni.research.conference.search</field>
+        <field name="model">uni.research.conference</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="acronym"/>
+                <field name="code"/>
+                <field name="theme"/>
+                <field name="location"/>
+                <field name="country_id"/>
+                <field name="organizer"/>
+                <filter string="Announced" name="filter_announced"
+                        domain="[('state', '=', 'announced')]"/>
+                <filter string="Ongoing" name="filter_ongoing"
+                        domain="[('state', '=', 'ongoing')]"/>
+                <filter string="Completed" name="filter_completed"
+                        domain="[('state', '=', 'completed')]"/>
+                <filter string="Indexed" name="filter_indexed"
+                        domain="[('is_indexed', '=', True)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Country" name="group_country"
+                            context="{'group_by': 'country_id'}"/>
+                    <filter string="Organizer" name="group_organizer"
+                            context="{'group_by': 'organizer'}"/>
+                    <filter string="State" name="group_state"
+                            context="{'group_by': 'state'}"/>
+                    <filter string="Start Month" name="group_start_month"
+                            context="{'group_by': 'start_date:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.research.conference — Action                              -->
+    <!-- ============================================================ -->
+    <record id="action_uni_research_conference" model="ir.actions.act_window">
+        <field name="name">Conferences</field>
+        <field name="res_model">uni.research.conference</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_research_conference_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Register a new scientific conference
+            </p>
+            <p>Track conferences, their call-for-papers deadlines, location,
+               organizers, and proceedings indexing status.</p>
+        </field>
+    </record>
+</odoo>

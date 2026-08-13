@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- uni.faculty.load — List View                                  -->
+    <!-- ============================================================ -->
+    <record id="view_uni_faculty_load_list" model="ir.ui.view">
+        <field name="name">uni.faculty.load.list</field>
+        <field name="model">uni.faculty.load</field>
+        <field name="arch" type="xml">
+            <list string="Teaching Load"
+                  decoration-info="load_type == 'teaching'"
+                  decoration-warning="load_type == 'research'"
+                  decoration-secondary="load_type == 'administrative'">
+                <field name="name"/>
+                <field name="faculty_id"/>
+                <field name="academic_term_id"/>
+                <field name="load_type"/>
+                <field name="teaching_hours"/>
+                <field name="credit_hours"/>
+                <field name="research_hours"/>
+                <field name="admin_hours"/>
+                <field name="total_hours" sum="Total"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.faculty.load — Form View                                  -->
+    <!-- ============================================================ -->
+    <record id="view_uni_faculty_load_form" model="ir.ui.view">
+        <field name="name">uni.faculty.load.form</field>
+        <field name="model">uni.faculty.load</field>
+        <field name="arch" type="xml">
+            <form string="Teaching Load">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" string="Load Record"/>
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="faculty_id"/>
+                            <field name="academic_term_id"/>
+                            <field name="university_id" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="load_type"/>
+                        </group>
+                    </group>
+                    <group string="Hours Distribution">
+                        <group>
+                            <field name="teaching_hours"/>
+                            <field name="credit_hours"/>
+                        </group>
+                        <group>
+                            <field name="research_hours"/>
+                            <field name="admin_hours"/>
+                            <field name="total_hours"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="notes"/>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.faculty.load — Search View                                -->
+    <!-- ============================================================ -->
+    <record id="view_uni_faculty_load_search" model="ir.ui.view">
+        <field name="name">uni.faculty.load.search</field>
+        <field name="model">uni.faculty.load</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="faculty_id"/>
+                <field name="academic_term_id"/>
+                <field name="university_id"/>
+                <group expand="0" string="Group By">
+                    <filter string="Faculty" name="group_faculty"
+                            context="{'group_by': 'faculty_id'}"/>
+                    <filter string="Academic Term" name="group_term"
+                            context="{'group_by': 'academic_term_id'}"/>
+                    <filter string="Load Type" name="group_type"
+                            context="{'group_by': 'load_type'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.faculty.load — Action                                     -->
+    <!-- ============================================================ -->
+    <record id="action_uni_faculty_load" model="ir.actions.act_window">
+        <field name="name">Teaching Load</field>
+        <field name="res_model">uni.faculty.load</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_faculty_load_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new teaching load record
+            </p>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- Default student statuses -->
+    <record id="student_status_prospective" model="uni.student.status">
+        <field name="name">Prospective</field>
+        <field name="code">PROSPECTIVE</field>
+        <field name="sequence">10</field>
+        <field name="color">2</field>
+        <field name="is_active_status" eval="False"/>
+        <field name="is_graduated_status" eval="False"/>
+        <field name="is_blocked_status" eval="False"/>
+        <field name="description">Applicant or prospective student not yet admitted.</field>
+    </record>
+
+    <record id="student_status_active" model="uni.student.status">
+        <field name="name">Active</field>
+        <field name="code">ACTIVE</field>
+        <field name="sequence">20</field>
+        <field name="color">10</field>
+        <field name="is_active_status" eval="True"/>
+        <field name="is_graduated_status" eval="False"/>
+        <field name="is_blocked_status" eval="False"/>
+        <field name="description">Currently enrolled and attending classes.</field>
+    </record>
+
+    <record id="student_status_on_leave" model="uni.student.status">
+        <field name="name">On Leave</field>
+        <field name="code">ON_LEAVE</field>
+        <field name="sequence">30</field>
+        <field name="color">3</field>
+        <field name="is_active_status" eval="False"/>
+        <field name="is_graduated_status" eval="False"/>
+        <field name="is_blocked_status" eval="False"/>
+        <field name="description">Temporarily away from studies (approved leave of absence).</field>
+    </record>
+
+    <record id="student_status_graduated" model="uni.student.status">
+        <field name="name">Graduated</field>
+        <field name="code">GRADUATED</field>
+        <field name="sequence">40</field>
+        <field name="color">7</field>
+        <field name="is_active_status" eval="False"/>
+        <field name="is_graduated_status" eval="True"/>
+        <field name="is_blocked_status" eval="False"/>
+        <field name="description">Completed all graduation requirements.</field>
+    </record>
+
+    <record id="student_status_suspended" model="uni.student.status">
+        <field name="name">Suspended</field>
+        <field name="code">SUSPENDED</field>
+        <field name="sequence">50</field>
+        <field name="color">1</field>
+        <field name="is_active_status" eval="False"/>
+        <field name="is_graduated_status" eval="False"/>
+        <field name="is_blocked_status" eval="True"/>
+        <field name="description">Temporarily blocked from enrollment (academic or disciplinary).</field>
+    </record>
+
+    <record id="student_status_withdrawn" model="uni.student.status">
+        <field name="name">Withdrawn</field>
+        <field name="code">WITHDRAWN</field>
+        <field name="sequence">60</field>
+        <field name="color">9</field>
+        <field name="is_active_status" eval="False"/>
+        <field name="is_graduated_status" eval="False"/>
+        <field name="is_blocked_status" eval="True"/>
+        <field name="description">Permanently left the university before completing the program.</field>
+    </record>
+</odoo>

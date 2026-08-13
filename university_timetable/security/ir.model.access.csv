@@ -1,0 +1,13 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_uni_classroom_type_user,uni.classroom.type.user,model_uni_classroom_type,university_core.group_university_user,1,0,0,0
+access_uni_classroom_type_manager,uni.classroom.type.manager,model_uni_classroom_type,university_core.group_university_manager,1,1,1,1
+access_uni_classroom_user,uni.classroom.user,model_uni_classroom,university_core.group_university_user,1,0,0,0
+access_uni_classroom_manager,uni.classroom.manager,model_uni_classroom,university_core.group_university_manager,1,1,1,1
+access_uni_classroom_booking_user,uni.classroom.booking.user,model_uni_classroom_booking,university_core.group_university_user,1,0,0,0
+access_uni_classroom_booking_manager,uni.classroom.booking.manager,model_uni_classroom_booking,university_core.group_university_manager,1,1,1,1
+access_uni_timetable_slot_user,uni.timetable.slot.user,model_uni_timetable_slot,university_core.group_university_user,1,0,0,0
+access_uni_timetable_slot_manager,uni.timetable.slot.manager,model_uni_timetable_slot,university_core.group_university_manager,1,1,1,1
+access_uni_timetable_user,uni.timetable.user,model_uni_timetable,university_core.group_university_user,1,0,0,0
+access_uni_timetable_manager,uni.timetable.manager,model_uni_timetable,university_core.group_university_manager,1,1,1,1
+access_uni_timetable_line_user,uni.timetable.line.user,model_uni_timetable_line,university_core.group_university_user,1,0,0,0
+access_uni_timetable_line_manager,uni.timetable.line.manager,model_uni_timetable_line,university_core.group_university_manager,1,1,1,1

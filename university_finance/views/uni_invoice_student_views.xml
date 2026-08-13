@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- uni.invoice.student — List View                               -->
+    <!-- ============================================================ -->
+    <record id="view_uni_invoice_student_list" model="ir.ui.view">
+        <field name="name">uni.invoice.student.list</field>
+        <field name="model">uni.invoice.student</field>
+        <field name="arch" type="xml">
+            <list string="Student Invoices"
+                  decoration-success="state == 'paid'"
+                  decoration-info="state == 'confirmed'"
+                  decoration-warning="state == 'partial'"
+                  decoration-muted="state == 'cancelled'"
+                  decoration-danger="state == 'draft'">
+                <field name="name"/>
+                <field name="code" optional="hide"/>
+                <field name="student_id"/>
+                <field name="academic_term_id" optional="hide"/>
+                <field name="university_id" optional="hide"/>
+                <field name="invoice_date"/>
+                <field name="due_date"/>
+                <field name="amount_total" widget="monetary"
+                       options="{'currency_field': 'currency_id'}" sum="Total"/>
+                <field name="amount_paid" widget="monetary"
+                       options="{'currency_field': 'currency_id'}" sum="Paid"/>
+                <field name="amount_due" widget="monetary"
+                       options="{'currency_field': 'currency_id'}" sum="Due"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="move_id" optional="hide"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'paid'"
+                       decoration-info="state == 'confirmed'"
+                       decoration-warning="state == 'partial'"
+                       decoration-muted="state == 'cancelled'"
+                       decoration-danger="state == 'draft'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.invoice.student — Form View                               -->
+    <!-- ============================================================ -->
+    <record id="view_uni_invoice_student_form" model="ir.ui.view">
+        <field name="name">uni.invoice.student.form</field>
+        <field name="model">uni.invoice.student</field>
+        <field name="arch" type="xml">
+            <form string="Student Invoice">
+                <header>
+                    <button name="action_confirm" string="Confirm"
+                            type="object" class="oe_highlight"
+                            invisible="state != 'draft'"/>
+                    <button name="action_create_account_invoice"
+                            string="Create Accounting Invoice"
+                            type="object" class="oe_highlight"
+                            invisible="state == 'draft' or move_id != False"/>
+                    <button name="action_view_account_invoice"
+                            string="View Accounting Invoice"
+                            type="object"
+                            invisible="move_id == False"/>
+                    <button name="action_view_payment" string="View Payments"
+                            type="object"
+                            invisible="move_id == False"/>
+                    <button name="action_sync_payment_status"
+                            string="Sync Payment Status"
+                            type="object"
+                            invisible="state not in ('confirmed', 'paid', 'partial')"/>
+                    <button name="action_cancel" string="Cancel"
+                            type="object"
+                            invisible="state == 'cancelled'"
+                            confirm="Cancel this student invoice?"/>
+                    <button name="action_draft" string="Set to Draft"
+                            type="object"
+                            invisible="state != 'cancelled'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,confirmed,paid"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_account_invoice" type="object"
+                                class="oe_stat_button" icon="fa-pencil-square-o"
+                                invisible="move_id == False">
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">Account Invoice</span>
+                            </div>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" string="Student Invoice"/>
+                        <h1><field name="name" readonly="1"/></h1>
+                        <h3><field name="code" placeholder="Auto-filled from reference"/></h3>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="student_id"
+                                   options="{'no_create': True}"/>
+                            <field name="university_id" readonly="1"
+                                   options="{'no_create': True}"/>
+                            <field name="partner_id" invisible="1"/>
+                            <field name="academic_term_id"
+                                   options="{'no_create': True}"/>
+                            <field name="fee_structure_id"
+                                   options="{'no_create': True}"/>
+                            <field name="scholarship_id"
+                                   options="{'no_create': True}"/>
+                            <field name="payment_plan_id"
+                                   options="{'no_create': True}"/>
+                            <field name="company_id" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="invoice_date"/>
+                            <field name="due_date"/>
+                            <field name="currency_id"
+                                   options="{'no_create': True}"/>
+                            <field name="discount_amount" widget="monetary"
+                                   options="{'currency_field': 'currency_id'}"/>
+                            <field name="move_id" readonly="1"
+                                   options="{'no_create': True}"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Invoice Lines">
+                            <field name="line_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="fee_type_id"
+                                           options="{'no_create': True}"/>
+                                    <field name="fee_type_code" readonly="1"/>
+                                    <field name="description"/>
+                                    <field name="quantity"/>
+                                    <field name="price_unit" widget="monetary"
+                                           options="{'currency_field': 'currency_id'}"/>
+                                    <field name="discount"/>
+                                    <field name="subtotal" widget="monetary"
+                                           options="{'currency_field': 'currency_id'}"/>
+                                    <field name="currency_id" column_invisible="True"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Totals">
+                            <group>
+                                <group>
+                                    <field name="amount_total" widget="monetary"
+                                           options="{'currency_field': 'currency_id'}"/>
+                                    <field name="amount_paid" widget="monetary"
+                                           options="{'currency_field': 'currency_id'}"/>
+                                    <field name="amount_due" widget="monetary"
+                                           options="{'currency_field': 'currency_id'}"/>
+                                </group>
+                                <group>
+                                    <field name="discount_amount" widget="monetary"
+                                           options="{'currency_field': 'currency_id'}"/>
+                                    <field name="line_count"/>
+                                    <field name="state" widget="badge"
+                                           decoration-success="state == 'paid'"
+                                           decoration-info="state == 'confirmed'"
+                                           decoration-warning="state == 'partial'"
+                                           decoration-muted="state == 'cancelled'"
+                                           decoration-danger="state == 'draft'"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Notes">
+                            <field name="notes" nolabel="1"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.invoice.student — Search View                             -->
+    <!-- ============================================================ -->
+    <record id="view_uni_invoice_student_search" model="ir.ui.view">
+        <field name="name">uni.invoice.student.search</field>
+        <field name="model">uni.invoice.student</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="student_id"/>
+                <field name="university_id"/>
+                <field name="academic_term_id"/>
+                <field name="fee_structure_id"/>
+                <field name="scholarship_id"/>
+                <field name="payment_plan_id"/>
+                <field name="move_id"/>
+                <filter string="Draft" name="filter_draft"
+                        domain="[('state', '=', 'draft')]"/>
+                <filter string="Confirmed" name="filter_confirmed"
+                        domain="[('state', '=', 'confirmed')]"/>
+                <filter string="Partially Paid" name="filter_partial"
+                        domain="[('state', '=', 'partial')]"/>
+                <filter string="Paid" name="filter_paid"
+                        domain="[('state', '=', 'paid')]"/>
+                <filter string="Cancelled" name="filter_cancelled"
+                        domain="[('state', '=', 'cancelled')]"/>
+                <separator/>
+                <filter string="Has Accounting Invoice" name="filter_has_move"
+                        domain="[('move_id', '!=', False)]"/>
+                <filter string="No Accounting Invoice" name="filter_no_move"
+                        domain="[('move_id', '=', False)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Student" name="group_student"
+                            context="{'group_by': 'student_id'}"/>
+                    <filter string="University" name="group_university"
+                            context="{'group_by': 'university_id'}"/>
+                    <filter string="Term" name="group_term"
+                            context="{'group_by': 'academic_term_id'}"/>
+                    <filter string="Status" name="group_state"
+                            context="{'group_by': 'state'}"/>
+                    <filter string="Currency" name="group_currency"
+                            context="{'group_by': 'currency_id'}"/>
+                    <filter string="Invoice Month" name="group_month"
+                            context="{'group_by': 'invoice_date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.invoice.student — Action                                  -->
+    <!-- ============================================================ -->
+    <record id="action_uni_invoice_student" model="ir.actions.act_window">
+        <field name="name">Student Invoices</field>
+        <field name="res_model">uni.invoice.student</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_invoice_student_search"/>
+        <field name="context">{'default_state': 'draft'}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new student invoice
+            </p>
+            <p>Student invoices bill students for tuition and other fees,
+               optionally linked to a fee structure, scholarship, and payment
+               plan. Each invoice can generate a linked Odoo accounting
+               invoice (account.move).</p>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.invoice.student.line — List/Form/Action                    -->
+    <!-- ============================================================ -->
+    <record id="view_uni_invoice_student_line_list" model="ir.ui.view">
+        <field name="name">uni.invoice.student.line.list</field>
+        <field name="model">uni.invoice.student.line</field>
+        <field name="arch" type="xml">
+            <list string="Invoice Lines">
+                <field name="sequence" widget="handle"/>
+                <field name="fee_type_id"/>
+                <field name="description"/>
+                <field name="quantity"/>
+                <field name="price_unit" widget="monetary"
+                       options="{'currency_field': 'currency_id'}"/>
+                <field name="discount"/>
+                <field name="subtotal" widget="monetary"
+                       options="{'currency_field': 'currency_id'}"
+                       sum="Total"/>
+                <field name="currency_id" column_invisible="True"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_uni_invoice_student_line_form" model="ir.ui.view">
+        <field name="name">uni.invoice.student.line.form</field>
+        <field name="model">uni.invoice.student.line</field>
+        <field name="arch" type="xml">
+            <form string="Invoice Line">
+                <sheet>
+                    <group>
+                        <field name="invoice_id"
+                               options="{'no_create': True}"/>
+                        <field name="fee_type_id"
+                               options="{'no_create': True}"/>
+                        <field name="fee_type_code" readonly="1"/>
+                        <field name="description"/>
+                        <field name="quantity"/>
+                        <field name="price_unit" widget="monetary"
+                               options="{'currency_field': 'currency_id'}"/>
+                        <field name="discount"/>
+                        <field name="subtotal" widget="monetary"
+                               options="{'currency_field': 'currency_id'}"/>
+                        <field name="currency_id"
+                               options="{'no_create': True}"/>
+                        <field name="sequence"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_uni_invoice_student_line" model="ir.actions.act_window">
+        <field name="name">Invoice Lines</field>
+        <field name="res_model">uni.invoice.student.line</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

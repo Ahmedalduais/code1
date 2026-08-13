@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- Accreditation Program sequence -->
+    <record id="seq_uni_accreditation_program" model="ir.sequence">
+        <field name="name">Accreditation Program Sequence</field>
+        <field name="code">uni.accreditation.program</field>
+        <field name="prefix">ACR/%(year)s/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <!-- Accreditation Report sequence -->
+    <record id="seq_uni_accreditation_report" model="ir.sequence">
+        <field name="name">Accreditation Report Sequence</field>
+        <field name="code">uni.accreditation.report</field>
+        <field name="prefix">ACR-RPT/%(year)s/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <!-- Self Study sequence -->
+    <record id="seq_uni_self_study" model="ir.sequence">
+        <field name="name">Self Study Sequence</field>
+        <field name="code">uni.self.study</field>
+        <field name="prefix">SST/%(year)s/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+</odoo>

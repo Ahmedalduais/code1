@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- List View -->
+    <record id="view_uni_internship_completion_list" model="ir.ui.view">
+        <field name="name">uni.internship.completion.list</field>
+        <field name="model">uni.internship.completion</field>
+        <field name="arch" type="xml">
+            <list string="Internship Completions"
+                  decoration-success="status == 'completed'"
+                  decoration-info="status == 'approved'"
+                  decoration-danger="status == 'rejected'"
+                  decoration-warning="status == 'pending'">
+                <field name="name"/>
+                <field name="completion_date"/>
+                <field name="student_id"/>
+                <field name="internship_id"/>
+                <field name="hours_completed"/>
+                <field name="hours_required"/>
+                <field name="completion_percentage" widget="progressbar"/>
+                <field name="final_grade"/>
+                <field name="max_grade"/>
+                <field name="grade_percentage" widget="progressbar"/>
+                <field name="grade_letter" optional="hide"/>
+                <field name="certificate_issued" optional="hide"/>
+                <field name="status" widget="badge"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_uni_internship_completion_form" model="ir.ui.view">
+        <field name="name">uni.internship.completion.form</field>
+        <field name="model">uni.internship.completion</field>
+        <field name="arch" type="xml">
+            <form string="Internship Completion">
+                <header>
+                    <button name="action_approve" type="object" string="Approve"
+                            class="oe_highlight"
+                            invisible="status != 'pending'"/>
+                    <button name="action_reject" type="object" string="Reject"
+                            invisible="status != 'pending'"/>
+                    <button name="action_complete" type="object" string="Mark Completed"
+                            class="oe_highlight"
+                            invisible="status != 'approved'"/>
+                    <button name="action_pending" type="object" string="Back to Pending"
+                            invisible="status not in ('approved', 'rejected', 'completed')"/>
+                    <field name="status" widget="statusbar"
+                           statusbar_visible="pending,approved,completed"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group string="Internship Info">
+                            <field name="internship_id"/>
+                            <field name="student_id"/>
+                            <field name="student_name" invisible="1"/>
+                            <field name="completion_date"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                        <group string="Approval">
+                            <field name="approved_by"/>
+                            <field name="approved_date"/>
+                            <field name="certificate_issued"/>
+                            <field name="certificate_id"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Hours">
+                            <field name="hours_completed"/>
+                            <field name="hours_required"/>
+                            <field name="completion_percentage" widget="progressbar"/>
+                        </group>
+                        <group string="Grade">
+                            <field name="final_grade"/>
+                            <field name="max_grade"/>
+                            <field name="grade_percentage" widget="progressbar"/>
+                            <field name="grade_letter"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Notes" name="notes">
+                            <field name="notes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_uni_internship_completion_search" model="ir.ui.view">
+        <field name="name">uni.internship.completion.search</field>
+        <field name="model">uni.internship.completion</field>
+        <field name="arch" type="xml">
+            <search string="Search Completions">
+                <field name="name"/>
+                <field name="internship_id"/>
+                <field name="student_id"/>
+                <separator/>
+                <filter name="filter_pending" string="Pending"
+                        domain="[('status', '=', 'pending')]"/>
+                <filter name="filter_approved" string="Approved"
+                        domain="[('status', '=', 'approved')]"/>
+                <filter name="filter_completed" string="Completed"
+                        domain="[('status', '=', 'completed')]"/>
+                <filter name="filter_rejected" string="Rejected"
+                        domain="[('status', '=', 'rejected')]"/>
+                <separator/>
+                <filter name="filter_with_certificate" string="Has Certificate"
+                        domain="[('certificate_issued', '=', True)]"/>
+                <separator/>
+                <group expand="0" string="Group By">
+                    <filter name="group_student" string="Student"
+                            context="{'group_by': 'student_id'}"/>
+                    <filter name="group_internship" string="Internship"
+                            context="{'group_by': 'internship_id'}"/>
+                    <filter name="group_status" string="Status"
+                            context="{'group_by': 'status'}"/>
+                    <filter name="group_completion_date" string="Completion Date"
+                            context="{'group_by': 'completion_date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_uni_internship_completion" model="ir.actions.act_window">
+        <field name="name">Completions</field>
+        <field name="res_model">uni.internship.completion</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_internship_completion_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new internship completion record
+            </p>
+            <p>
+                Completion records track the final hours completed vs required,
+                final grade, approval status and link to issued certificates.
+            </p>
+        </field>
+    </record>
+</odoo>

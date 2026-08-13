@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- Paper format — A4 portrait for academic standing             -->
+    <!-- ============================================================ -->
+    <record id="paper_format_academic_standing" model="report.paperformat">
+        <field name="name">Academic Standing A4 Portrait</field>
+        <field name="default" eval="False"/>
+        <field name="format">A4</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">15</field>
+        <field name="margin_bottom">20</field>
+        <field name="margin_left">10</field>
+        <field name="margin_right">10</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">10</field>
+        <field name="dpi">90</field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- QWeb PDF report action                                       -->
+    <!-- ============================================================ -->
+    <record id="action_report_uni_academic_standing" model="ir.actions.report">
+        <field name="name">Academic Standing Report</field>
+        <field name="model">uni.report.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">university_reports.report_academic_standing_document</field>
+        <field name="report_file">university_reports.report_academic_standing_document</field>
+        <field name="paperformat_id" ref="paper_format_academic_standing"/>
+        <field name="print_report_name">'ACADEMIC-STANDING-%s' % (fields.Date.today().strftime('%Y%m%d'))</field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- Wizard action — pre-binds the academic standing template     -->
+    <!-- ============================================================ -->
+    <record id="action_report_uni_academic_standing_wizard" model="ir.actions.act_window">
+        <field name="name">Academic Standing</field>
+        <field name="res_model">uni.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{
+            'default_template_id': ref('university_reports.template_academic_standing'),
+            'default_output_format': 'pdf',
+        }</field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- QWeb template — academic standing distribution               -->
+    <!-- ============================================================ -->
+    <template id="report_academic_standing_document">
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <div class="page">
+                    <h2 class="text-center">Academic Standing Report</h2>
+                    <div class="text-center text-muted mb-3">
+                        <t t-if="object.university_id">
+                            <span t-field="object.university_id"/>
+                        </t>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <strong>Generated:</strong>
+                            <span t-esc="time.strftime('%Y-%m-%d %H:%M')"/>
+                        </div>
+                        <div class="col-6 text-right">
+                            <strong>Output:</strong>
+                            <span t-esc="object.output_format"/>
+                        </div>
+                    </div>
+
+                    <!-- Build student domain -->
+                    <t t-set="domain" t-value="[('state', 'in', ('active', 'graduated'))]"/>
+                    <t t-if="object.university_id">
+                        <t t-set="domain" t-value="domain + [('university_id', '=', object.university_id.id)]"/>
+                    </t>
+                    <t t-if="object.college_id">
+                        <t t-set="domain" t-value="domain + [('college_id', '=', object.college_id.id)]"/>
+                    </t>
+                    <t t-if="object.department_id">
+                        <t t-set="domain" t-value="domain + [('department_id', '=', object.department_id.id)]"/>
+                    </t>
+                    <t t-if="object.program_id">
+                        <t t-set="domain" t-value="domain + [('program_id', '=', object.program_id.id)]"/>
+                    </t>
+
+                    <t t-set="students" t-value="object.env['ir.attachment'].browse()"/>
+                    <t t-if="'uni.student' in object.env">
+                        <t t-set="students" t-value="object.env['uni.student'].search(domain)"/>
+                    </t>
+
+                    <!-- Compute distribution (guarded for empty recordsets) -->
+                    <t t-set="excellent" t-value="0"/>
+                    <t t-set="good" t-value="0"/>
+                    <t t-set="probation" t-value="0"/>
+                    <t t-set="dismissed" t-value="0"/>
+                    <t t-set="none_standing" t-value="0"/>
+                    <t t-set="total" t-value="len(students)"/>
+                    <t t-if="students">
+                        <t t-set="excellent" t-value="len(students.filtered(lambda s: s.academic_standing == 'excellent'))"/>
+                        <t t-set="good" t-value="len(students.filtered(lambda s: s.academic_standing == 'good'))"/>
+                        <t t-set="probation" t-value="len(students.filtered(lambda s: s.academic_standing == 'probation'))"/>
+                        <t t-set="dismissed" t-value="len(students.filtered(lambda s: s.academic_standing == 'dismissed'))"/>
+                        <t t-set="none_standing" t-value="len(students.filtered(lambda s: not s.academic_standing))"/>
+                    </t>
+
+                    <!-- Filters summary -->
+                    <table class="table table-sm table-bordered mb-3">
+                        <tbody>
+                            <tr>
+                                <th class="table-light">University</th>
+                                <td><span t-field="object.university_id"/></td>
+                                <th class="table-light">College</th>
+                                <td><span t-field="object.college_id"/></td>
+                            </tr>
+                            <tr>
+                                <th class="table-light">Department</th>
+                                <td><span t-field="object.department_id"/></td>
+                                <th class="table-light">Program</th>
+                                <td><span t-field="object.program_id"/></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- Summary cards -->
+                    <div class="row mb-4">
+                        <div class="col-3 text-center">
+                            <div class="card text-white bg-success">
+                                <div class="card-body">
+                                    <h5 class="card-title mb-0">
+                                        <span t-esc="excellent"/>
+                                    </h5>
+                                    <small>Excellent</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-3 text-center">
+                            <div class="card text-white bg-info">
+                                <div class="card-body">
+                                    <h5 class="card-title mb-0">
+                                        <span t-esc="good"/>
+                                    </h5>
+                                    <small>Good</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-3 text-center">
+                            <div class="card text-white bg-warning">
+                                <div class="card-body">
+                                    <h5 class="card-title mb-0">
+                                        <span t-esc="probation"/>
+                                    </h5>
+                                    <small>Probation</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-3 text-center">
+                            <div class="card text-white bg-danger">
+                                <div class="card-body">
+                                    <h5 class="card-title mb-0">
+                                        <span t-esc="dismissed"/>
+                                    </h5>
+                                    <small>Dismissed</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <strong>Total students analysed:</strong>
+                        <span t-esc="total"/>
+                        <t t-if="none_standing">
+                            <span class="ms-3">
+                                <strong>Without standing:</strong>
+                                <span t-esc="none_standing"/>
+                            </span>
+                        </t>
+                    </div>
+
+                    <!-- Distribution table -->
+                    <h4 class="mt-4">Distribution by Academic Standing</h4>
+                    <table class="table table-sm table-bordered">
+                        <thead>
+                            <tr class="active">
+                                <th>Standing</th>
+                                <th class="text-center">Count</th>
+                                <th class="text-center">Percentage</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="table-success">
+                                <td>Excellent</td>
+                                <td class="text-center"><span t-esc="excellent"/></td>
+                                <td class="text-center">
+                                    <t t-if="total">
+                                        <t t-esc="round(excellent * 100.0 / total, 2)"/>%
+                                    </t>
+                                </td>
+                            </tr>
+                            <tr class="table-info">
+                                <td>Good</td>
+                                <td class="text-center"><span t-esc="good"/></td>
+                                <td class="text-center">
+                                    <t t-if="total">
+                                        <t t-esc="round(good * 100.0 / total, 2)"/>%
+                                    </t>
+                                </td>
+                            </tr>
+                            <tr class="table-warning">
+                                <td>Probation</td>
+                                <td class="text-center"><span t-esc="probation"/></td>
+                                <td class="text-center">
+                                    <t t-if="total">
+                                        <t t-esc="round(probation * 100.0 / total, 2)"/>%
+                                    </t>
+                                </td>
+                            </tr>
+                            <tr class="table-danger">
+                                <td>Dismissed</td>
+                                <td class="text-center"><span t-esc="dismissed"/></td>
+                                <td class="text-center">
+                                    <t t-if="total">
+                                        <t t-esc="round(dismissed * 100.0 / total, 2)"/>%
+                                    </t>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr class="table-light">
+                                <th>Total</th>
+                                <th class="text-center"><span t-esc="total"/></th>
+                                <th class="text-center">100%</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+
+                    <!-- Students at risk (probation or dismissed) -->
+                    <t t-set="at_risk" t-value="students if students else object.env['ir.attachment'].browse()"/>
+                    <t t-if="students">
+                        <t t-set="at_risk" t-value="students.filtered(lambda s: s.academic_standing in ('probation', 'dismissed'))"/>
+                    </t>
+                    <t t-if="at_risk">
+                        <h4 class="mt-4 text-danger">Students at Risk</h4>
+                        <table class="table table-sm table-bordered">
+                            <thead>
+                                <tr class="active">
+                                    <th>Code</th>
+                                    <th>Name</th>
+                                    <th>Program</th>
+                                    <th class="text-center">GPA</th>
+                                    <th class="text-center">Standing</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="at_risk" t-as="s">
+                                    <td><span t-field="s.student_code"/></td>
+                                    <td><span t-field="s.name"/></td>
+                                    <td><span t-field="s.program_id"/></td>
+                                    <td class="text-center"><span t-field="s.cumulative_gpa"/></td>
+                                    <td class="text-center"><span t-field="s.academic_standing"/></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </t>
+
+                    <t t-if="not students and 'uni.student' not in object.env">
+                        <div class="alert alert-danger">
+                            <strong>Module not installed:</strong>
+                            The <code>university_student</code> module is required
+                            to produce this report. Please install it and try again.
+                        </div>
+                    </t>
+                    <t t-elif="not students">
+                        <div class="alert alert-warning">
+                            No students match the selected filters.
+                        </div>
+                    </t>
+
+                    <!-- Footer -->
+                    <div class="row mt-4">
+                        <div class="col-12 text-center text-muted">
+                            <small>Page <span class="page"/> of <span class="topage"/></small>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>

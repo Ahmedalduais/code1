@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_university_grading_root"
+              name="Grading"
+              parent="university_core.menu_university_root"
+              sequence="40"/>
+
+    <menuitem id="menu_uni_grading_system"
+              name="Grading Systems"
+              parent="menu_university_grading_root"
+              action="action_uni_grading_system"
+              sequence="10"/>
+
+    <menuitem id="menu_uni_grading_scale_line"
+              name="Grading Scale Lines"
+              parent="menu_university_grading_root"
+              action="action_uni_grading_scale_line"
+              sequence="15"
+              groups="university_core.group_university_manager"/>
+
+    <menuitem id="menu_uni_grade_letter"
+              name="Grade Letters"
+              parent="menu_university_grading_root"
+              action="action_uni_grade_letter"
+              sequence="20"/>
+
+    <menuitem id="menu_uni_grade_conversion"
+              name="Grade Conversions"
+              parent="menu_university_grading_root"
+              action="action_uni_grade_conversion"
+              sequence="30"
+              groups="university_core.group_university_manager"/>
+
+    <menuitem id="menu_uni_grading_calculator"
+              name="GPA Calculator"
+              parent="menu_university_grading_root"
+              action="action_uni_grading_calculator"
+              sequence="40"/>
+</odoo>

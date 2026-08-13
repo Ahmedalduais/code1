@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- List View -->
+    <record id="view_uni_internship_attendance_list" model="ir.ui.view">
+        <field name="name">uni.internship.attendance.list</field>
+        <field name="model">uni.internship.attendance</field>
+        <field name="arch" type="xml">
+            <list string="Internship Attendance"
+                  decoration-success="status == 'present'"
+                  decoration-danger="status == 'absent'"
+                  decoration-warning="status in ('late', 'early_leave')"
+                  decoration-info="status == 'excused'">
+                <field name="name"/>
+                <field name="date"/>
+                <field name="student_id"/>
+                <field name="internship_id"/>
+                <field name="check_in" widget="float_time"/>
+                <field name="check_out" widget="float_time"/>
+                <field name="hours" widget="float_time"/>
+                <field name="status"
+                       decoration-success="status == 'present'"
+                       decoration-danger="status == 'absent'"
+                       decoration-warning="status in ('late', 'early_leave')"
+                       decoration-info="status == 'excused'"
+                       widget="badge"/>
+                <field name="late_minutes" optional="hide"/>
+                <field name="early_leave_minutes" optional="hide"/>
+                <field name="is_remote" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_uni_internship_attendance_form" model="ir.ui.view">
+        <field name="name">uni.internship.attendance.form</field>
+        <field name="model">uni.internship.attendance</field>
+        <field name="arch" type="xml">
+            <form string="Internship Attendance">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group string="Internship Info">
+                            <field name="internship_id"/>
+                            <field name="student_id"/>
+                            <field name="student_name" invisible="1"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                        <group string="Day Info">
+                            <field name="date"/>
+                            <field name="status"
+                                   decoration-success="status == 'present'"
+                                   decoration-danger="status == 'absent'"
+                                   decoration-warning="status in ('late', 'early_leave')"
+                                   decoration-info="status == 'excused'"
+                                   widget="radio"/>
+                            <field name="location"/>
+                            <field name="is_remote"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Time">
+                            <field name="check_in" widget="float_time"/>
+                            <field name="check_out" widget="float_time"/>
+                            <field name="hours" widget="float_time"/>
+                        </group>
+                        <group string="Adjustments">
+                            <field name="late_minutes"
+                                   invisible="status not in ('late', 'early_leave', 'present')"/>
+                            <field name="early_leave_minutes"
+                                   invisible="status not in ('early_leave', 'present')"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Notes" name="notes">
+                            <field name="notes" placeholder="Additional notes about this attendance record..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_uni_internship_attendance_search" model="ir.ui.view">
+        <field name="name">uni.internship.attendance.search</field>
+        <field name="model">uni.internship.attendance</field>
+        <field name="arch" type="xml">
+            <search string="Search Attendance">
+                <field name="name"/>
+                <field name="internship_id"/>
+                <field name="student_id"/>
+                <separator/>
+                <filter name="filter_present" string="Present"
+                        domain="[('status', '=', 'present')]"/>
+                <filter name="filter_absent" string="Absent"
+                        domain="[('status', '=', 'absent')]"/>
+                <filter name="filter_late" string="Late"
+                        domain="[('status', '=', 'late')]"/>
+                <filter name="filter_excused" string="Excused"
+                        domain="[('status', '=', 'excused')]"/>
+                <separator/>
+                <filter name="filter_today" string="Today"
+                        domain="[('date', '=', context_today().strftime('%Y-%m-%d'))]"/>
+                <separator/>
+                <group expand="0" string="Group By">
+                    <filter name="group_student" string="Student"
+                            context="{'group_by': 'student_id'}"/>
+                    <filter name="group_date" string="Date"
+                            context="{'group_by': 'date'}"/>
+                    <filter name="group_status" string="Status"
+                            context="{'group_by': 'status'}"/>
+                    <filter name="group_internship" string="Internship"
+                            context="{'group_by': 'internship_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Calendar View -->
+    <record id="view_uni_internship_attendance_calendar" model="ir.ui.view">
+        <field name="name">uni.internship.attendance.calendar</field>
+        <field name="model">uni.internship.attendance</field>
+        <field name="arch" type="xml">
+            <calendar string="Attendance" date_start="date" color="student_id">
+                <field name="name"/>
+                <field name="student_id"/>
+                <field name="status"/>
+            </calendar>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_uni_internship_attendance" model="ir.actions.act_window">
+        <field name="name">Attendance</field>
+        <field name="res_model">uni.internship.attendance</field>
+        <field name="view_mode">list,form,calendar</field>
+        <field name="search_view_id" ref="view_uni_internship_attendance_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new attendance record
+            </p>
+            <p>
+                Track daily attendance of interns including check-in/out times,
+                late arrivals, early leaves and excused absences.
+            </p>
+        </field>
+    </record>
+</odoo>

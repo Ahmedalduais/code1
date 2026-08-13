@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- uni.report.builder — List View                               -->
+    <!-- ============================================================ -->
+    <record id="view_uni_report_builder_list" model="ir.ui.view">
+        <field name="name">uni.report.builder.list</field>
+        <field name="model">uni.report.builder</field>
+        <field name="arch" type="xml">
+            <list string="Report Builders"
+                  decoration-info="state == 'draft'"
+                  decoration-warning="state == 'running'"
+                  decoration-success="state == 'completed'"
+                  decoration-danger="state == 'error'"
+                  decoration-muted="state == 'ready'">
+                <field name="name"/>
+                <field name="code" optional="show"/>
+                <field name="name_custom" optional="show"/>
+                <field name="template_id"/>
+                <field name="user_id" optional="show"/>
+                <field name="output_format" widget="badge"/>
+                <field name="chart_type" optional="hide"/>
+                <field name="result_count" optional="show"/>
+                <field name="last_run_date" optional="show"/>
+                <field name="last_run_duration_seconds" optional="hide"
+                       widget="float_time"/>
+                <field name="is_scheduled" optional="hide" widget="boolean_toggle"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'draft'"
+                       decoration-warning="state == 'running'"
+                       decoration-success="state == 'completed'"
+                       decoration-danger="state == 'error'"
+                       decoration-muted="state == 'ready'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.report.builder — Form View                               -->
+    <!-- ============================================================ -->
+    <record id="view_uni_report_builder_form" model="ir.ui.view">
+        <field name="name">uni.report.builder.form</field>
+        <field name="model">uni.report.builder</field>
+        <field name="arch" type="xml">
+            <form string="Report Builder">
+                <header>
+                    <button name="action_set_ready" string="Set Ready"
+                            type="object" class="oe_highlight"
+                            invisible="state != 'draft'"/>
+                    <button name="action_run" string="Run"
+                            type="object" class="oe_highlight"
+                            invisible="state not in ('ready', 'completed', 'error')"/>
+                    <button name="action_preview" string="Preview"
+                            type="object"
+                            invisible="state not in ('ready', 'completed', 'error')"/>
+                    <button name="action_download" string="Download"
+                            type="object"
+                            invisible="not saved_result"/>
+                    <button name="action_save_as_template" string="Save as Template"
+                            type="object"
+                            invisible="state != 'completed'"/>
+                    <button name="action_draft" string="Set to Draft"
+                            type="object"
+                            invisible="state == 'running'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,ready,running,completed"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_download" type="object"
+                                class="oe_stat_button" icon="fa-download"
+                                invisible="not saved_result">
+                            <field name="result_count" widget="statinfo"
+                                   string="Rows"/>
+                        </button>
+                        <button name="action_preview" type="object"
+                                class="oe_stat_button" icon="fa-eye">
+                            <field name="last_run_duration_seconds"
+                                   widget="statinfo"
+                                   string="Last (s)"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" string="Builder"/>
+                        <h1><field name="name" readonly="1"/></h1>
+                        <h3><field name="code" placeholder="RPB-2025-0001"/></h3>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="template_id"
+                                   options="{'no_create': True}"
+                                   required="1"/>
+                            <field name="name_custom"
+                                   placeholder="Custom title (optional)"/>
+                            <field name="user_id"
+                                   options="{'no_create': True}"/>
+                        </group>
+                        <group>
+                            <field name="output_format" widget="radio"/>
+                            <field name="chart_type" widget="radio"
+                                   invisible="output_format == 'screen'"/>
+                            <field name="is_scheduled" widget="boolean_toggle"
+                                   readonly="1"/>
+                            <field name="schedule_id" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Configuration">
+                            <group>
+                                <group>
+                                    <field name="group_by"
+                                           placeholder="e.g. college_id"/>
+                                    <field name="sort_by"
+                                           placeholder="e.g. name"/>
+                                </group>
+                                <group>
+                                    <field name="filters_configuration"
+                                           widget="ace"
+                                           options="{'mode': 'json'}"/>
+                                    <field name="columns_configuration"
+                                           widget="ace"
+                                           options="{'mode': 'json'}"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Execution">
+                            <group>
+                                <group>
+                                    <field name="last_run_date" readonly="1"/>
+                                    <field name="last_run_duration_seconds"
+                                           widget="float_time" readonly="1"/>
+                                    <field name="result_count" readonly="1"/>
+                                </group>
+                                <group>
+                                    <field name="saved_result" filename="saved_result_filename"
+                                           readonly="1"/>
+                                    <field name="saved_result_filename" readonly="1"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Notes">
+                            <field name="notes" nolabel="1" colspan="2"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.report.builder — Search View                             -->
+    <!-- ============================================================ -->
+    <record id="view_uni_report_builder_search" model="ir.ui.view">
+        <field name="name">uni.report.builder.search</field>
+        <field name="model">uni.report.builder</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="name_custom"/>
+                <field name="template_id"/>
+                <field name="user_id"/>
+                <separator/>
+                <filter string="Draft" name="filter_draft"
+                        domain="[('state', '=', 'draft')]"/>
+                <filter string="Ready" name="filter_ready"
+                        domain="[('state', '=', 'ready')]"/>
+                <filter string="Running" name="filter_running"
+                        domain="[('state', '=', 'running')]"/>
+                <filter string="Completed" name="filter_completed"
+                        domain="[('state', '=', 'completed')]"/>
+                <filter string="Error" name="filter_error"
+                        domain="[('state', '=', 'error')]"/>
+                <separator/>
+                <filter string="Scheduled" name="filter_scheduled"
+                        domain="[('is_scheduled', '=', True)]"/>
+                <filter string="My Builders" name="filter_mine"
+                        domain="[('user_id', '=', uid)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Template" name="group_template"
+                            context="{'group_by': 'template_id'}"/>
+                    <filter string="Owner" name="group_user"
+                            context="{'group_by': 'user_id'}"/>
+                    <filter string="Output Format" name="group_format"
+                            context="{'group_by': 'output_format'}"/>
+                    <filter string="State" name="group_state"
+                            context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.report.builder — Action                                  -->
+    <!-- ============================================================ -->
+    <record id="action_uni_report_builder" model="ir.actions.act_window">
+        <field name="name">Report Builders</field>
+        <field name="res_model">uni.report.builder</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_report_builder_search"/>
+        <field name="context">{'search_default_filter_mine': 1,
+                              'search_default_filter_completed': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new report builder
+            </p>
+            <p>Builders combine a template with filters, columns and output
+               format to produce a report. Run them on demand or schedule
+               them for periodic execution.</p>
+        </field>
+    </record>
+</odoo>

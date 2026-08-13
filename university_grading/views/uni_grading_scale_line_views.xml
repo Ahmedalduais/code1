@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Grading Scale Line List View -->
+    <record id="view_uni_grading_scale_line_list" model="ir.ui.view">
+        <field name="name">uni.grading.scale.line.list</field>
+        <field name="model">uni.grading.scale.line</field>
+        <field name="arch" type="xml">
+            <list string="Grading Scale Lines">
+                <field name="grading_system_id"/>
+                <field name="grade_letter_id"/>
+                <field name="grade_letter_code"/>
+                <field name="percentage_min"/>
+                <field name="percentage_max"/>
+                <field name="gpa_value"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Grading Scale Line Form View -->
+    <record id="view_uni_grading_scale_line_form" model="ir.ui.view">
+        <field name="name">uni.grading.scale.line.form</field>
+        <field name="model">uni.grading.scale.line</field>
+        <field name="arch" type="xml">
+            <form string="Grading Scale Line">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="grading_system_id"/>
+                            <field name="grade_letter_id"/>
+                            <field name="grade_letter_code" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="percentage_min"/>
+                            <field name="percentage_max"/>
+                            <field name="gpa_value" readonly="1"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="description"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Grading Scale Line Search View -->
+    <record id="view_uni_grading_scale_line_search" model="ir.ui.view">
+        <field name="name">uni.grading.scale.line.search</field>
+        <field name="model">uni.grading.scale.line</field>
+        <field name="arch" type="xml">
+            <search string="Search Grading Scale Lines">
+                <field name="grading_system_id"/>
+                <field name="grade_letter_id"/>
+                <field name="grade_letter_code"/>
+                <group expand="0" string="Group By">
+                    <filter string="Grading System" name="group_system"
+                            context="{'group_by': 'grading_system_id'}"/>
+                    <filter string="Grade Letter" name="group_grade"
+                            context="{'group_by': 'grade_letter_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Grading Scale Line Action -->
+    <record id="action_uni_grading_scale_line" model="ir.actions.act_window">
+        <field name="name">Grading Scale Lines</field>
+        <field name="res_model">uni.grading.scale.line</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_grading_scale_line_search"/>
+    </record>
+</odoo>

@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- uni.research.ethics — List View                               -->
+    <!-- ============================================================ -->
+    <record id="view_uni_research_ethics_list" model="ir.ui.view">
+        <field name="name">uni.research.ethics.list</field>
+        <field name="model">uni.research.ethics</field>
+        <field name="arch" type="xml">
+            <list string="Ethics Applications"
+                  decoration-info="state in ('draft', 'submitted')"
+                  decoration-warning="state == 'under_review'"
+                  decoration-success="state == 'decided' and decision == 'approved'"
+                  decoration-danger="state == 'decided' and decision == 'rejected'"
+                  decoration-muted="state == 'closed'">
+                <field name="name"/>
+                <field name="project_id"/>
+                <field name="faculty_id"/>
+                <field name="submission_type"/>
+                <field name="application_date"/>
+                <field name="review_date"/>
+                <field name="decision_date"/>
+                <field name="human_subjects" optional="hide"/>
+                <field name="animal_subjects" optional="hide"/>
+                <field name="risk_level"/>
+                <field name="consent_required" optional="hide" widget="boolean_toggle"/>
+                <field name="state" widget="badge"
+                       decoration-info="state in ('draft', 'submitted')"
+                       decoration-warning="state == 'under_review'"
+                       decoration-success="state == 'decided'"
+                       decoration-muted="state == 'closed'"/>
+                <field name="decision" widget="badge"
+                       decoration-success="decision == 'approved'"
+                       decoration-warning="decision == 'conditional_approval'"
+                       decoration-danger="decision == 'rejected'"
+                       decoration-secondary="decision == 'pending'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.research.ethics — Form View                               -->
+    <!-- ============================================================ -->
+    <record id="view_uni_research_ethics_form" model="ir.ui.view">
+        <field name="name">uni.research.ethics.form</field>
+        <field name="model">uni.research.ethics</field>
+        <field name="arch" type="xml">
+            <form string="Ethics Application">
+                <header>
+                    <button name="action_submit" string="Submit"
+                            type="object" class="oe_highlight"
+                            invisible="state != 'draft'"/>
+                    <button name="action_back_to_draft" string="Back to Draft"
+                            type="object"
+                            invisible="state not in ('submitted', 'under_review')"/>
+                    <button name="action_review" string="Start Review"
+                            type="object" class="oe_highlight"
+                            invisible="state != 'submitted'"/>
+                    <button name="action_approve" string="Approve"
+                            type="object" class="oe_highlight"
+                            invisible="state != 'under_review'"
+                            confirm="Confirm full approval of this ethics application?"/>
+                    <button name="action_conditional_approve" string="Conditional Approval"
+                            type="object"
+                            invisible="state != 'under_review'"/>
+                    <button name="action_reject" string="Reject"
+                            type="object"
+                            invisible="state != 'under_review'"
+                            confirm="Are you sure you want to reject this ethics application?"/>
+                    <button name="action_close" string="Close"
+                            type="object"
+                            invisible="state != 'decided'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,submitted,under_review,decided,closed"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="project_id" string="Ethics Application"/>
+                        <h1><field name="project_id" options="{'no_create': True}"/></h1>
+                        <h3><field name="name" readonly="1"/></h3>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="code"/>
+                            <field name="faculty_id" readonly="1"/>
+                            <field name="submission_type"/>
+                        </group>
+                        <group>
+                            <field name="application_date"/>
+                            <field name="review_date"/>
+                            <field name="decision_date"/>
+                            <field name="approval_expiry_date"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Research Summary">
+                            <group>
+                                <field name="research_summary"
+                                       placeholder="Brief description of the research and methodology..."/>
+                            </group>
+                        </page>
+                        <page string="Subjects &amp; Materials">
+                            <group>
+                                <group>
+                                    <field name="human_subjects"/>
+                                    <field name="animal_subjects"/>
+                                    <field name="biological_materials"/>
+                                </group>
+                                <group>
+                                    <field name="risk_level"/>
+                                    <field name="risk_description"
+                                           invisible="risk_level not in ('moderate', 'high')"/>
+                                </group>
+                            </group>
+                            <group>
+                                <field name="consent_required"/>
+                                <field name="consent_description"
+                                       invisible="not consent_required"/>
+                            </group>
+                        </page>
+                        <page string="Review Committee">
+                            <group>
+                                <field name="review_committee_members"
+                                       widget="many2many_tags"
+                                       options="{'no_create': True}"/>
+                                <field name="committee_member_count"/>
+                            </group>
+                        </page>
+                        <page string="Decision">
+                            <group>
+                                <group>
+                                    <field name="decision" readonly="state != 'decided'"/>
+                                    <field name="conditions"
+                                           invisible="decision != 'conditional_approval'"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Attachment">
+                            <group>
+                                <field name="file" filename="filename"/>
+                                <field name="filename" invisible="1"/>
+                            </group>
+                        </page>
+                        <page string="Notes">
+                            <field name="notes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.research.ethics — Search View                             -->
+    <!-- ============================================================ -->
+    <record id="view_uni_research_ethics_search" model="ir.ui.view">
+        <field name="name">uni.research.ethics.search</field>
+        <field name="model">uni.research.ethics</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="project_id"/>
+                <field name="faculty_id"/>
+                <separator/>
+                <filter string="Draft" name="filter_draft"
+                        domain="[('state', '=', 'draft')]"/>
+                <filter string="Submitted" name="filter_submitted"
+                        domain="[('state', '=', 'submitted')]"/>
+                <filter string="Under Review" name="filter_under_review"
+                        domain="[('state', '=', 'under_review')]"/>
+                <filter string="Decided" name="filter_decided"
+                        domain="[('state', '=', 'decided')]"/>
+                <filter string="Closed" name="filter_closed"
+                        domain="[('state', '=', 'closed')]"/>
+                <separator/>
+                <filter string="Approved" name="filter_approved"
+                        domain="[('decision', '=', 'approved')]"/>
+                <filter string="Conditional" name="filter_conditional"
+                        domain="[('decision', '=', 'conditional_approval')]"/>
+                <filter string="Rejected" name="filter_rejected"
+                        domain="[('decision', '=', 'rejected')]"/>
+                <separator/>
+                <filter string="Human Subjects" name="filter_human"
+                        domain="[('human_subjects', '=', True)]"/>
+                <filter string="Animal Subjects" name="filter_animal"
+                        domain="[('animal_subjects', '=', True)]"/>
+                <filter string="Biological Materials" name="filter_bio"
+                        domain="[('biological_materials', '=', True)]"/>
+                <filter string="High Risk" name="filter_high_risk"
+                        domain="[('risk_level', '=', 'high')]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Project" name="group_project"
+                            context="{'group_by': 'project_id'}"/>
+                    <filter string="Faculty" name="group_faculty"
+                            context="{'group_by': 'faculty_id'}"/>
+                    <filter string="Submission Type" name="group_submission"
+                            context="{'group_by': 'submission_type'}"/>
+                    <filter string="Risk Level" name="group_risk"
+                            context="{'group_by': 'risk_level'}"/>
+                    <filter string="Decision" name="group_decision"
+                            context="{'group_by': 'decision'}"/>
+                    <filter string="State" name="group_state"
+                            context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.research.ethics — Action                                  -->
+    <!-- ============================================================ -->
+    <record id="action_uni_research_ethics" model="ir.actions.act_window">
+        <field name="name">Ethics Approvals</field>
+        <field name="res_model">uni.research.ethics</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_research_ethics_search"/>
+        <field name="context">{
+            'search_default_filter_submitted': 1,
+            'search_default_filter_under_review': 1,
+        }</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new ethics application
+            </p>
+            <p>Submit research projects to the ethics committee for review,
+               track human/animal/biological subject involvement, risk level,
+               consent requirements, and the committee's final decision.</p>
+        </field>
+    </record>
+</odoo>

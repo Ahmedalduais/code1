@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============ uni.project.proposal — List View ============ -->
+    <record id="view_uni_project_proposal_list" model="ir.ui.view">
+        <field name="name">uni.project.proposal.list</field>
+        <field name="model">uni.project.proposal</field>
+        <field name="arch" type="xml">
+            <list string="Project Proposals"
+                  decoration-success="state=='approved'"
+                  decoration-danger="state=='rejected'"
+                  decoration-warning="state=='revise'"
+                  decoration-info="state=='under_review'"
+                  decoration-muted="state=='draft'">
+                <field name="name"/>
+                <field name="title"/>
+                <field name="theme_id" optional="show"/>
+                <field name="team_name" optional="show"/>
+                <field name="university_id" optional="hide"/>
+                <field name="college_id" optional="show"/>
+                <field name="department_id" optional="show"/>
+                <field name="program_id" optional="hide"/>
+                <field name="proposal_date" optional="hide"/>
+                <field name="submission_date" optional="show"/>
+                <field name="budget_estimate" sum="Total Budget" optional="hide"/>
+                <field name="currency_id" optional="hide"/>
+                <field name="state" widget="badge"/>
+                <field name="active" widget="boolean_toggle" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============ uni.project.proposal — Form View ============ -->
+    <record id="view_uni_project_proposal_form" model="ir.ui.view">
+        <field name="name">uni.project.proposal.form</field>
+        <field name="model">uni.project.proposal</field>
+        <field name="arch" type="xml">
+            <form string="Project Proposal">
+                <header>
+                    <button name="action_submit" type="object" string="Submit"
+                            class="btn-primary"
+                            invisible="state != 'draft'"/>
+                    <button name="action_start_review" type="object"
+                            string="Start Review" class="btn-secondary"
+                            invisible="state != 'submitted'"/>
+                    <button name="action_approve" type="object" string="Approve"
+                            class="btn-success"
+                            invisible="state not in ('submitted', 'under_review', 'revise')"/>
+                    <button name="action_revise" type="object"
+                            string="Request Revision" class="btn-warning"
+                            invisible="state not in ('submitted', 'under_review')"/>
+                    <button name="action_reject" type="object" string="Reject"
+                            class="btn-danger"
+                            invisible="state not in ('submitted', 'under_review', 'revise')"/>
+                    <button name="action_draft" type="object"
+                            string="Set to Draft" class="btn-secondary"
+                            invisible="state not in ('rejected', 'revise', 'approved')"/>
+                    <field name="state" widget="statusbar"
+                          statusbar_visible="draft,submitted,under_review,approved"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="title" string="Project Title"/>
+                        <h1><field name="title" placeholder="e.g. Smart Campus Navigation System"/></h1>
+                        <h3><field name="name" readonly="1"/></h3>
+                    </div>
+                    <group>
+                        <group string="Academic Affiliation">
+                            <field name="university_id" options="{'no_create': True}"/>
+                            <field name="college_id" options="{'no_create': True}"/>
+                            <field name="department_id" options="{'no_create': True}"/>
+                            <field name="program_id" options="{'no_create': True}"/>
+                            <field name="academic_term_id" options="{'no_create': True}"/>
+                        </group>
+                        <group string="Classification">
+                            <field name="theme_id" options="{'no_create': True}"/>
+                            <field name="project_id" options="{'no_create': True}"/>
+                            <field name="proposal_date"/>
+                            <field name="submission_date"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Team" name="team">
+                            <group>
+                                <group>
+                                    <field name="team_name"/>
+                                    <field name="team_leader_name"/>
+                                    <field name="team_leader_code"/>
+                                </group>
+                                <group>
+                                    <field name="member_names"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Proposal Details" name="details">
+                            <group>
+                                <field name="abstract"/>
+                                <field name="objectives"/>
+                                <field name="methodology"/>
+                                <field name="expected_outcomes"/>
+                                <field name="timeline_summary"/>
+                                <field name="references"/>
+                            </group>
+                        </page>
+                        <page string="Budget" name="budget">
+                            <group>
+                                <group>
+                                    <field name="budget_estimate"/>
+                                    <field name="currency_id"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Document" name="document">
+                            <group>
+                                <field name="proposal_file" filename="proposal_filename"/>
+                                <field name="proposal_filename" invisible="proposal_file == False"/>
+                            </group>
+                        </page>
+                        <page string="Review" name="review">
+                            <group>
+                                <group string="Review">
+                                    <field name="reviewed_by"/>
+                                    <field name="reviewed_date"/>
+                                    <field name="review_comments"/>
+                                </group>
+                                <group string="Approval">
+                                    <field name="approved_by"/>
+                                    <field name="approved_date"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="notes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============ uni.project.proposal — Search View ============ -->
+    <record id="view_uni_project_proposal_search" model="ir.ui.view">
+        <field name="name">uni.project.proposal.search</field>
+        <field name="model">uni.project.proposal</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="title"/>
+                <field name="team_name"/>
+                <field name="team_leader_name"/>
+                <field name="team_leader_code"/>
+                <field name="theme_id"/>
+                <field name="university_id"/>
+                <field name="college_id"/>
+                <field name="department_id"/>
+                <field name="program_id"/>
+                <field name="academic_term_id"/>
+                <separator/>
+                <filter string="My Proposals" name="filter_my"
+                        domain="[('create_uid', '=', uid)]"/>
+                <filter string="Submitted" name="filter_submitted"
+                        domain="[('state', '=', 'submitted')]"/>
+                <filter string="Under Review" name="filter_review"
+                        domain="[('state', '=', 'under_review')]"/>
+                <filter string="Approved" name="filter_approved"
+                        domain="[('state', '=', 'approved')]"/>
+                <filter string="Rejected" name="filter_rejected"
+                        domain="[('state', '=', 'rejected')]"/>
+                <filter string="Needs Revision" name="filter_revise"
+                        domain="[('state', '=', 'revise')]"/>
+                <filter string="Archived" name="filter_inactive"
+                        domain="[('active', '=', False)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Status" name="group_state"
+                            context="{'group_by': 'state'}"/>
+                    <filter string="Theme" name="group_theme"
+                            context="{'group_by': 'theme_id'}"/>
+                    <filter string="Department" name="group_dept"
+                            context="{'group_by': 'department_id'}"/>
+                    <filter string="College" name="group_college"
+                            context="{'group_by': 'college_id'}"/>
+                    <filter string="University" name="group_university"
+                            context="{'group_by': 'university_id'}"/>
+                    <filter string="Academic Term" name="group_term"
+                            context="{'group_by': 'academic_term_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============ uni.project.proposal — Action ============ -->
+    <record id="action_uni_project_proposal" model="ir.actions.act_window">
+        <field name="name">Project Proposals</field>
+        <field name="res_model">uni.project.proposal</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_project_proposal_search"/>
+        <field name="context">{'search_default_filter_my': True}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first project proposal
+            </p>
+            <p>
+                Proposals capture the project idea, team composition, and
+                academic affiliation before a formal project record is created.
+            </p>
+        </field>
+    </record>
+</odoo>

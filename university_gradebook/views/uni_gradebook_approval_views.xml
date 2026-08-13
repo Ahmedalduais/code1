@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- uni.gradebook.approval — List View                            -->
+    <!-- ============================================================ -->
+    <record id="view_uni_gradebook_approval_list" model="ir.ui.view">
+        <field name="name">uni.gradebook.approval.list</field>
+        <field name="model">uni.gradebook.approval</field>
+        <field name="arch" type="xml">
+            <list string="Gradebook Approvals"
+                  decoration-success="state == 'published'"
+                  decoration-info="state == 'approved'"
+                  decoration-warning="state in ('submitted', 'under_review')"
+                  decoration-danger="state == 'rejected'"
+                  decoration-muted="state == 'cancelled'">
+                <field name="name"/>
+                <field name="gradebook_id"/>
+                <field name="course_id"/>
+                <field name="academic_term_id"/>
+                <field name="approval_type"/>
+                <field name="requested_by"/>
+                <field name="request_date"/>
+                <field name="deadline"/>
+                <field name="is_overdue" optional="hide"/>
+                <field name="priority" optional="hide"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'published'"
+                       decoration-info="state == 'approved'"
+                       decoration-warning="state in ('submitted', 'under_review')"
+                       decoration-danger="state == 'rejected'"
+                       decoration-muted="state == 'cancelled'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.gradebook.approval — Form View                            -->
+    <!-- ============================================================ -->
+    <record id="view_uni_gradebook_approval_form" model="ir.ui.view">
+        <field name="name">uni.gradebook.approval.form</field>
+        <field name="model">uni.gradebook.approval</field>
+        <field name="arch" type="xml">
+            <form string="Gradebook Approval">
+                <header>
+                    <button name="action_submit" string="Submit"
+                            type="object" class="oe_highlight"
+                            invisible="state != 'draft'"/>
+                    <button name="action_start_review" string="Start Review"
+                            type="object" class="oe_highlight"
+                            invisible="state != 'submitted'"
+                            groups="university_core.group_university_manager"/>
+                    <button name="action_approve" string="Approve"
+                            type="object" class="oe_highlight"
+                            invisible="state != 'under_review'"
+                            groups="university_core.group_university_manager"/>
+                    <button name="action_reject" string="Reject"
+                            type="object"
+                            invisible="state not in ('submitted', 'under_review')"
+                            groups="university_core.group_university_manager"
+                            confirm="Reject this approval request?"/>
+                    <button name="action_publish" string="Publish Grades"
+                            type="object" class="oe_highlight"
+                            invisible="state != 'approved'"
+                            groups="university_core.group_university_manager"
+                            confirm="Publishing will lock the gradebook. Continue?"/>
+                    <button name="action_cancel" string="Cancel"
+                            type="object"
+                            invisible="state in ('cancelled', 'published')"
+                            groups="university_core.group_university_manager"/>
+                    <button name="action_reset_to_draft" string="Reset to Draft"
+                            type="object"
+                            invisible="state not in ('rejected', 'cancelled')"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,submitted,under_review,approved,published"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" string="Approval Request"/>
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="gradebook_id"
+                                   options="{'no_create': True}"/>
+                            <field name="course_id"/>
+                            <field name="academic_term_id"/>
+                            <field name="approval_type"/>
+                        </group>
+                        <group>
+                            <field name="requested_by"/>
+                            <field name="request_date"/>
+                            <field name="priority"/>
+                            <field name="deadline"/>
+                            <field name="is_overdue"
+                                   decoration-danger="is_overdue == True"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Request">
+                            <group>
+                                <field name="request_comments"/>
+                                <field name="request_data" groups="base.group_no_one"/>
+                            </group>
+                        </page>
+                        <page string="Review"
+                              invisible="state in ('draft', 'submitted')">
+                            <group>
+                                <field name="reviewed_by"/>
+                                <field name="reviewed_date"/>
+                                <field name="review_comments"/>
+                            </group>
+                        </page>
+                        <page string="Approval"
+                              invisible="state not in ('approved', 'published')">
+                            <group>
+                                <field name="approved_by"/>
+                                <field name="approved_date"/>
+                                <field name="approval_comments"/>
+                            </group>
+                        </page>
+                        <page string="Publication"
+                              invisible="state != 'published'">
+                            <group>
+                                <field name="published_by"/>
+                                <field name="published_date"/>
+                            </group>
+                        </page>
+                        <page string="Rejection"
+                              invisible="state != 'rejected'">
+                            <group>
+                                <field name="rejection_reason"/>
+                            </group>
+                        </page>
+                        <page string="Notes">
+                            <group>
+                                <field name="notes"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.gradebook.approval — Search View                          -->
+    <!-- ============================================================ -->
+    <record id="view_uni_gradebook_approval_search" model="ir.ui.view">
+        <field name="name">uni.gradebook.approval.search</field>
+        <field name="model">uni.gradebook.approval</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="gradebook_id"/>
+                <field name="course_id"/>
+                <field name="academic_term_id"/>
+                <field name="requested_by"/>
+                <field name="reviewed_by"/>
+                <field name="approved_by"/>
+                <field name="approval_type"/>
+                <filter string="Draft" name="filter_draft"
+                        domain="[('state', '=', 'draft')]"/>
+                <filter string="Submitted" name="filter_submitted"
+                        domain="[('state', '=', 'submitted')]"/>
+                <filter string="Under Review" name="filter_review"
+                        domain="[('state', '=', 'under_review')]"/>
+                <filter string="Approved" name="filter_approved"
+                        domain="[('state', '=', 'approved')]"/>
+                <filter string="Rejected" name="filter_rejected"
+                        domain="[('state', '=', 'rejected')]"/>
+                <filter string="Published" name="filter_published"
+                        domain="[('state', '=', 'published')]"/>
+                <separator/>
+                <filter string="Overdue" name="filter_overdue"
+                        domain="[('is_overdue', '=', True)]"/>
+                <filter string="Urgent" name="filter_urgent"
+                        domain="[('priority', '=', '2')]"/>
+                <filter string="High Priority" name="filter_high"
+                        domain="[('priority', '=', '1')]"/>
+                <separator/>
+                <filter string="Submissions" name="filter_submission"
+                        domain="[('approval_type', '=', 'submission')]"/>
+                <filter string="Reviews" name="filter_review_type"
+                        domain="[('approval_type', '=', 'review')]"/>
+                <filter string="Modifications" name="filter_modification"
+                        domain="[('approval_type', '=', 'modification')]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Gradebook" name="group_gradebook"
+                            context="{'group_by': 'gradebook_id'}"/>
+                    <filter string="Course" name="group_course"
+                            context="{'group_by': 'course_id'}"/>
+                    <filter string="Term" name="group_term"
+                            context="{'group_by': 'academic_term_id'}"/>
+                    <filter string="Type" name="group_type"
+                            context="{'group_by': 'approval_type'}"/>
+                    <filter string="Status" name="group_status"
+                            context="{'group_by': 'state'}"/>
+                    <filter string="Requested By" name="group_requested_by"
+                            context="{'group_by': 'requested_by'}"/>
+                    <filter string="Priority" name="group_priority"
+                            context="{'group_by': 'priority'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.gradebook.approval — Action                               -->
+    <!-- ============================================================ -->
+    <record id="action_uni_gradebook_approval" model="ir.actions.act_window">
+        <field name="name">Gradebook Approvals</field>
+        <field name="res_model">uni.gradebook.approval</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_gradebook_approval_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new approval request
+            </p>
+            <p>Track grade submission, review, approval and publication
+               workflow with deadlines, priorities and audit trail.</p>
+        </field>
+    </record>
+</odoo>

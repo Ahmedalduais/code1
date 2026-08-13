@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Main Menu: Internship -->
+    <menuitem id="menu_university_internship_root"
+              name="Internship"
+              parent="university_core.menu_university_root"
+              sequence="55"/>
+
+    <!-- Training Entities -->
+    <menuitem id="menu_uni_internship_entities"
+              name="Training Entities"
+              parent="menu_university_internship_root"
+              sequence="10"/>
+
+    <menuitem id="menu_uni_internship_training_entity"
+              name="Training Entities"
+              parent="menu_uni_internship_entities"
+              action="action_uni_internship_training_entity"
+              sequence="10"/>
+
+    <menuitem id="menu_uni_internship_entity_supervisor"
+              name="Entity Supervisors"
+              parent="menu_uni_internship_entities"
+              action="action_uni_internship_entity_supervisor"
+              sequence="20"/>
+
+    <!-- Opportunities -->
+    <menuitem id="menu_uni_internship_opportunities"
+              name="Opportunities"
+              parent="menu_university_internship_root"
+              sequence="20"/>
+
+    <menuitem id="menu_uni_internship_opportunity"
+              name="Opportunities"
+              parent="menu_uni_internship_opportunities"
+              action="action_uni_internship_opportunity"
+              sequence="10"/>
+
+    <menuitem id="menu_uni_internship_opportunity_skill"
+              name="Required Skills"
+              parent="menu_uni_internship_opportunities"
+              action="action_uni_internship_opportunity_skill"
+              sequence="20"
+              groups="university_core.group_university_manager"/>
+
+    <!-- Applications -->
+    <menuitem id="menu_uni_internship_applications"
+              name="Applications"
+              parent="menu_university_internship_root"
+              sequence="30"/>
+
+    <menuitem id="menu_uni_internship_application"
+              name="Applications"
+              parent="menu_uni_internship_applications"
+              action="action_uni_internship_application"
+              sequence="10"/>
+
+    <menuitem id="menu_uni_internship_application_interview"
+              name="Interviews"
+              parent="menu_uni_internship_applications"
+              action="action_uni_internship_application_interview"
+              sequence="20"/>
+
+    <!-- Placements -->
+    <menuitem id="menu_uni_internship_placement"
+              name="Placements"
+              parent="menu_university_internship_root"
+              action="action_uni_internship_placement"
+              sequence="40"/>
+
+    <!-- Internships -->
+    <menuitem id="menu_uni_internship"
+              name="Internships"
+              parent="menu_university_internship_root"
+              action="action_uni_internship"
+              sequence="50"/>
+
+    <!-- Teams -->
+    <menuitem id="menu_uni_internship_teams"
+              name="Teams"
+              parent="menu_university_internship_root"
+              sequence="60"/>
+
+    <menuitem id="menu_uni_internship_team"
+              name="Internship Teams"
+              parent="menu_uni_internship_teams"
+              action="action_uni_internship_team"
+              sequence="10"/>
+
+    <menuitem id="menu_uni_internship_team_member"
+              name="Team Members"
+              parent="menu_uni_internship_teams"
+              action="action_uni_internship_team_member"
+              sequence="20"/>
+
+    <!-- Students -->
+    <menuitem id="menu_uni_internship_student"
+              name="Student Records"
+              parent="menu_university_internship_root"
+              action="action_uni_internship_student"
+              sequence="70"/>
+
+    <!-- Supervisors -->
+    <menuitem id="menu_uni_internship_supervisors"
+              name="Supervisors"
+              parent="menu_university_internship_root"
+              sequence="80"/>
+
+    <menuitem id="menu_uni_internship_supervisor"
+              name="Supervisors"
+              parent="menu_uni_internship_supervisors"
+              action="action_uni_internship_supervisor"
+              sequence="10"/>
+
+    <menuitem id="menu_uni_internship_supervision_plan"
+              name="Supervision Plans"
+              parent="menu_uni_internship_supervisors"
+              action="action_uni_internship_supervision_plan"
+              sequence="20"/>
+
+    <!-- Logging & Attendance -->
+    <menuitem id="menu_uni_internship_logging"
+              name="Logging &amp; Attendance"
+              parent="menu_university_internship_root"
+              sequence="90"/>
+
+    <menuitem id="menu_uni_internship_log"
+              name="Daily Logs"
+              parent="menu_uni_internship_logging"
+              action="action_uni_internship_log"
+              sequence="10"/>
+
+    <menuitem id="menu_uni_internship_attendance"
+              name="Attendance"
+              parent="menu_uni_internship_logging"
+              action="action_uni_internship_attendance"
+              sequence="20"/>
+
+    <menuitem id="menu_uni_internship_weekly_report"
+              name="Weekly Reports"
+              parent="menu_uni_internship_logging"
+              action="action_uni_internship_weekly_report"
+              sequence="30"/>
+
+    <menuitem id="menu_uni_internship_report"
+              name="Internship Reports"
+              parent="menu_uni_internship_logging"
+              action="action_uni_internship_report"
+              sequence="40"/>
+
+    <!-- Evaluation & Completion -->
+    <menuitem id="menu_uni_internship_eval"
+              name="Evaluation &amp; Completion"
+              parent="menu_university_internship_root"
+              sequence="100"/>
+
+    <menuitem id="menu_uni_internship_evaluation"
+              name="Evaluations"
+              parent="menu_uni_internship_eval"
+              action="action_uni_internship_evaluation"
+              sequence="10"/>
+
+    <menuitem id="menu_uni_internship_evaluation_criteria"
+              name="Evaluation Criteria"
+              parent="menu_uni_internship_eval"
+              action="action_uni_internship_evaluation_criteria"
+              sequence="20"
+              groups="university_core.group_university_manager"/>
+
+    <menuitem id="menu_uni_internship_completion"
+              name="Completions"
+              parent="menu_uni_internship_eval"
+              action="action_uni_internship_completion"
+              sequence="30"/>
+
+    <!-- Certificates -->
+    <menuitem id="menu_uni_internship_certificate"
+              name="Certificates"
+              parent="menu_university_internship_root"
+              action="action_uni_internship_certificate"
+              sequence="110"/>
+</odoo>

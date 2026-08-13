@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- uni.faculty.publication — List View                           -->
+    <!-- ============================================================ -->
+    <record id="view_uni_faculty_publication_list" model="ir.ui.view">
+        <field name="name">uni.faculty.publication.list</field>
+        <field name="model">uni.faculty.publication</field>
+        <field name="arch" type="xml">
+            <list string="Publications"
+                  decoration-info="publication_type == 'journal'"
+                  decoration-warning="publication_type == 'conference'"
+                  decoration-success="publication_type == 'book'"
+                  decoration-secondary="publication_type == 'book_chapter'">
+                <field name="name"/>
+                <field name="title"/>
+                <field name="faculty_id"/>
+                <field name="publication_type"/>
+                <field name="publisher"/>
+                <field name="publication_date"/>
+                <field name="is_peer_reviewed"/>
+                <field name="citation_count" sum="Total Citations"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.faculty.publication — Form View                           -->
+    <!-- ============================================================ -->
+    <record id="view_uni_faculty_publication_form" model="ir.ui.view">
+        <field name="name">uni.faculty.publication.form</field>
+        <field name="model">uni.faculty.publication</field>
+        <field name="arch" type="xml">
+            <form string="Publication">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="title" string="Publication"/>
+                        <h1><field name="title" placeholder="Publication title"/></h1>
+                        <h3><field name="name" readonly="1"/></h3>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="faculty_id"/>
+                            <field name="publication_type"/>
+                            <field name="publisher"/>
+                            <field name="publication_date"/>
+                            <field name="university_id" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="doi"/>
+                            <field name="isbn"/>
+                            <field name="is_peer_reviewed"/>
+                            <field name="citation_count"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="abstract"/>
+                    </group>
+                    <group>
+                        <field name="co_authors"/>
+                    </group>
+                    <group>
+                        <field name="attachment" filename="attachment_filename"/>
+                        <field name="attachment_filename" invisible="1"/>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.faculty.publication — Search View                         -->
+    <!-- ============================================================ -->
+    <record id="view_uni_faculty_publication_search" model="ir.ui.view">
+        <field name="name">uni.faculty.publication.search</field>
+        <field name="model">uni.faculty.publication</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="title"/>
+                <field name="faculty_id"/>
+                <field name="publisher"/>
+                <field name="doi"/>
+                <field name="isbn"/>
+                <field name="university_id"/>
+                <filter string="Peer Reviewed" name="filter_peer"
+                        domain="[('is_peer_reviewed', '=', True)]"/>
+                <filter string="Books" name="filter_books"
+                        domain="[('publication_type', 'in', ('book', 'book_chapter'))]"/>
+                <filter string="Journals" name="filter_journals"
+                        domain="[('publication_type', '=', 'journal')]"/>
+                <filter string="Conferences" name="filter_conferences"
+                        domain="[('publication_type', '=', 'conference')]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Faculty" name="group_faculty"
+                            context="{'group_by': 'faculty_id'}"/>
+                    <filter string="Type" name="group_type"
+                            context="{'group_by': 'publication_type'}"/>
+                    <filter string="Publisher" name="group_publisher"
+                            context="{'group_by': 'publisher'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.faculty.publication — Action                              -->
+    <!-- ============================================================ -->
+    <record id="action_uni_faculty_publication" model="ir.actions.act_window">
+        <field name="name">Publications</field>
+        <field name="res_model">uni.faculty.publication</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_faculty_publication_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Register a new publication
+            </p>
+        </field>
+    </record>
+</odoo>

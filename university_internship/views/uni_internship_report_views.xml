@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- List View -->
+    <record id="view_uni_internship_report_list" model="ir.ui.view">
+        <field name="name">uni.internship.report.list</field>
+        <field name="model">uni.internship.report</field>
+        <field name="arch" type="xml">
+            <list string="Internship Reports"
+                  decoration-success="state == 'approved'"
+                  decoration-danger="state == 'rejected'"
+                  decoration-warning="state == 'revised'"
+                  decoration-info="state == 'under_review'">
+                <field name="name"/>
+                <field name="title"/>
+                <field name="report_type"/>
+                <field name="student_id"/>
+                <field name="internship_id"/>
+                <field name="submission_date"/>
+                <field name="grade"/>
+                <field name="max_grade"/>
+                <field name="state" widget="badge"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_uni_internship_report_form" model="ir.ui.view">
+        <field name="name">uni.internship.report.form</field>
+        <field name="model">uni.internship.report</field>
+        <field name="arch" type="xml">
+            <form string="Internship Report">
+                <header>
+                    <button name="action_submit" type="object" string="Submit"
+                            class="oe_highlight"
+                            invisible="state != 'draft'"/>
+                    <button name="action_review" type="object" string="Start Review"
+                            class="oe_highlight"
+                            invisible="state != 'submitted'"/>
+                    <button name="action_approve" type="object" string="Approve"
+                            class="oe_highlight"
+                            invisible="state != 'under_review'"/>
+                    <button name="action_reject" type="object" string="Reject"
+                            invisible="state != 'under_review'"/>
+                    <button name="action_revise" type="object" string="Request Revision"
+                            invisible="state not in ('submitted', 'under_review', 'approved')"/>
+                    <button name="action_draft" type="object" string="Back to Draft"
+                            invisible="state not in ('submitted', 'under_review', 'revised', 'rejected', 'approved')"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,submitted,under_review,approved"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="title"/>
+                        <h1><field name="title" placeholder="Report Title..."/></h1>
+                        <h3><field name="name" readonly="1"/></h3>
+                    </div>
+                    <group>
+                        <group string="Internship Info">
+                            <field name="internship_id"/>
+                            <field name="student_id"/>
+                            <field name="student_name" invisible="1"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                        <group string="Report Info">
+                            <field name="report_type"/>
+                            <field name="submission_date"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Grading">
+                            <field name="grade"/>
+                            <field name="max_grade"/>
+                        </group>
+                        <group string="Review">
+                            <field name="supervisor_id"/>
+                            <field name="reviewed_by"/>
+                            <field name="reviewed_date"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Content" name="content">
+                            <field name="summary" placeholder="Executive summary..."/>
+                            <separator string="Report Content"/>
+                            <field name="content" placeholder="Write the full report content here..."/>
+                        </page>
+                        <page string="Supervisor Feedback" name="feedback">
+                            <field name="supervisor_feedback"
+                                   placeholder="Supervisor feedback on the report..."/>
+                        </page>
+                        <page string="Attachments" name="attachments">
+                            <group>
+                                <field name="file" filename="filename"/>
+                                <field name="filename" invisible="1"/>
+                            </group>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="notes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_uni_internship_report_search" model="ir.ui.view">
+        <field name="name">uni.internship.report.search</field>
+        <field name="model">uni.internship.report</field>
+        <field name="arch" type="xml">
+            <search string="Search Internship Reports">
+                <field name="name"/>
+                <field name="title"/>
+                <field name="internship_id"/>
+                <field name="student_id"/>
+                <field name="supervisor_id"/>
+                <separator/>
+                <filter name="filter_final" string="Final Reports"
+                        domain="[('report_type', '=', 'final')]"/>
+                <filter name="filter_midterm" string="Midterm Reports"
+                        domain="[('report_type', '=', 'midterm')]"/>
+                <filter name="filter_monthly" string="Monthly Reports"
+                        domain="[('report_type', '=', 'monthly')]"/>
+                <separator/>
+                <filter name="filter_approved" string="Approved"
+                        domain="[('state', '=', 'approved')]"/>
+                <filter name="filter_rejected" string="Rejected"
+                        domain="[('state', '=', 'rejected')]"/>
+                <filter name="filter_pending" string="Pending Review"
+                        domain="[('state', 'in', ('submitted', 'under_review'))]"/>
+                <separator/>
+                <group expand="0" string="Group By">
+                    <filter name="group_student" string="Student"
+                            context="{'group_by': 'student_id'}"/>
+                    <filter name="group_internship" string="Internship"
+                            context="{'group_by': 'internship_id'}"/>
+                    <filter name="group_type" string="Report Type"
+                            context="{'group_by': 'report_type'}"/>
+                    <filter name="group_state" string="Status"
+                            context="{'group_by': 'state'}"/>
+                    <filter name="group_supervisor" string="Supervisor"
+                            context="{'group_by': 'supervisor_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_uni_internship_report" model="ir.actions.act_window">
+        <field name="name">Internship Reports</field>
+        <field name="res_model">uni.internship.report</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_internship_report_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new internship report
+            </p>
+            <p>
+                Manage weekly, monthly, midterm and final internship reports
+                with full submission and review workflow.
+            </p>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,388 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============ uni.project — List View ============ -->
+    <record id="view_uni_project_list" model="ir.ui.view">
+        <field name="name">uni.project.list</field>
+        <field name="model">uni.project</field>
+        <field name="arch" type="xml">
+            <list string="Projects"
+                  decoration-success="state in ('completed', 'defended', 'published')"
+                  decoration-info="state=='active'"
+                  decoration-warning="state=='on_hold'"
+                  decoration-danger="state=='cancelled'"
+                  decoration-muted="state=='planning'">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="project_type" optional="show"/>
+                <field name="theme_id" optional="show"/>
+                <field name="university_id" optional="hide"/>
+                <field name="college_id" optional="show"/>
+                <field name="department_id" optional="show"/>
+                <field name="coordinator_id" optional="hide"/>
+                <field name="start_date" optional="show"/>
+                <field name="expected_end_date" optional="hide"/>
+                <field name="actual_end_date" optional="hide"/>
+                <field name="team_count"/>
+                <field name="total_members"/>
+                <field name="is_group_project" optional="hide"/>
+                <field name="budget" sum="Total Budget" optional="hide"/>
+                <field name="currency_id" optional="hide"/>
+                <field name="sponsor" optional="hide"/>
+                <field name="state" widget="badge"/>
+                <field name="active" widget="boolean_toggle" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============ uni.project — Kanban View ============ -->
+    <record id="view_uni_project_kanban" model="ir.ui.view">
+        <field name="name">uni.project.kanban</field>
+        <field name="model">uni.project</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" class="o_kanban_small_column"
+                    sample="1">
+                <field name="state"/>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="project_type"/>
+                <field name="theme_id"/>
+                <field name="team_count"/>
+                <field name="total_members"/>
+                <field name="college_id"/>
+                <field name="department_id"/>
+                <field name="sponsor"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div t-attf-class="oe_kanban_card oe_kanban_global_click">
+                            <div class="o_kanban_record_top">
+                                <div class="o_kanban_record_headings">
+                                    <strong class="o_kanban_record_title">
+                                        <field name="name"/>
+                                    </strong>
+                                    <div class="o_kanban_record_subtitle text-muted">
+                                        <field name="code"/>
+                                        <span t-if="record.theme_id.raw_value">
+                                            • <field name="theme_id"/>
+                                        </span>
+                                    </div>
+                                </div>
+                                <field name="state" widget="badge"/>
+                            </div>
+                            <div t-if="record.project_type.raw_value"
+                                 class="o_kanban_record_body mt-1">
+                                <span class="badge badge-secondary">
+                                    <field name="project_type"/>
+                                </span>
+                            </div>
+                            <div class="o_kanban_record_bottom">
+                                <div class="oe_kanban_bottom_left">
+                                    <span t-if="record.team_count.raw_value"
+                                          class="text-muted">
+                                        <i class="fa fa-users"/> <field name="team_count"/> teams /
+                                        <field name="total_members"/> members
+                                    </span>
+                                </div>
+                                <div class="oe_kanban_bottom_right">
+                                    <span t-if="record.sponsor.raw_value"
+                                          class="text-muted">
+                                        <i class="fa fa-building"/>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- ============ uni.project — Form View ============ -->
+    <record id="view_uni_project_form" model="ir.ui.view">
+        <field name="name">uni.project.form</field>
+        <field name="model">uni.project</field>
+        <field name="arch" type="xml">
+            <form string="Graduation Project">
+                <header>
+                    <button name="action_activate" type="object" string="Activate"
+                            class="btn-primary"
+                            invisible="state not in ('planning', 'on_hold')"/>
+                    <button name="action_hold" type="object" string="Put on Hold"
+                            class="btn-warning"
+                            invisible="state != 'active'"/>
+                    <button name="action_complete" type="object" string="Complete"
+                            class="btn-success"
+                            invisible="state != 'active'"/>
+                    <button name="action_defended" type="object" string="Mark Defended"
+                            class="btn-primary"
+                            invisible="state != 'completed'"/>
+                    <button name="action_publish" type="object" string="Publish"
+                            class="btn-success"
+                            invisible="state != 'defended'"/>
+                    <button name="action_cancel" type="object" string="Cancel"
+                            class="btn-danger"
+                            invisible="state in ('cancelled', 'published')"/>
+                    <button name="action_plan" type="object" string="Reset to Planning"
+                            class="btn-secondary"
+                            invisible="state not in ('on_hold', 'cancelled')"/>
+                    <field name="state" widget="statusbar"
+                          statusbar_visible="planning,active,completed,defended,published"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" type="object"
+                                name="action_view_teams" icon="fa-users">
+                            <field name="team_count" widget="statinfo" string="Teams"/>
+                        </button>
+                        <button class="oe_stat_button" type="object"
+                                name="action_view_teams" icon="fa-user-plus"
+                                invisible="total_members == 0">
+                            <field name="total_members" widget="statinfo"
+                                   string="Members"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" string="Project Name"/>
+                        <h1><field name="name" placeholder="e.g. Smart Campus Navigation System"/></h1>
+                        <h3><field name="code" placeholder="e.g. PRJ-2024-001"/></h3>
+                    </div>
+                    <group>
+                        <group string="Classification">
+                            <field name="project_type"/>
+                            <field name="theme_id" options="{'no_create': True}"/>
+                            <field name="proposal_id" options="{'no_create': True}"/>
+                            <field name="max_team_size"/>
+                            <field name="is_group_project" readonly="1"/>
+                        </group>
+                        <group string="Academic Affiliation">
+                            <field name="university_id" options="{'no_create': True}"/>
+                            <field name="college_id" options="{'no_create': True}"/>
+                            <field name="department_id" options="{'no_create': True}"/>
+                            <field name="coordinator_id" options="{'no_create': True}"
+                                   string="Project Coordinator"/>
+                            <field name="level"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Schedule">
+                            <field name="start_date"/>
+                            <field name="expected_end_date"/>
+                            <field name="actual_end_date"/>
+                        </group>
+                        <group string="Budget &amp; Sponsor">
+                            <field name="budget"/>
+                            <field name="currency_id"/>
+                            <field name="sponsor"/>
+                            <field name="sponsor_logo" widget="image"
+                                   class="oe_avatar" options="{'size': [90, 90]}"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Details" name="details">
+                            <group>
+                                <field name="abstract"/>
+                                <field name="keywords"/>
+                                <field name="notes"/>
+                            </group>
+                        </page>
+                        <page string="Teams" name="teams">
+                            <field name="team_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="team_leader_id"/>
+                                    <field name="member_count"/>
+                                    <field name="formation_date"/>
+                                    <field name="status" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Supervisors" name="supervisors">
+                            <field name="supervisor_ids">
+                                <list>
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="name"/>
+                                    <field name="role"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Execution" name="execution">
+                            <group>
+                                <group>
+                                    <field name="timeline_id" options="{'no_create': True}"/>
+                                </group>
+                            </group>
+                            <separator string="Milestones"/>
+                            <field name="milestone_ids">
+                                <list>
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="name"/>
+                                    <field name="target_date"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                            <separator string="Deliverables"/>
+                            <field name="deliverable_ids">
+                                <list>
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="name"/>
+                                    <field name="due_date"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Meetings &amp; Progress" name="meetings">
+                            <separator string="Meetings"/>
+                            <field name="meeting_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="date"/>
+                                    <field name="meeting_type"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                            <separator string="Progress Reports"/>
+                            <field name="progress_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="report_date"/>
+                                    <field name="progress_percentage" widget="progressbar"/>
+                                    <field name="is_on_track" widget="boolean_toggle"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Defense &amp; Evaluation" name="defense">
+                            <separator string="Defenses"/>
+                            <field name="defense_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="date"/>
+                                    <field name="defense_type"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                            <separator string="Committees"/>
+                            <field name="committee_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="committee_type"/>
+                                    <field name="member_count"/>
+                                    <field name="is_active" widget="boolean_toggle"/>
+                                </list>
+                            </field>
+                            <separator string="Evaluations"/>
+                            <field name="evaluation_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="evaluation_type"/>
+                                    <field name="total_score"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Publications" name="publications">
+                            <field name="publication_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="publication_type"/>
+                                    <field name="publication_date"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Description" name="description">
+                            <field name="description"/>
+                        </page>
+                        <page string="Objectives" name="objectives">
+                            <field name="objectives"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============ uni.project — Search View ============ -->
+    <record id="view_uni_project_search" model="ir.ui.view">
+        <field name="name">uni.project.search</field>
+        <field name="model">uni.project</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="abstract"/>
+                <field name="keywords"/>
+                <field name="theme_id"/>
+                <field name="project_type"/>
+                <field name="university_id"/>
+                <field name="college_id"/>
+                <field name="department_id"/>
+                <field name="coordinator_id"/>
+                <field name="sponsor"/>
+                <field name="proposal_id"/>
+                <separator/>
+                <filter string="Planning" name="filter_planning"
+                        domain="[('state', '=', 'planning')]"/>
+                <filter string="Active" name="filter_active"
+                        domain="[('state', '=', 'active')]"/>
+                <filter string="On Hold" name="filter_on_hold"
+                        domain="[('state', '=', 'on_hold')]"/>
+                <filter string="Completed" name="filter_completed"
+                        domain="[('state', '=', 'completed')]"/>
+                <filter string="Defended" name="filter_defended"
+                        domain="[('state', '=', 'defended')]"/>
+                <filter string="Published" name="filter_published"
+                        domain="[('state', '=', 'published')]"/>
+                <filter string="Cancelled" name="filter_cancelled"
+                        domain="[('state', '=', 'cancelled')]"/>
+                <separator/>
+                <filter string="Group Projects" name="filter_group"
+                        domain="[('is_group_project', '=', True)]"/>
+                <filter string="Individual Projects" name="filter_individual"
+                        domain="[('is_group_project', '=', False)]"/>
+                <filter string="Has Sponsor" name="filter_sponsor"
+                        domain="[('sponsor', '!=', False)]"/>
+                <filter string="Archived" name="filter_inactive"
+                        domain="[('active', '=', False)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Status" name="group_state"
+                            context="{'group_by': 'state'}"/>
+                    <filter string="Project Type" name="group_type"
+                            context="{'group_by': 'project_type'}"/>
+                    <filter string="Theme" name="group_theme"
+                            context="{'group_by': 'theme_id'}"/>
+                    <filter string="University" name="group_university"
+                            context="{'group_by': 'university_id'}"/>
+                    <filter string="College" name="group_college"
+                            context="{'group_by': 'college_id'}"/>
+                    <filter string="Department" name="group_dept"
+                            context="{'group_by': 'department_id'}"/>
+                    <filter string="Coordinator" name="group_coord"
+                            context="{'group_by': 'coordinator_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============ uni.project — Action ============ -->
+    <record id="action_uni_project" model="ir.actions.act_window">
+        <field name="name">Projects</field>
+        <field name="res_model">uni.project</field>
+        <field name="view_mode">list,kanban,form</field>
+        <field name="search_view_id" ref="view_uni_project_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first graduation project
+            </p>
+            <p>
+                Each project can host multiple teams, supervisors, milestones,
+                defenses, and publications. Track the full lifecycle from
+                planning to publication.
+            </p>
+        </field>
+    </record>
+</odoo>

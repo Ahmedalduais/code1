@@ -1,0 +1,367 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============ uni.internship — List View ============ -->
+    <record id="view_uni_internship_list" model="ir.ui.view">
+        <field name="name">uni.internship.list</field>
+        <field name="model">uni.internship</field>
+        <field name="arch" type="xml">
+            <list string="Internships"
+                  decoration-success="internship_state in ('completed')"
+                  decoration-info="internship_state=='ongoing'"
+                  decoration-warning="internship_state=='planning'"
+                  decoration-danger="internship_state in ('failed', 'cancelled')">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="internship_type" optional="show"/>
+                <field name="training_entity_id" optional="show"/>
+                <field name="academic_term_id" optional="hide"/>
+                <field name="university_id" optional="hide"/>
+                <field name="college_id" optional="show"/>
+                <field name="department_id" optional="show"/>
+                <field name="start_date" optional="show"/>
+                <field name="end_date" optional="hide"/>
+                <field name="team_count"/>
+                <field name="total_members"/>
+                <field name="is_group_internship" optional="hide" widget="boolean_toggle"/>
+                <field name="hours_required" optional="hide"/>
+                <field name="hours_completed" optional="show"/>
+                <field name="progress_percentage" widget="progressbar" optional="show"/>
+                <field name="final_grade" optional="hide"/>
+                <field name="grade_letter" optional="hide"/>
+                <field name="internship_state" widget="badge"/>
+                <field name="active" widget="boolean_toggle" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============ uni.internship — Kanban View ============ -->
+    <record id="view_uni_internship_kanban" model="ir.ui.view">
+        <field name="name">uni.internship.kanban</field>
+        <field name="model">uni.internship</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="internship_state" class="o_kanban_small_column"
+                    sample="1">
+                <field name="internship_state"/>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="internship_type"/>
+                <field name="training_entity_id"/>
+                <field name="team_count"/>
+                <field name="total_members"/>
+                <field name="progress_percentage"/>
+                <field name="college_id"/>
+                <field name="department_id"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div t-attf-class="oe_kanban_card oe_kanban_global_click">
+                            <div class="o_kanban_record_top">
+                                <div class="o_kanban_record_headings">
+                                    <strong class="o_kanban_record_title">
+                                        <field name="name"/>
+                                    </strong>
+                                    <div class="o_kanban_record_subtitle text-muted">
+                                        <field name="code"/>
+                                        <span t-if="record.training_entity_id.raw_value">
+                                            • <field name="training_entity_id"/>
+                                        </span>
+                                    </div>
+                                </div>
+                                <field name="internship_state" widget="badge"/>
+                            </div>
+                            <div t-if="record.internship_type.raw_value"
+                                 class="o_kanban_record_body mt-1">
+                                <span class="badge badge-secondary">
+                                    <field name="internship_type"/>
+                                </span>
+                            </div>
+                            <div class="o_kanban_record_body mt-1">
+                                <field name="progress_percentage" widget="progressbar"
+                                       options="{'current_value': 'progress_percentage'}"/>
+                            </div>
+                            <div class="o_kanban_record_bottom">
+                                <div class="oe_kanban_bottom_left">
+                                    <span t-if="record.team_count.raw_value"
+                                          class="text-muted">
+                                        <i class="fa fa-users"/> <field name="team_count"/> teams /
+                                        <field name="total_members"/> members
+                                    </span>
+                                </div>
+                                <div class="oe_kanban_bottom_right">
+                                    <span t-if="record.training_entity_id.raw_value"
+                                          class="text-muted">
+                                        <i class="fa fa-building"/>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- ============ uni.internship — Form View ============ -->
+    <record id="view_uni_internship_form" model="ir.ui.view">
+        <field name="name">uni.internship.form</field>
+        <field name="model">uni.internship</field>
+        <field name="arch" type="xml">
+            <form string="Internship">
+                <header>
+                    <button name="action_start" type="object" string="Start"
+                            class="btn-primary"
+                            invisible="internship_state != 'planning'"/>
+                    <button name="action_complete" type="object" string="Complete"
+                            class="btn-success"
+                            invisible="internship_state != 'ongoing'"/>
+                    <button name="action_fail" type="object" string="Mark as Failed"
+                            class="btn-danger"
+                            invisible="internship_state != 'ongoing'"/>
+                    <button name="action_cancel" type="object" string="Cancel"
+                            class="btn-danger"
+                            invisible="internship_state in ('cancelled', 'completed')"/>
+                    <button name="action_planning" type="object" string="Reset to Planning"
+                            class="btn-secondary"
+                            invisible="internship_state not in ('failed', 'cancelled', 'ongoing')"/>
+                    <field name="internship_state" widget="statusbar"
+                           statusbar_visible="planning,ongoing,completed"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" type="object"
+                                name="action_view_teams" icon="fa-users">
+                            <field name="team_count" widget="statinfo" string="Teams"/>
+                        </button>
+                        <button class="oe_stat_button" type="object"
+                                name="action_view_teams" icon="fa-user-plus"
+                                invisible="total_members == 0">
+                            <field name="total_members" widget="statinfo" string="Members"/>
+                        </button>
+                        <button class="oe_stat_button" type="object"
+                                name="action_view_logs" icon="fa-file-text-o">
+                            <field name="log_ids" widget="statinfo" string="Logs"/>
+                        </button>
+                        <button class="oe_stat_button" type="object"
+                                name="action_view_reports" icon="fa-files-o">
+                            <field name="report_ids" widget="statinfo" string="Reports"/>
+                        </button>
+                        <button class="oe_stat_button" type="object"
+                                name="action_view_evaluations" icon="fa-star">
+                            <field name="evaluation_ids" widget="statinfo" string="Evals"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" string="Internship Name"/>
+                        <h1><field name="name" placeholder="e.g. Summer Training 2024"/></h1>
+                        <h3><field name="code" placeholder="e.g. INT-2024-001"/></h3>
+                    </div>
+                    <group>
+                        <group string="Classification">
+                            <field name="internship_type"/>
+                            <field name="training_entity_id" options="{'no_create': True}"/>
+                            <field name="opportunity_id" options="{'no_create': True}"/>
+                            <field name="academic_term_id" options="{'no_create': True}"/>
+                            <field name="max_team_size"/>
+                            <field name="is_group_internship" readonly="1"/>
+                        </group>
+                        <group string="Academic Affiliation">
+                            <field name="university_id" options="{'no_create': True}"/>
+                            <field name="college_id" options="{'no_create': True}"/>
+                            <field name="department_id" options="{'no_create': True}"/>
+                            <field name="coordinator_id" options="{'no_create': True}"/>
+                            <field name="level"/>
+                            <field name="credit_hours"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Schedule">
+                            <field name="start_date"/>
+                            <field name="end_date"/>
+                            <field name="academic_term_id"/>
+                        </group>
+                        <group string="Hours &amp; Progress">
+                            <field name="hours_required"/>
+                            <field name="hours_completed" readonly="1"/>
+                            <field name="hours_remaining" readonly="1"/>
+                            <field name="progress_percentage" widget="progressbar" readonly="1"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Grade">
+                            <field name="final_grade"/>
+                            <field name="grade_letter"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Details" name="details">
+                            <group>
+                                <field name="description"/>
+                                <field name="objectives"/>
+                                <field name="notes"/>
+                            </group>
+                        </page>
+                        <page string="Teams" name="teams">
+                            <field name="team_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="team_leader_id"/>
+                                    <field name="member_count"/>
+                                    <field name="formation_date"/>
+                                    <field name="status" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Supervisors" name="supervisors">
+                            <field name="supervisor_ids">
+                                <list>
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="name"/>
+                                    <field name="faculty_id"/>
+                                    <field name="supervisor_type"/>
+                                    <field name="is_active" widget="boolean_toggle"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Daily Logs" name="logs">
+                            <field name="log_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="date"/>
+                                    <field name="hours"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Attendance" name="attendance">
+                            <field name="attendance_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="date"/>
+                                    <field name="status" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Weekly Reports" name="weekly_reports">
+                            <field name="weekly_report_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="start_date"/>
+                                    <field name="end_date"/>
+                                    <field name="total_hours"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Reports" name="reports">
+                            <field name="report_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="report_type"/>
+                                    <field name="submission_date"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Evaluations" name="evaluations">
+                            <field name="evaluation_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="evaluation_type"/>
+                                    <field name="total_score"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Completions" name="completions">
+                            <field name="completion_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="completion_date"/>
+                                    <field name="status" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============ uni.internship — Search View ============ -->
+    <record id="view_uni_internship_search" model="ir.ui.view">
+        <field name="name">uni.internship.search</field>
+        <field name="model">uni.internship</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="training_entity_id"/>
+                <field name="opportunity_id"/>
+                <field name="academic_term_id"/>
+                <field name="internship_type"/>
+                <field name="university_id"/>
+                <field name="college_id"/>
+                <field name="department_id"/>
+                <field name="coordinator_id"/>
+                <separator/>
+                <filter string="Planning" name="filter_planning"
+                        domain="[('internship_state', '=', 'planning')]"/>
+                <filter string="Ongoing" name="filter_ongoing"
+                        domain="[('internship_state', '=', 'ongoing')]"/>
+                <filter string="Completed" name="filter_completed"
+                        domain="[('internship_state', '=', 'completed')]"/>
+                <filter string="Failed" name="filter_failed"
+                        domain="[('internship_state', '=', 'failed')]"/>
+                <filter string="Cancelled" name="filter_cancelled"
+                        domain="[('internship_state', '=', 'cancelled')]"/>
+                <separator/>
+                <filter string="Group Internships" name="filter_group"
+                        domain="[('is_group_internship', '=', True)]"/>
+                <filter string="Individual Internships" name="filter_individual"
+                        domain="[('is_group_internship', '=', False)]"/>
+                <filter string="Has Training Entity" name="filter_entity"
+                        domain="[('training_entity_id', '!=', False)]"/>
+                <filter string="Archived" name="filter_inactive"
+                        domain="[('active', '=', False)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Internship Status" name="group_state"
+                            context="{'group_by': 'internship_state'}"/>
+                    <filter string="Internship Type" name="group_type"
+                            context="{'group_by': 'internship_type'}"/>
+                    <filter string="Training Entity" name="group_entity"
+                            context="{'group_by': 'training_entity_id'}"/>
+                    <filter string="Academic Term" name="group_term"
+                            context="{'group_by': 'academic_term_id'}"/>
+                    <filter string="University" name="group_university"
+                            context="{'group_by': 'university_id'}"/>
+                    <filter string="College" name="group_college"
+                            context="{'group_by': 'college_id'}"/>
+                    <filter string="Department" name="group_dept"
+                            context="{'group_by': 'department_id'}"/>
+                    <filter string="Coordinator" name="group_coord"
+                            context="{'group_by': 'coordinator_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============ uni.internship — Action ============ -->
+    <record id="action_uni_internship" model="ir.actions.act_window">
+        <field name="name">Internships</field>
+        <field name="res_model">uni.internship</field>
+        <field name="view_mode">list,kanban,form</field>
+        <field name="search_view_id" ref="view_uni_internship_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first internship
+            </p>
+            <p>
+                Each internship can host multiple teams, supervisors, daily
+                logs, attendance, weekly reports, evaluations, and
+                completions. Track the full lifecycle from planning to
+                completion.
+            </p>
+        </field>
+    </record>
+</odoo>

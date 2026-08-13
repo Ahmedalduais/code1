@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============ uni.lms.forum — List View ============ -->
+    <record id="view_uni_lms_forum_list" model="ir.ui.view">
+        <field name="name">uni.lms.forum.list</field>
+        <field name="model">uni.lms.forum</field>
+        <field name="arch" type="xml">
+            <list string="LMS Forums"
+                  decoration-success="state=='active'"
+                  decoration-warning="state=='draft'"
+                  decoration-muted="state=='closed'">
+                <field name="sequence" widget="handle" optional="show"/>
+                <field name="name"/>
+                <field name="code" optional="hide"/>
+                <field name="lms_course_id"/>
+                <field name="moderator_name"/>
+                <field name="post_count"/>
+                <field name="is_announcements_only" widget="boolean_toggle"/>
+                <field name="allow_student_posts" widget="boolean_toggle"/>
+                <field name="state" widget="badge"/>
+                <field name="active" widget="boolean_toggle" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============ uni.lms.forum — Form View ============ -->
+    <record id="view_uni_lms_forum_form" model="ir.ui.view">
+        <field name="name">uni.lms.forum.form</field>
+        <field name="model">uni.lms.forum</field>
+        <field name="arch" type="xml">
+            <form string="LMS Forum">
+                <header>
+                    <button name="action_activate" type="object" string="Activate"
+                            class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_close" type="object" string="Close"
+                            class="btn-danger" invisible="state != 'active'"/>
+                    <button name="action_draft" type="object" string="Set to Draft"
+                            class="btn-secondary" invisible="state == 'draft'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,active,closed"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" type="object"
+                                name="action_view_posts" icon="fa-comments">
+                            <field name="post_count" widget="statinfo" string="Posts"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" string="Forum Name"/>
+                        <h1><field name="name" placeholder="e.g. General Discussion"/></h1>
+                        <h3><field name="code" placeholder="Optional short code"/></h3>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="lms_course_id" options="{'no_create': True}"/>
+                            <field name="moderator_name" placeholder="e.g. Dr. Sarah Khan"/>
+                            <field name="sequence"/>
+                            <field name="active" widget="boolean_toggle"/>
+                        </group>
+                        <group>
+                            <field name="is_announcements_only" widget="boolean_toggle"/>
+                            <field name="allow_student_posts" widget="boolean_toggle"
+                                   invisible="is_announcements_only"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Description" name="description">
+                            <field name="description" nolabel="1"
+                                   placeholder="Forum description and rules..."/>
+                        </page>
+                        <page string="Posts" name="posts">
+                            <field name="post_ids">
+                                <list>
+                                    <field name="title"/>
+                                    <field name="author_id"/>
+                                    <field name="create_date"/>
+                                    <field name="is_pinned" widget="boolean_toggle"/>
+                                    <field name="is_locked" widget="boolean_toggle"/>
+                                    <field name="reply_count"/>
+                                    <field name="view_count"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="notes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============ uni.lms.forum — Search View ============ -->
+    <record id="view_uni_lms_forum_search" model="ir.ui.view">
+        <field name="name">uni.lms.forum.search</field>
+        <field name="model">uni.lms.forum</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="lms_course_id"/>
+                <field name="moderator_name"/>
+                <filter string="Active" name="filter_active"
+                        domain="[('state', '=', 'active')]"/>
+                <filter string="Closed" name="filter_closed"
+                        domain="[('state', '=', 'closed')]"/>
+                <separator/>
+                <filter string="Announcements Only" name="filter_announcements"
+                        domain="[('is_announcements_only', '=', True)]"/>
+                <filter string="Allow Student Posts" name="filter_student_posts"
+                        domain="[('allow_student_posts', '=', True)]"/>
+                <separator/>
+                <filter string="Archived Records" name="filter_archived"
+                        domain="[('active', '=', False)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="LMS Course" name="group_course"
+                            context="{'group_by': 'lms_course_id'}"/>
+                    <filter string="Moderator" name="group_moderator"
+                            context="{'group_by': 'moderator_name'}"/>
+                    <filter string="Status" name="group_state"
+                            context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============ uni.lms.forum — Action ============ -->
+    <record id="action_uni_lms_forum" model="ir.actions.act_window">
+        <field name="name">LMS Forums</field>
+        <field name="res_model">uni.lms.forum</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_lms_forum_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new forum
+            </p>
+            <p>
+                Forums enable course discussions. Choose between open
+                student-posting forums or announcements-only forums moderated
+                by faculty. Posts can be pinned, locked, or hidden.
+            </p>
+        </field>
+    </record>
+
+    <!-- ============ uni.lms.forum.post — List View ============ -->
+    <record id="view_uni_lms_forum_post_list" model="ir.ui.view">
+        <field name="name">uni.lms.forum.post.list</field>
+        <field name="model">uni.lms.forum.post</field>
+        <field name="arch" type="xml">
+            <list string="Forum Posts"
+                  decoration-success="state=='published'"
+                  decoration-warning="state=='draft'"
+                  decoration-muted="state=='hidden'">
+                <field name="forum_id"/>
+                <field name="title"/>
+                <field name="author_id"/>
+                <field name="parent_id" optional="hide"/>
+                <field name="is_pinned" widget="boolean_toggle"/>
+                <field name="is_locked" widget="boolean_toggle"/>
+                <field name="reply_count"/>
+                <field name="view_count"/>
+                <field name="create_date"/>
+                <field name="state" widget="badge"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============ uni.lms.forum.post — Form View ============ -->
+    <record id="view_uni_lms_forum_post_form" model="ir.ui.view">
+        <field name="name">uni.lms.forum.post.form</field>
+        <field name="model">uni.lms.forum.post</field>
+        <field name="arch" type="xml">
+            <form string="Forum Post">
+                <header>
+                    <button name="action_publish" type="object" string="Publish"
+                            class="btn-primary" invisible="state == 'published'"/>
+                    <button name="action_hide" type="object" string="Hide"
+                            class="btn-secondary" invisible="state == 'hidden'"/>
+                    <button name="action_pin" type="object" string="Pin"
+                            class="btn-primary" invisible="is_pinned"/>
+                    <button name="action_unpin" type="object" string="Unpin"
+                            class="btn-secondary" invisible="not is_pinned"/>
+                    <button name="action_lock" type="object" string="Lock"
+                            class="btn-danger" invisible="is_locked"/>
+                    <button name="action_unlock" type="object" string="Unlock"
+                            class="btn-secondary" invisible="not is_locked"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,published,hidden"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="forum_id" options="{'no_create': True}"/>
+                            <field name="author_id" options="{'no_create': True}"/>
+                            <field name="parent_id" options="{'no_create': True}"/>
+                            <field name="is_pinned" widget="boolean_toggle"/>
+                            <field name="is_locked" widget="boolean_toggle"/>
+                        </group>
+                        <group>
+                            <field name="title" placeholder="Post title..."/>
+                            <field name="create_date" readonly="1"/>
+                            <field name="write_date" readonly="1"/>
+                            <field name="view_count"/>
+                            <field name="reply_count"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="content" nolabel="1"
+                               placeholder="Write your post content..."/>
+                    </group>
+                    <notebook>
+                        <page string="Replies" name="replies">
+                            <field name="child_ids">
+                                <list>
+                                    <field name="title"/>
+                                    <field name="author_id"/>
+                                    <field name="create_date"/>
+                                    <field name="is_locked" widget="boolean_toggle"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============ uni.lms.forum.post — Search View ============ -->
+    <record id="view_uni_lms_forum_post_search" model="ir.ui.view">
+        <field name="name">uni.lms.forum.post.search</field>
+        <field name="model">uni.lms.forum.post</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="title"/>
+                <field name="forum_id"/>
+                <field name="author_id"/>
+                <field name="parent_id"/>
+                <filter string="Published" name="filter_published"
+                        domain="[('state', '=', 'published')]"/>
+                <filter string="Hidden" name="filter_hidden"
+                        domain="[('state', '=', 'hidden')]"/>
+                <separator/>
+                <filter string="Pinned" name="filter_pinned"
+                        domain="[('is_pinned', '=', True)]"/>
+                <filter string="Locked" name="filter_locked"
+                        domain="[('is_locked', '=', True)]"/>
+                <separator/>
+                <filter string="Top-level Posts" name="filter_top_level"
+                        domain="[('parent_id', '=', False)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Forum" name="group_forum"
+                            context="{'group_by': 'forum_id'}"/>
+                    <filter string="Author" name="group_author"
+                            context="{'group_by': 'author_id'}"/>
+                    <filter string="Status" name="group_state"
+                            context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============ uni.lms.forum.post — Action ============ -->
+    <record id="action_uni_lms_forum_post" model="ir.actions.act_window">
+        <field name="name">Forum Posts</field>
+        <field name="res_model">uni.lms.forum.post</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_lms_forum_post_search"/>
+    </record>
+</odoo>

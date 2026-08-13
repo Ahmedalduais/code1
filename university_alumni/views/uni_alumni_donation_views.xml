@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- uni.alumni.donation — List View                              -->
+    <!-- ============================================================ -->
+    <record id="view_uni_alumni_donation_list" model="ir.ui.view">
+        <field name="name">uni.alumni.donation.list</field>
+        <field name="model">uni.alumni.donation</field>
+        <field name="arch" type="xml">
+            <list string="Alumni Donations"
+                  decoration-success="state == 'received'"
+                  decoration-warning="state == 'pending'"
+                  decoration-muted="state == 'cancelled'">
+                <field name="name"/>
+                <field name="code" optional="hide"/>
+                <field name="member_id" options="{'no_create': True}"/>
+                <field name="university_id" optional="hide"/>
+                <field name="donation_date"/>
+                <field name="amount" sum="Total"/>
+                <field name="currency_id"
+                       groups="base.group_multi_currency"/>
+                <field name="donation_type"/>
+                <field name="purpose"/>
+                <field name="is_anonymous" optional="hide"/>
+                <field name="is_recurring" optional="hide"/>
+                <field name="acknowledgement_sent" optional="hide"/>
+                <field name="received_by" optional="hide"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'received'"
+                       decoration-warning="state == 'pending'"
+                       decoration-muted="state == 'cancelled'"/>
+                <field name="active" invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.alumni.donation — Form View                              -->
+    <!-- ============================================================ -->
+    <record id="view_uni_alumni_donation_form" model="ir.ui.view">
+        <field name="name">uni.alumni.donation.form</field>
+        <field name="model">uni.alumni.donation</field>
+        <field name="arch" type="xml">
+            <form string="Alumni Donation">
+                <header>
+                    <button name="action_receive" string="Receive"
+                            type="object" class="oe_highlight"
+                            invisible="state != 'pending'"/>
+                    <button name="action_send_acknowledgement"
+                            string="Send Acknowledgement"
+                            type="object" class="oe_highlight"
+                            invisible="state != 'received'"
+                            confirm="Mark acknowledgement as sent to the donor?"/>
+                    <button name="action_cancel" string="Cancel"
+                            type="object"
+                            invisible="state == 'cancelled'"
+                            confirm="Cancel this donation?"/>
+                    <button name="action_reset_to_pending"
+                            string="Reset to Pending"
+                            type="object"
+                            invisible="state != 'cancelled'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="pending,received"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button type="object" class="oe_stat_button" icon="fa-check">
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">Acknowledgement</span>
+                                <span class="o_stat_value">
+                                    <field name="acknowledgement_sent" widget="boolean_toggle"/>
+                                </span>
+                            </div>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" string="Donation"/>
+                        <h1><field name="name" readonly="1"/></h1>
+                        <h3><field name="member_id"
+                                   options="{'no_create': True}"
+                                   placeholder="Select the alumni donor..."/></h3>
+                    </div>
+                    <group>
+                        <group string="Details">
+                            <field name="code"/>
+                            <field name="donation_date"/>
+                            <field name="amount"/>
+                            <field name="currency_id"
+                                   options="{'no_create': True}"/>
+                            <field name="donation_type"/>
+                            <field name="payment_reference"/>
+                        </group>
+                        <group string="Purpose">
+                            <field name="purpose"/>
+                            <field name="purpose_details"
+                                   invisible="purpose not in ('scholarship', 'research', 'building', 'equipment', 'endowment', 'specific_program', 'other')"/>
+                            <field name="is_anonymous"/>
+                            <field name="is_recurring"/>
+                            <field name="recurrence_frequency"
+                                   invisible="not is_recurring"
+                                   required="is_recurring"/>
+                        </group>
+                    </group>
+                    <group string="Acknowledgement &amp; Receipt">
+                        <group>
+                            <field name="received_by"
+                                   options="{'no_create': True}"/>
+                            <field name="acknowledgement_sent" readonly="1"/>
+                            <field name="acknowledgement_date" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="receipt_file"
+                                   filename="receipt_filename"/>
+                            <field name="receipt_filename" invisible="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Notes" name="notes">
+                            <field name="notes" nolabel="1"
+                                   placeholder="Internal notes about this donation..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.alumni.donation — Graph View (over time)                 -->
+    <!-- ============================================================ -->
+    <record id="view_uni_alumni_donation_graph" model="ir.ui.view">
+        <field name="name">uni.alumni.donation.graph</field>
+        <field name="model">uni.alumni.donation</field>
+        <field name="arch" type="xml">
+            <graph string="Donations Over Time" type="bar">
+                <field name="donation_date" type="row" interval="month"/>
+                <field name="amount" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.alumni.donation — Pivot View                             -->
+    <!-- ============================================================ -->
+    <record id="view_uni_alumni_donation_pivot" model="ir.ui.view">
+        <field name="name">uni.alumni.donation.pivot</field>
+        <field name="model">uni.alumni.donation</field>
+        <field name="arch" type="xml">
+            <pivot string="Donations Analysis">
+                <field name="member_id" type="row"/>
+                <field name="purpose" type="col"/>
+                <field name="amount" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.alumni.donation — Search View                            -->
+    <!-- ============================================================ -->
+    <record id="view_uni_alumni_donation_search" model="ir.ui.view">
+        <field name="name">uni.alumni.donation.search</field>
+        <field name="model">uni.alumni.donation</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="member_id"/>
+                <field name="university_id"/>
+                <field name="donation_type"/>
+                <field name="purpose"/>
+                <field name="received_by"/>
+                <field name="payment_reference"/>
+                <separator/>
+                <filter string="Pending" name="filter_pending"
+                        domain="[('state', '=', 'pending')]"/>
+                <filter string="Received" name="filter_received"
+                        domain="[('state', '=', 'received')]"/>
+                <filter string="Cancelled" name="filter_cancelled"
+                        domain="[('state', '=', 'cancelled')]"/>
+                <separator/>
+                <filter string="Anonymous" name="filter_anonymous"
+                        domain="[('is_anonymous', '=', True)]"/>
+                <filter string="Recurring" name="filter_recurring"
+                        domain="[('is_recurring', '=', True)]"/>
+                <filter string="Acknowledgement Sent" name="filter_ack"
+                        domain="[('acknowledgement_sent', '=', True)]"/>
+                <filter string="Acknowledgement Pending" name="filter_ack_pending"
+                        domain="[('acknowledgement_sent', '=', False), ('state', '=', 'received')]"/>
+                <separator/>
+                <filter string="This Year" name="filter_year"
+                        domain="[('donation_date', '>=', (context_today() - relativedelta(days=365)).strftime('%Y-%m-%d'))]"/>
+                <filter string="This Month" name="filter_month"
+                        domain="[('donation_date', '>=', (context_today() - relativedelta(days=30)).strftime('%Y-%m-%d'))]"/>
+                <separator/>
+                <filter string="Archived" name="filter_archived"
+                        domain="[('active', '=', False)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="State" name="group_state"
+                            context="{'group_by': 'state'}"/>
+                    <filter string="Donation Type" name="group_type"
+                            context="{'group_by': 'donation_type'}"/>
+                    <filter string="Purpose" name="group_purpose"
+                            context="{'group_by': 'purpose'}"/>
+                    <filter string="Member" name="group_member"
+                            context="{'group_by': 'member_id'}"/>
+                    <filter string="University" name="group_university"
+                            context="{'group_by': 'university_id'}"/>
+                    <filter string="Received By" name="group_received_by"
+                            context="{'group_by': 'received_by'}"/>
+                    <filter string="Recurrence" name="group_recurrence"
+                            context="{'group_by': 'recurrence_frequency'}"/>
+                    <filter string="Donation Date" name="group_date"
+                            context="{'group_by': 'donation_date:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.alumni.donation — Action                                 -->
+    <!-- ============================================================ -->
+    <record id="action_uni_alumni_donation" model="ir.actions.act_window">
+        <field name="name">Alumni Donations</field>
+        <field name="res_model">uni.alumni.donation</field>
+        <field name="view_mode">list,form,graph,pivot</field>
+        <field name="search_view_id" ref="view_uni_alumni_donation_search"/>
+        <field name="context">{'default_state': 'pending', 'default_donation_date': context_today()}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Register a new alumni donation
+            </p>
+            <p>Donations can be cash, check, bank transfer, in-kind, or
+               stock/securities. Track purpose, recurring schedules,
+               receipts, and acknowledgement status.</p>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.alumni.donation — Reporting Action (graph-first)         -->
+    <!-- ============================================================ -->
+    <record id="action_uni_alumni_donation_report" model="ir.actions.act_window">
+        <field name="name">Donations Analysis</field>
+        <field name="res_model">uni.alumni.donation</field>
+        <field name="view_mode">graph,pivot,list</field>
+        <field name="search_view_id" ref="view_uni_alumni_donation_search"/>
+        <field name="context">{'search_default_filter_received': True}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Analyze alumni donations
+            </p>
+            <p>Visualize donation amounts over time, by purpose, by
+               member, or by type using the graph and pivot views.</p>
+        </field>
+    </record>
+</odoo>

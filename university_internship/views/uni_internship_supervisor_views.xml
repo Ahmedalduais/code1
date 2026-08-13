@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============ uni.internship.supervisor — List View ============ -->
+    <record id="view_uni_internship_supervisor_list" model="ir.ui.view">
+        <field name="name">uni.internship.supervisor.list</field>
+        <field name="model">uni.internship.supervisor</field>
+        <field name="arch" type="xml">
+            <list string="Internship Supervisors"
+                  decoration-success="is_active == True"
+                  decoration-muted="is_active == False">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="internship_id"/>
+                <field name="faculty_id"/>
+                <field name="faculty_name" optional="show"/>
+                <field name="supervisor_type"/>
+                <field name="entity_supervisor_id" optional="hide"/>
+                <field name="assignment_date" optional="show"/>
+                <field name="end_date" optional="hide"/>
+                <field name="workload_hours" optional="hide"/>
+                <field name="is_active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============ uni.internship.supervisor — Form View ============ -->
+    <record id="view_uni_internship_supervisor_form" model="ir.ui.view">
+        <field name="name">uni.internship.supervisor.form</field>
+        <field name="model">uni.internship.supervisor</field>
+        <field name="arch" type="xml">
+            <form string="Internship Supervisor">
+                <header>
+                    <button name="action_end_supervision" type="object"
+                            string="End Supervision" class="btn-danger"
+                            invisible="is_active == False"/>
+                    <button name="action_reactivate" type="object"
+                            string="Reactivate" class="btn-primary"
+                            invisible="is_active == True"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" string="Reference"/>
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group string="Assignment">
+                            <field name="internship_id" options="{'no_create': True}"/>
+                            <field name="faculty_id" options="{'no_create': True}"/>
+                            <field name="faculty_name"/>
+                            <field name="supervisor_type"/>
+                            <field name="entity_supervisor_id"
+                                   options="{'no_create': True}"
+                                   invisible="supervisor_type != 'field'"/>
+                            <field name="sequence"/>
+                        </group>
+                        <group string="Lifecycle">
+                            <field name="assignment_date"/>
+                            <field name="end_date" readonly="is_active == True"/>
+                            <field name="is_active" widget="boolean_toggle"/>
+                            <field name="active" widget="boolean_toggle" optional="hide"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Workload">
+                            <field name="workload_hours"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Notes" name="notes">
+                            <field name="notes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============ uni.internship.supervisor — Search View ============ -->
+    <record id="view_uni_internship_supervisor_search" model="ir.ui.view">
+        <field name="name">uni.internship.supervisor.search</field>
+        <field name="model">uni.internship.supervisor</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="internship_id"/>
+                <field name="faculty_id"/>
+                <field name="faculty_name"/>
+                <field name="supervisor_type"/>
+                <field name="entity_supervisor_id"/>
+                <separator/>
+                <filter string="Active" name="filter_active"
+                        domain="[('is_active', '=', True)]"/>
+                <filter string="Inactive" name="filter_inactive"
+                        domain="[('is_active', '=', False)]"/>
+                <filter string="Academic" name="filter_academic"
+                        domain="[('supervisor_type', '=', 'academic')]"/>
+                <filter string="Field" name="filter_field"
+                        domain="[('supervisor_type', '=', 'field')]"/>
+                <filter string="Co-Supervisor" name="filter_co"
+                        domain="[('supervisor_type', '=', 'co_supervisor')]"/>
+                <filter string="External" name="filter_external"
+                        domain="[('supervisor_type', '=', 'external')]"/>
+                <separator/>
+                <filter string="Archived" name="filter_archived"
+                        domain="[('active', '=', False)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Internship" name="group_internship"
+                            context="{'group_by': 'internship_id'}"/>
+                    <filter string="Faculty" name="group_faculty"
+                            context="{'group_by': 'faculty_id'}"/>
+                    <filter string="Supervisor Type" name="group_type"
+                            context="{'group_by': 'supervisor_type'}"/>
+                    <filter string="Active" name="group_active"
+                            context="{'group_by': 'is_active'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============ uni.internship.supervisor — Action ============ -->
+    <record id="action_uni_internship_supervisor" model="ir.actions.act_window">
+        <field name="name">Internship Supervisors</field>
+        <field name="res_model">uni.internship.supervisor</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_internship_supervisor_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first internship supervisor
+            </p>
+            <p>
+                Supervisors are faculty members (or external field
+                supervisors) assigned to an internship with a specific
+                role (academic, field, co-supervisor, or external).
+            </p>
+        </field>
+    </record>
+</odoo>

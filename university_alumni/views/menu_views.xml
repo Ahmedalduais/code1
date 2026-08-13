@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- Alumni menu — under university_core.menu_university_root     -->
+    <!-- ============================================================ -->
+    <menuitem id="menu_university_alumni_root"
+              name="Alumni"
+              parent="university_core.menu_university_root"
+              sequence="70"/>
+
+    <!-- Members -->
+    <menuitem id="menu_uni_alumni_member"
+              name="Members"
+              parent="menu_university_alumni_root"
+              action="action_uni_alumni_member"
+              sequence="10"/>
+
+    <!-- Events -->
+    <menuitem id="menu_uni_alumni_event"
+              name="Events"
+              parent="menu_university_alumni_root"
+              action="action_uni_alumni_event"
+              sequence="20"/>
+
+    <!-- Donations -->
+    <menuitem id="menu_uni_alumni_donation"
+              name="Donations"
+              parent="menu_university_alumni_root"
+              action="action_uni_alumni_donation"
+              sequence="30"/>
+
+    <!-- Networks -->
+    <menuitem id="menu_uni_alumni_network"
+              name="Networks"
+              parent="menu_university_alumni_root"
+              action="action_uni_alumni_network"
+              sequence="40"/>
+
+    <!-- Careers -->
+    <menuitem id="menu_uni_alumni_career"
+              name="Careers"
+              parent="menu_university_alumni_root"
+              action="action_uni_alumni_career"
+              sequence="50"/>
+
+    <!-- Reporting sub-menu -->
+    <menuitem id="menu_university_alumni_reporting"
+              name="Reporting"
+              parent="menu_university_alumni_root"
+              sequence="90"
+              groups="university_core.group_university_manager"/>
+
+    <menuitem id="menu_uni_alumni_donation_graph"
+              name="Donations Analysis"
+              parent="menu_university_alumni_reporting"
+              action="action_uni_alumni_donation_report"
+              sequence="10"/>
+
+    <menuitem id="menu_uni_alumni_career_graph"
+              name="Careers Analysis"
+              parent="menu_university_alumni_reporting"
+              action="action_uni_alumni_career_report"
+              sequence="20"/>
+</odoo>

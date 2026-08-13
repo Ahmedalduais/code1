@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- uni.housing.allocation — List View                            -->
+    <!-- ============================================================ -->
+    <record id="view_uni_housing_allocation_list" model="ir.ui.view">
+        <field name="name">uni.housing.allocation.list</field>
+        <field name="model">uni.housing.allocation</field>
+        <field name="arch" type="xml">
+            <list string="Allocations"
+                  decoration-success="state == 'active'"
+                  decoration-info="state == 'draft'"
+                  decoration-muted="state == 'cancelled'"
+                  decoration-warning="state == 'completed'">
+                <field name="name"/>
+                <field name="code" optional="hide"/>
+                <field name="student_id"/>
+                <field name="room_id"/>
+                <field name="building_id"/>
+                <field name="university_id" optional="hide"/>
+                <field name="allocation_date"/>
+                <field name="check_in_date"/>
+                <field name="expected_check_out_date"/>
+                <field name="actual_check_out_date"/>
+                <field name="monthly_rent" widget="monetary"
+                       options="{'currency_field': 'currency_id'}"
+                       sum="Total Monthly Rent"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="contract_id" optional="hide"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'active'"
+                       decoration-info="state == 'draft'"
+                       decoration-muted="state == 'cancelled'"
+                       decoration-warning="state == 'completed'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.housing.allocation — Form View                            -->
+    <!-- ============================================================ -->
+    <record id="view_uni_housing_allocation_form" model="ir.ui.view">
+        <field name="name">uni.housing.allocation.form</field>
+        <field name="model">uni.housing.allocation</field>
+        <field name="arch" type="xml">
+            <form string="Allocation">
+                <header>
+                    <button name="action_check_in" type="object"
+                            string="Check-in" class="oe_highlight"
+                            invisible="state != 'draft'"/>
+                    <button name="action_check_out" type="object"
+                            string="Check-out"
+                            invisible="state != 'active'"/>
+                    <button name="action_cancel" type="object"
+                            string="Cancel"
+                            invisible="state in ('completed', 'cancelled')"/>
+                    <button name="action_draft" type="object"
+                            string="Reset to Draft"
+                            invisible="state != 'cancelled'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,active,completed,cancelled"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" string="Allocation Reference"/>
+                        <h1><field name="name" readonly="1"/></h1>
+                        <h3><field name="code" placeholder="Optional code"/></h3>
+                    </div>
+                    <group>
+                        <group string="Student &amp; Room">
+                            <field name="student_id"
+                                   options="{'no_create': True}"/>
+                            <field name="room_id"
+                                   options="{'no_create': True}"
+                                   domain="[('state', 'in', ('available', 'full'))]"/>
+                            <field name="building_id" readonly="1"/>
+                            <field name="university_id" readonly="1"/>
+                        </group>
+                        <group string="Pricing">
+                            <field name="monthly_rent"
+                                   widget="monetary"
+                                   options="{'currency_field': 'currency_id'}"/>
+                            <field name="currency_id"
+                                   options="{'no_create': True}"/>
+                            <field name="contract_id"
+                                   options="{'no_create': True}"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Dates">
+                            <field name="allocation_date"/>
+                            <field name="check_in_date"/>
+                            <field name="expected_check_out_date"/>
+                            <field name="actual_check_out_date"/>
+                        </group>
+                        <group string="State">
+                            <field name="state"/>
+                        </group>
+                    </group>
+                    <group string="Notes">
+                        <field name="notes" nolabel="1"
+                               placeholder="Internal notes about this allocation..."/>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.housing.allocation — Search View                          -->
+    <!-- ============================================================ -->
+    <record id="view_uni_housing_allocation_search" model="ir.ui.view">
+        <field name="name">uni.housing.allocation.search</field>
+        <field name="model">uni.housing.allocation</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="student_id"/>
+                <field name="room_id"/>
+                <field name="building_id"/>
+                <field name="university_id"/>
+                <field name="contract_id"/>
+                <filter string="Draft" name="filter_draft"
+                        domain="[('state', '=', 'draft')]"/>
+                <filter string="Active" name="filter_active"
+                        domain="[('state', '=', 'active')]"/>
+                <filter string="Completed" name="filter_completed"
+                        domain="[('state', '=', 'completed')]"/>
+                <filter string="Cancelled" name="filter_cancelled"
+                        domain="[('state', '=', 'cancelled')]"/>
+                <filter string="Currently Checked In" name="filter_in"
+                        domain="[('state', '=', 'active')]"/>
+                <separator/>
+                <filter string="Today" name="filter_today"
+                        domain="[('allocation_date', '=', context_today().strftime('%Y-%m-%d'))]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Student" name="group_student"
+                            context="{'group_by': 'student_id'}"/>
+                    <filter string="Room" name="group_room"
+                            context="{'group_by': 'room_id'}"/>
+                    <filter string="Building" name="group_building"
+                            context="{'group_by': 'building_id'}"/>
+                    <filter string="University" name="group_university"
+                            context="{'group_by': 'university_id'}"/>
+                    <filter string="State" name="group_state"
+                            context="{'group_by': 'state'}"/>
+                    <filter string="Allocation Date" name="group_date"
+                            context="{'group_by': 'allocation_date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.housing.allocation — Action                               -->
+    <!-- ============================================================ -->
+    <record id="action_uni_housing_allocation" model="ir.actions.act_window">
+        <field name="name">Allocations</field>
+        <field name="res_model">uni.housing.allocation</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_housing_allocation_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new room allocation
+            </p>
+            <p>Allocations link students to rooms. Each allocation tracks
+               check-in/check-out dates and the room's monthly rent. A
+               student can have only one active or draft allocation at a
+               time.</p>
+        </field>
+    </record>
+</odoo>

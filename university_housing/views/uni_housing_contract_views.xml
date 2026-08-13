@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- uni.housing.contract — List View                              -->
+    <!-- ============================================================ -->
+    <record id="view_uni_housing_contract_list" model="ir.ui.view">
+        <field name="name">uni.housing.contract.list</field>
+        <field name="model">uni.housing.contract</field>
+        <field name="arch" type="xml">
+            <list string="Contracts"
+                  decoration-success="state == 'active'"
+                  decoration-info="state == 'draft'"
+                  decoration-muted="state == 'expired'"
+                  decoration-danger="state == 'terminated'">
+                <field name="name"/>
+                <field name="code" optional="hide"/>
+                <field name="student_id"/>
+                <field name="university_id" optional="hide"/>
+                <field name="allocation_id" optional="hide"/>
+                <field name="contract_type"/>
+                <field name="start_date"/>
+                <field name="end_date"/>
+                <field name="total_amount" widget="monetary"
+                       options="{'currency_field': 'currency_id'}"
+                       sum="Total Contract Value"/>
+                <field name="paid_amount" widget="monetary"
+                       options="{'currency_field': 'currency_id'}"
+                       sum="Total Paid"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="payment_frequency" optional="hide"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'active'"
+                       decoration-info="state == 'draft'"
+                       decoration-muted="state == 'expired'"
+                       decoration-danger="state == 'terminated'"/>
+                <field name="active" widget="boolean_toggle" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.housing.contract — Form View                              -->
+    <!-- ============================================================ -->
+    <record id="view_uni_housing_contract_form" model="ir.ui.view">
+        <field name="name">uni.housing.contract.form</field>
+        <field name="model">uni.housing.contract</field>
+        <field name="arch" type="xml">
+            <form string="Contract">
+                <header>
+                    <button name="action_activate" type="object"
+                            string="Activate" class="oe_highlight"
+                            invisible="state != 'draft'"/>
+                    <button name="action_terminate" type="object"
+                            string="Terminate"
+                            invisible="state != 'active'"/>
+                    <button name="action_expire" type="object"
+                            string="Mark Expired"
+                            invisible="state != 'active'"/>
+                    <button name="action_refund_deposit" type="object"
+                            string="Refund Deposit"
+                            invisible="deposit_refunded == True or deposit_amount &lt;= 0"/>
+                    <button name="action_draft" type="object"
+                            string="Reset to Draft"
+                            invisible="state not in ('terminated', 'expired')"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,active,expired,terminated"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_archive" type="object"
+                                class="oe_stat_button" icon="fa-archive"
+                                invisible="active == False">
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">Unarchive</span>
+                            </div>
+                        </button>
+                        <button name="action_unarchive" type="object"
+                                class="oe_stat_button" icon="fa-archive"
+                                invisible="active == True">
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">Restore</span>
+                            </div>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" string="Contract Reference"/>
+                        <h1><field name="name" readonly="1"/></h1>
+                        <h3><field name="code" placeholder="Optional code"/></h3>
+                    </div>
+                    <group>
+                        <group string="Student &amp; Allocation">
+                            <field name="student_id"
+                                   options="{'no_create': True}"/>
+                            <field name="university_id" readonly="1"/>
+                            <field name="allocation_id"
+                                   options="{'no_create': True}"/>
+                        </group>
+                        <group string="Contract Details">
+                            <field name="contract_type"/>
+                            <field name="start_date"/>
+                            <field name="end_date"/>
+                            <field name="payment_frequency"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Financials">
+                            <field name="total_amount"
+                                   widget="monetary"
+                                   options="{'currency_field': 'currency_id'}"/>
+                            <field name="paid_amount"
+                                   widget="monetary"
+                                   options="{'currency_field': 'currency_id'}"/>
+                            <field name="currency_id"
+                                   options="{'no_create': True}"/>
+                        </group>
+                        <group string="Deposit">
+                            <field name="deposit_amount"
+                                   widget="monetary"
+                                   options="{'currency_field': 'currency_id'}"/>
+                            <field name="deposit_refunded"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Signatures">
+                            <field name="signed_by_student"/>
+                            <field name="signed_date"/>
+                            <field name="signed_by"
+                                   options="{'no_create': True}"/>
+                        </group>
+                        <group string="State">
+                            <field name="state"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Terms &amp; Conditions" name="terms">
+                            <group>
+                                <field name="terms_and_conditions" nolabel="1"
+                                       placeholder="Full text of the contract terms and conditions..."/>
+                            </group>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <group>
+                                <field name="notes" nolabel="1"
+                                       placeholder="Internal notes about this contract..."/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.housing.contract — Search View                            -->
+    <!-- ============================================================ -->
+    <record id="view_uni_housing_contract_search" model="ir.ui.view">
+        <field name="name">uni.housing.contract.search</field>
+        <field name="model">uni.housing.contract</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="student_id"/>
+                <field name="university_id"/>
+                <field name="allocation_id"/>
+                <filter string="Draft" name="filter_draft"
+                        domain="[('state', '=', 'draft')]"/>
+                <filter string="Active" name="filter_active"
+                        domain="[('state', '=', 'active')]"/>
+                <filter string="Expired" name="filter_expired"
+                        domain="[('state', '=', 'expired')]"/>
+                <filter string="Terminated" name="filter_terminated"
+                        domain="[('state', '=', 'terminated')]"/>
+                <filter string="Signed by Student" name="filter_signed"
+                        domain="[('signed_by_student', '=', True)]"/>
+                <filter string="Has Deposit" name="filter_deposit"
+                        domain="[('deposit_amount', '>', 0)]"/>
+                <filter string="Deposit Not Refunded" name="filter_not_refunded"
+                        domain="[('deposit_amount', '>', 0), ('deposit_refunded', '=', False)]"/>
+                <filter string="Archived" name="filter_archived"
+                        domain="[('active', '=', False)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Student" name="group_student"
+                            context="{'group_by': 'student_id'}"/>
+                    <filter string="University" name="group_university"
+                            context="{'group_by': 'university_id'}"/>
+                    <filter string="Contract Type" name="group_type"
+                            context="{'group_by': 'contract_type'}"/>
+                    <filter string="Payment Frequency" name="group_freq"
+                            context="{'group_by': 'payment_frequency'}"/>
+                    <filter string="State" name="group_state"
+                            context="{'group_by': 'state'}"/>
+                    <filter string="Start Date" name="group_start"
+                            context="{'group_by': 'start_date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.housing.contract — Action                                 -->
+    <!-- ============================================================ -->
+    <record id="action_uni_housing_contract" model="ir.actions.act_window">
+        <field name="name">Contracts</field>
+        <field name="res_model">uni.housing.contract</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_housing_contract_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new housing contract
+            </p>
+            <p>Housing contracts formalise the agreement between the student
+               and the university. Track contract type, financials, deposit,
+               and signatures.</p>
+        </field>
+    </record>
+</odoo>

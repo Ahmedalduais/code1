@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- uni.library.borrow — List View                                -->
+    <!-- ============================================================ -->
+    <record id="view_uni_library_borrow_list" model="ir.ui.view">
+        <field name="name">uni.library.borrow.list</field>
+        <field name="model">uni.library.borrow</field>
+        <field name="arch" type="xml">
+            <list string="Borrows"
+                  decoration-success="state == 'returned'"
+                  decoration-danger="state == 'overdue'"
+                  decoration-muted="state == 'cancelled'">
+                <field name="name"/>
+                <field name="book_id"/>
+                <field name="borrower_type"/>
+                <field name="borrower_name"/>
+                <field name="borrow_date"/>
+                <field name="due_date"/>
+                <field name="actual_return_date"/>
+                <field name="days_overdue"/>
+                <field name="fine_amount" sum="Total Fines"
+                       widget="monetary"
+                       options="{'currency_field': 'fine_currency_id'}"/>
+                <field name="fine_currency_id" column_invisible="1"/>
+                <field name="renewed_count"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'returned'"
+                       decoration-danger="state == 'overdue' or state == 'lost'"
+                       decoration-info="state == 'borrowed'"
+                       decoration-muted="state == 'cancelled'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.library.borrow — Form View                                -->
+    <!-- ============================================================ -->
+    <record id="view_uni_library_borrow_form" model="ir.ui.view">
+        <field name="name">uni.library.borrow.form</field>
+        <field name="model">uni.library.borrow</field>
+        <field name="arch" type="xml">
+            <form string="Borrow">
+                <header>
+                    <button name="action_return" type="object"
+                            string="Return Book" class="oe_highlight"
+                            invisible="state not in ('borrowed', 'overdue')"/>
+                    <button name="action_renew" type="object"
+                            string="Renew"
+                            invisible="state not in ('borrowed', 'overdue')"/>
+                    <button name="action_mark_lost" type="object"
+                            string="Mark Lost"
+                            invisible="state not in ('borrowed', 'overdue')"/>
+                    <button name="action_cancel" type="object"
+                            string="Cancel"
+                            invisible="state in ('returned', 'cancelled')"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="borrowed,overdue,returned"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_fine" type="object"
+                                class="oe_stat_button" icon="fa-money"
+                                invisible="not fine_id">
+                            <div class="o_stat_info">
+                                <span class="o_stat_value"><field name="fine_amount" widget="monetary" options="{'currency_field': 'fine_currency_id'}"/></span>
+                                <span class="o_stat_text">Fine</span>
+                            </div>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" string="Borrow Reference"/>
+                        <h1><field name="name" readonly="1"/></h1>
+                        <h3><field name="code" placeholder="Optional code"/></h3>
+                    </div>
+                    <group>
+                        <group string="Book">
+                            <field name="book_id"
+                                   options="{'no_create': True}"/>
+                            <field name="is_reference_only"
+                                   invisible="not book_id"/>
+                        </group>
+                        <group string="Borrower">
+                            <field name="borrower_type"/>
+                            <field name="student_name"
+                                   invisible="borrower_type != 'student'"
+                                   placeholder="Student full name"/>
+                            <field name="student_code"
+                                   invisible="borrower_type != 'student'"
+                                   placeholder="Optional student code"/>
+                            <field name="faculty_name"
+                                   invisible="borrower_type != 'faculty'"
+                                   placeholder="Faculty member name"/>
+                            <field name="employee_id"
+                                   invisible="borrower_type != 'staff'"
+                                   options="{'no_create': True}"/>
+                            <field name="partner_id"
+                                   invisible="borrower_type != 'external'"
+                                   options="{'no_create': True}"/>
+                            <field name="borrower_name" readonly="1"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Dates">
+                            <field name="borrow_date"/>
+                            <field name="due_date"/>
+                            <field name="return_date"/>
+                            <field name="actual_return_date"/>
+                        </group>
+                        <group string="Overdue &amp; Fines">
+                            <field name="is_overdue"/>
+                            <field name="days_overdue"/>
+                            <field name="fine_amount"
+                                   widget="monetary"
+                                   options="{'currency_field': 'fine_currency_id'}"/>
+                            <field name="fine_currency_id"
+                                   options="{'no_create': True}"/>
+                            <field name="fine_paid"/>
+                            <field name="fine_id" readonly="1"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Renewals">
+                            <field name="renewed_count"/>
+                            <field name="max_renewals"/>
+                        </group>
+                    </group>
+                    <group string="Notes">
+                        <field name="notes" nolabel="1"
+                               placeholder="Internal notes about this borrow..."/>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.library.borrow — Search View                              -->
+    <!-- ============================================================ -->
+    <record id="view_uni_library_borrow_search" model="ir.ui.view">
+        <field name="name">uni.library.borrow.search</field>
+        <field name="model">uni.library.borrow</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="book_id"/>
+                <field name="borrower_name"/>
+                <field name="student_name"/>
+                <field name="student_code"/>
+                <field name="faculty_name"/>
+                <field name="employee_id"/>
+                <field name="partner_id"/>
+                <filter string="Active" name="filter_active"
+                        domain="[('state', 'in', ('borrowed', 'overdue'))]"/>
+                <filter string="Overdue" name="filter_overdue"
+                        domain="[('is_overdue', '=', True)]"/>
+                <filter string="Returned" name="filter_returned"
+                        domain="[('state', '=', 'returned')]"/>
+                <filter string="Has Fine" name="filter_has_fine"
+                        domain="[('fine_amount', '>', 0)]"/>
+                <filter string="Unpaid Fine" name="filter_unpaid_fine"
+                        domain="[('fine_amount', '>', 0), ('fine_paid', '=', False)]"/>
+                <separator/>
+                <filter string="Today" name="filter_today"
+                        domain="[('borrow_date', '=', context_today().strftime('%Y-%m-%d'))]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Borrower Type" name="group_borrower_type"
+                            context="{'group_by': 'borrower_type'}"/>
+                    <filter string="State" name="group_state"
+                            context="{'group_by': 'state'}"/>
+                    <filter string="Book" name="group_book"
+                            context="{'group_by': 'book_id'}"/>
+                    <filter string="Borrow Date" name="group_borrow_date"
+                            context="{'group_by': 'borrow_date'}"/>
+                    <filter string="Due Date" name="group_due_date"
+                            context="{'group_by': 'due_date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.library.borrow — Graph View (borrows over time)           -->
+    <!-- ============================================================ -->
+    <record id="view_uni_library_borrow_graph" model="ir.ui.view">
+        <field name="name">uni.library.borrow.graph</field>
+        <field name="model">uni.library.borrow</field>
+        <field name="arch" type="xml">
+            <graph string="Borrows Over Time" type="bar">
+                <field name="borrow_date" type="row" interval="month"/>
+                <field name="state" type="col"/>
+                <field name="days_overdue" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.library.borrow — Action                                    -->
+    <!-- ============================================================ -->
+    <record id="action_uni_library_borrow" model="ir.actions.act_window">
+        <field name="name">Borrows</field>
+        <field name="res_model">uni.library.borrow</field>
+        <field name="view_mode">list,form,graph</field>
+        <field name="search_view_id" ref="view_uni_library_borrow_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new borrow record
+            </p>
+            <p>Borrow records track books lent to students, faculty, staff,
+               or external partners. The system calculates overdue days
+               and fines automatically.</p>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_uni_grade_letter_list" model="ir.ui.view">
+        <field name="name">uni.grade.letter.list</field>
+        <field name="model">uni.grade.letter</field>
+        <field name="arch" type="xml">
+            <list string="Grade Letters">
+                <field name="sequence" widget="handle"/>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="gpa_value"/>
+                <field name="percentage_min"/>
+                <field name="percentage_max"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_uni_grade_letter_form" model="ir.ui.view">
+        <field name="name">uni.grade.letter.form</field>
+        <field name="model">uni.grade.letter</field>
+        <field name="arch" type="xml">
+            <form string="Grade Letter">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" string="Grade Letter"/>
+                        <h1><field name="name" placeholder="e.g. A+"/></h1>
+                        <h3><field name="code" placeholder="e.g. A+"/></h3>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="sequence"/>
+                            <field name="gpa_value"/>
+                        </group>
+                        <group>
+                            <field name="percentage_min"/>
+                            <field name="percentage_max"/>
+                            <field name="color"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="description"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_uni_grade_letter_search" model="ir.ui.view">
+        <field name="name">uni.grade.letter.search</field>
+        <field name="model">uni.grade.letter</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="code"/>
+                <filter string="Active" name="filter_active"
+                        domain="[('active', '=', True)]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_uni_grade_letter" model="ir.actions.act_window">
+        <field name="name">Grade Letters</field>
+        <field name="res_model">uni.grade.letter</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_grade_letter_search"/>
+        <field name="context">{'search_default_filter_active': 1}</field>
+    </record>
+</odoo>

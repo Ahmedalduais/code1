@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- Classroom booking sequence -->
+    <record id="seq_uni_classroom_booking" model="ir.sequence">
+        <field name="name">Classroom Booking Sequence</field>
+        <field name="code">uni.classroom.booking</field>
+        <field name="prefix">BOOK/%(year)s/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+</odoo>

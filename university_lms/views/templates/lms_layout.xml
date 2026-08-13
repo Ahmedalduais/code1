@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- LMS Layout — wraps website.layout with LMS-specific styling  -->
+    <!-- ============================================================ -->
+    <template id="lms_layout" name="University LMS Layout">
+        <t t-call="website.layout">
+            <t t-set="body_classname" t-value="'o_uni_lms'"/>
+            <div class="container o_uni_lms_wrap py-4">
+                <!-- Breadcrumb + page title -->
+                <div class="d-flex align-items-center mb-3">
+                    <div class="flex-grow-1">
+                        <h2 class="mb-0">
+                            <i class="fa fa-graduation-cap me-2 text-primary"/>
+                            <t t-esc="page_title or 'University LMS'"/>
+                        </h2>
+                    </div>
+                    <div>
+                        <a t-attf-href="/university/lms/courses"
+                           class="btn btn-outline-secondary btn-sm">
+                            <i class="fa fa-th me-1"/>All Courses
+                        </a>
+                        <a t-if="request.env.user.id"
+                           t-attf-href="/university/lms/my/progress"
+                           class="btn btn-outline-primary btn-sm">
+                            <i class="fa fa-chart-line me-1"/>My Progress
+                        </a>
+                    </div>
+                </div>
+                <t t-out="0"/>
+            </div>
+        </t>
+    </template>
+
+    <!-- ============================================================ -->
+    <!-- Helper page: no student account linked                       -->
+    <!-- ============================================================ -->
+    <template id="lms_no_student_account" name="LMS — No Student Account">
+        <t t-call="university_lms.lms_layout">
+            <div class="alert alert-warning">
+                <h4 class="alert-heading">
+                    <i class="fa fa-exclamation-triangle me-2"/>
+                    No student account
+                </h4>
+                <p class="mb-0">
+                    Your user account is not linked to a student record.
+                    Please contact the University Administration to have
+                    your student account activated before enrolling in LMS courses.
+                </p>
+            </div>
+        </t>
+    </template>
+
+    <!-- ============================================================ -->
+    <!-- Helper page: enrollment closed                                -->
+    <!-- ============================================================ -->
+    <template id="lms_enrollment_closed" name="LMS — Enrollment Closed">
+        <t t-call="university_lms.lms_layout">
+            <div class="alert alert-info">
+                <h4 class="alert-heading">
+                    <i class="fa fa-lock me-2"/>
+                    Enrollment is closed
+                </h4>
+                <p>
+                    Enrollment for "<t t-esc="course.display_name"/>" is currently
+                    closed. Please check back later or contact the course instructor.
+                </p>
+                <a t-attf-href="/university/lms/course/#{course.id}"
+                   class="btn btn-outline-primary">
+                    <i class="fa fa-arrow-left me-1"/>Back to Course
+                </a>
+            </div>
+        </t>
+    </template>
+
+    <!-- ============================================================ -->
+    <!-- Helper page: course is full                                   -->
+    <!-- ============================================================ -->
+    <template id="lms_enrollment_full" name="LMS — Course Full">
+        <t t-call="university_lms.lms_layout">
+            <div class="alert alert-danger">
+                <h4 class="alert-heading">
+                    <i class="fa fa-users me-2"/>
+                    Course is full
+                </h4>
+                <p>
+                    "<t t-esc="course.display_name"/>" has reached its maximum
+                    enrollment capacity of <t t-esc="course.max_students"/> students.
+                </p>
+                <a t-attf-href="/university/lms/courses"
+                   class="btn btn-outline-primary">
+                    <i class="fa fa-arrow-left me-1"/>Browse Other Courses
+                </a>
+            </div>
+        </t>
+    </template>
+
+    <!-- ============================================================ -->
+    <!-- Helper page: enrollment error                                 -->
+    <!-- ============================================================ -->
+    <template id="lms_enrollment_error" name="LMS — Enrollment Error">
+        <t t-call="university_lms.lms_layout">
+            <div class="alert alert-danger">
+                <h4 class="alert-heading">
+                    <i class="fa fa-exclamation-circle me-2"/>
+                    Enrollment error
+                </h4>
+                <p t-esc="error_message or 'An unexpected error occurred.'"/>
+                <a t-attf-href="/university/lms/course/#{course.id}"
+                   class="btn btn-outline-primary">
+                    <i class="fa fa-arrow-left me-1"/>Back to Course
+                </a>
+            </div>
+        </t>
+    </template>
+</odoo>

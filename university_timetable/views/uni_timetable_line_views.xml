@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- uni.timetable.line — List View                               -->
+    <!-- ============================================================ -->
+    <record id="view_uni_timetable_line_list" model="ir.ui.view">
+        <field name="name">uni.timetable.line.list</field>
+        <field name="model">uni.timetable.line</field>
+        <field name="arch" type="xml">
+            <list string="Timetable Lines"
+                  decoration-muted="is_makeup == True"
+                  decoration-info="is_makeup == False">
+                <field name="name" optional="hide"/>
+                <field name="timetable_id"/>
+                <field name="academic_term_id" optional="hide"/>
+                <field name="course_id"/>
+                <field name="faculty_id"/>
+                <field name="classroom_id"/>
+                <field name="day_of_week"/>
+                <field name="start_time" widget="float_time"/>
+                <field name="end_time" widget="float_time"/>
+                <field name="section" optional="show"/>
+                <field name="group" optional="hide"/>
+                <field name="is_makeup" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.timetable.line — Form View                               -->
+    <!-- ============================================================ -->
+    <record id="view_uni_timetable_line_form" model="ir.ui.view">
+        <field name="name">uni.timetable.line.form</field>
+        <field name="model">uni.timetable.line</field>
+        <field name="arch" type="xml">
+            <form string="Timetable Line">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" string="Timetable Line"/>
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="timetable_id"/>
+                            <field name="academic_term_id"/>
+                            <field name="university_id" invisible="1"/>
+                            <field name="college_id" invisible="1"/>
+                            <field name="department_id" invisible="1"/>
+                            <field name="program_id"/>
+                        </group>
+                        <group>
+                            <field name="course_id"/>
+                            <field name="faculty_id"/>
+                            <field name="classroom_id"/>
+                            <field name="slot_id"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="day_of_week" readonly="1"/>
+                            <field name="start_time" widget="float_time" readonly="1"/>
+                            <field name="end_time" widget="float_time" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="section"/>
+                            <field name="group"/>
+                            <field name="is_makeup" widget="boolean_toggle"/>
+                        </group>
+                    </group>
+                    <group string="Notes">
+                        <field name="notes" nolabel="1" colspan="2"/>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.timetable.line — Search View                             -->
+    <!-- ============================================================ -->
+    <record id="view_uni_timetable_line_search" model="ir.ui.view">
+        <field name="name">uni.timetable.line.search</field>
+        <field name="model">uni.timetable.line</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="timetable_id"/>
+                <field name="course_id"/>
+                <field name="faculty_id"/>
+                <field name="classroom_id"/>
+                <field name="slot_id"/>
+                <field name="academic_term_id"/>
+                <field name="university_id"/>
+                <field name="college_id"/>
+                <field name="department_id"/>
+                <field name="program_id"/>
+                <separator/>
+                <filter string="Make-up Sessions" name="filter_makeup"
+                        domain="[('is_makeup', '=', True)]"/>
+                <filter string="Regular Sessions" name="filter_regular"
+                        domain="[('is_makeup', '=', False)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Timetable" name="group_timetable"
+                            context="{'group_by': 'timetable_id'}"/>
+                    <filter string="Course" name="group_course"
+                            context="{'group_by': 'course_id'}"/>
+                    <filter string="Faculty" name="group_faculty"
+                            context="{'group_by': 'faculty_id'}"/>
+                    <filter string="Classroom" name="group_classroom"
+                            context="{'group_by': 'classroom_id'}"/>
+                    <filter string="Day" name="group_day"
+                            context="{'group_by': 'day_of_week'}"/>
+                    <filter string="Term" name="group_term"
+                            context="{'group_by': 'academic_term_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.timetable.line — Pivot View                              -->
+    <!--    Weekly recurring schedule is not date-based, so a pivot   -->
+    <!--    grid (day × course) is more useful than a calendar.       -->
+    <!-- ============================================================ -->
+    <record id="view_uni_timetable_line_pivot" model="ir.ui.view">
+        <field name="name">uni.timetable.line.pivot</field>
+        <field name="model">uni.timetable.line</field>
+        <field name="arch" type="xml">
+            <pivot string="Timetable">
+                <field name="course_id" type="row"/>
+                <field name="day_of_week" type="col"/>
+                <field name="slot_id" type="col"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.timetable.line — Action                                  -->
+    <!-- ============================================================ -->
+    <record id="action_uni_timetable_line" model="ir.actions.act_window">
+        <field name="name">Timetable Lines</field>
+        <field name="res_model">uni.timetable.line</field>
+        <field name="view_mode">list,form,pivot</field>
+        <field name="search_view_id" ref="view_uni_timetable_line_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new timetable line
+            </p>
+            <p>Each line binds a course to a faculty member, a classroom
+               and a time slot. The system prevents faculty, classroom and
+               course/section conflicts.</p>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,17 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_uni_faculty_user,uni.faculty.user,model_uni_faculty,university_core.group_university_user,1,0,0,0
+access_uni_faculty_manager,uni.faculty.manager,model_uni_faculty,university_core.group_university_manager,1,1,1,1
+access_uni_faculty_rank_user,uni.faculty.rank.user,model_uni_faculty_rank,university_core.group_university_user,1,0,0,0
+access_uni_faculty_rank_manager,uni.faculty.rank.manager,model_uni_faculty_rank,university_core.group_university_manager,1,1,1,1
+access_uni_faculty_assignment_user,uni.faculty.assignment.user,model_uni_faculty_assignment,university_core.group_university_user,1,0,0,0
+access_uni_faculty_assignment_manager,uni.faculty.assignment.manager,model_uni_faculty_assignment,university_core.group_university_manager,1,1,1,1
+access_uni_faculty_load_user,uni.faculty.load.user,model_uni_faculty_load,university_core.group_university_user,1,0,0,0
+access_uni_faculty_load_manager,uni.faculty.load.manager,model_uni_faculty_load,university_core.group_university_manager,1,1,1,1
+access_uni_faculty_publication_user,uni.faculty.publication.user,model_uni_faculty_publication,university_core.group_university_user,1,0,0,0
+access_uni_faculty_publication_manager,uni.faculty.publication.manager,model_uni_faculty_publication,university_core.group_university_manager,1,1,1,1
+access_uni_committee_user,uni.committee.user,model_uni_committee,university_core.group_university_user,1,0,0,0
+access_uni_committee_manager,uni.committee.manager,model_uni_committee,university_core.group_university_manager,1,1,1,1
+access_uni_committee_member_user,uni.committee.member.user,model_uni_committee_member,university_core.group_university_user,1,0,0,0
+access_uni_committee_member_manager,uni.committee.member.manager,model_uni_committee_member,university_core.group_university_manager,1,1,1,1
+access_uni_faculty_contract_user,uni.faculty.contract.user,model_uni_faculty_contract,university_core.group_university_user,1,0,0,0
+access_uni_faculty_contract_manager,uni.faculty.contract.manager,model_uni_faculty_contract,university_core.group_university_manager,1,1,1,1

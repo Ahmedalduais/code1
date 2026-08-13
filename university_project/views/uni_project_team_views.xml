@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============ uni.project.team — List View ============ -->
+    <record id="view_uni_project_team_list" model="ir.ui.view">
+        <field name="name">uni.project.team.list</field>
+        <field name="model">uni.project.team</field>
+        <field name="arch" type="xml">
+            <list string="Project Teams"
+                  decoration-success="status=='active'"
+                  decoration-muted="status=='dissolved'">
+                <field name="name"/>
+                <field name="project_id"/>
+                <field name="team_leader_id"/>
+                <field name="member_count"/>
+                <field name="formation_date" optional="show"/>
+                <field name="dissolution_date" optional="hide"/>
+                <field name="status" widget="badge"/>
+                <field name="active" widget="boolean_toggle" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============ uni.project.team — Form View ============ -->
+    <record id="view_uni_project_team_form" model="ir.ui.view">
+        <field name="name">uni.project.team.form</field>
+        <field name="model">uni.project.team</field>
+        <field name="arch" type="xml">
+            <form string="Project Team">
+                <header>
+                    <button name="action_dissolve" type="object" string="Dissolve"
+                            class="btn-danger"
+                            invisible="status != 'active'"/>
+                    <button name="action_reactivate" type="object"
+                            string="Reactivate" class="btn-primary"
+                            invisible="status != 'dissolved'"/>
+                    <field name="status" widget="statusbar"
+                          statusbar_visible="active,dissolved"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" string="Team Name"/>
+                        <h1><field name="name" placeholder="e.g. Team Alpha"/></h1>
+                    </div>
+                    <group>
+                        <group string="Affiliation">
+                            <field name="project_id" options="{'no_create': True}"/>
+                            <field name="team_leader_id" options="{'no_create': True}"/>
+                            <field name="team_leader_name"/>
+                        </group>
+                        <group string="Lifecycle">
+                            <field name="formation_date"/>
+                            <field name="dissolution_date"
+                                   readonly="status != 'dissolved'"/>
+                            <field name="status"/>
+                            <field name="active" widget="boolean_toggle"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Members" name="members">
+                            <field name="member_ids">
+                                <list editable="bottom">
+                                    <field name="student_id" options="{'no_create': True}"/>
+                                    <field name="student_code"/>
+                                    <field name="role"/>
+                                    <field name="join_date"/>
+                                    <field name="exit_date"/>
+                                    <field name="contribution_percentage"/>
+                                    <field name="is_active" widget="boolean_toggle"/>
+                                    <button name="action_set_inactive" type="object"
+                                            string="Set Inactive" icon="fa-archive"
+                                            invisible="is_active == False"/>
+                                    <button name="action_reactivate" type="object"
+                                            string="Reactivate" icon="fa-refresh"
+                                            invisible="is_active == True"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Description" name="description">
+                            <field name="description"/>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="notes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============ uni.project.team — Search View ============ -->
+    <record id="view_uni_project_team_search" model="ir.ui.view">
+        <field name="name">uni.project.team.search</field>
+        <field name="model">uni.project.team</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="project_id"/>
+                <field name="team_leader_id"/>
+                <field name="team_leader_name"/>
+                <separator/>
+                <filter string="Active" name="filter_active"
+                        domain="[('status', '=', 'active')]"/>
+                <filter string="Dissolved" name="filter_dissolved"
+                        domain="[('status', '=', 'dissolved')]"/>
+                <filter string="Archived" name="filter_inactive"
+                        domain="[('active', '=', False)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Project" name="group_project"
+                            context="{'group_by': 'project_id'}"/>
+                    <filter string="Team Leader" name="group_leader"
+                            context="{'group_by': 'team_leader_id'}"/>
+                    <filter string="Status" name="group_status"
+                            context="{'group_by': 'status'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============ uni.project.team — Action ============ -->
+    <record id="action_uni_project_team" model="ir.actions.act_window">
+        <field name="name">Project Teams</field>
+        <field name="res_model">uni.project.team</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_project_team_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first project team
+            </p>
+            <p>
+                Teams group students collaborating on a single project, each
+                with its own leader and member roster.
+            </p>
+        </field>
+    </record>
+</odoo>

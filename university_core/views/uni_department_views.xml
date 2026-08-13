@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_uni_department_list" model="ir.ui.view">
+        <field name="name">uni.department.list</field>
+        <field name="model">uni.department</field>
+        <field name="arch" type="xml">
+            <list string="Departments">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="college_id"/>
+                <field name="university_id"/>
+                <field name="branch_id"/>
+                <field name="head_id"/>
+                <field name="program_count"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_uni_department_form" model="ir.ui.view">
+        <field name="name">uni.department.form</field>
+        <field name="model">uni.department</field>
+        <field name="arch" type="xml">
+            <form string="Department">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_programs" type="object"
+                                class="oe_stat_button" icon="fa-graduation-cap">
+                            <field name="program_count" widget="statinfo" string="Programs"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" string="Department Name"/>
+                        <h1><field name="name" placeholder="e.g. Computer Science Department"/></h1>
+                        <h3><field name="code" placeholder="e.g. CS"/></h3>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="university_id"/>
+                            <field name="college_id"/>
+                            <field name="branch_id"/>
+                        </group>
+                        <group>
+                            <field name="head_id"/>
+                            <field name="establishment_date"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Programs">
+                            <field name="program_ids">
+                                <list>
+                                    <field name="code"/>
+                                    <field name="name"/>
+                                    <field name="level_id"/>
+                                    <field name="state"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Description">
+                            <field name="description"/>
+                        </page>
+                        <page string="Notes">
+                            <field name="notes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_uni_department_search" model="ir.ui.view">
+        <field name="name">uni.department.search</field>
+        <field name="model">uni.department</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="college_id"/>
+                <field name="head_id"/>
+                <filter string="Active" name="filter_active"
+                        domain="[('active', '=', True)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="College" name="group_college"
+                            context="{'group_by': 'college_id'}"/>
+                    <filter string="University" name="group_university"
+                            context="{'group_by': 'university_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_uni_department" model="ir.actions.act_window">
+        <field name="name">Departments</field>
+        <field name="res_model">uni.department</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_department_search"/>
+        <field name="context">{'search_default_filter_active': 1}</field>
+    </record>
+</odoo>

@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- Paper format — A4 landscape for financial summary            -->
+    <!-- ============================================================ -->
+    <record id="paper_format_financial_summary" model="report.paperformat">
+        <field name="name">Financial Summary A4 Landscape</field>
+        <field name="default" eval="False"/>
+        <field name="format">A4</field>
+        <field name="orientation">Landscape</field>
+        <field name="margin_top">15</field>
+        <field name="margin_bottom">20</field>
+        <field name="margin_left">8</field>
+        <field name="margin_right">8</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">10</field>
+        <field name="dpi">90</field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- QWeb PDF report action                                       -->
+    <!-- ============================================================ -->
+    <record id="action_report_uni_financial_summary" model="ir.actions.report">
+        <field name="name">Financial Summary Report</field>
+        <field name="model">uni.report.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">university_reports.report_financial_summary_document</field>
+        <field name="report_file">university_reports.report_financial_summary_document</field>
+        <field name="paperformat_id" ref="paper_format_financial_summary"/>
+        <field name="print_report_name">'FIN-SUMMARY-%s' % (fields.Date.today().strftime('%Y%m%d'))</field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- Wizard action — pre-binds the financial summary template     -->
+    <!-- ============================================================ -->
+    <record id="action_report_uni_financial_summary_wizard" model="ir.actions.act_window">
+        <field name="name">Financial Summary</field>
+        <field name="res_model">uni.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{
+            'default_template_id': ref('university_reports.template_financial_summary'),
+            'default_output_format': 'pdf',
+        }</field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- QWeb template — financial summary                            -->
+    <!-- ============================================================ -->
+    <template id="report_financial_summary_document">
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <div class="page">
+                    <h2 class="text-center">Financial Summary Report</h2>
+                    <div class="text-center text-muted mb-3">
+                        <t t-if="object.university_id">
+                            <span t-field="object.university_id"/>
+                        </t>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <strong>Generated:</strong>
+                            <span t-esc="time.strftime('%Y-%m-%d %H:%M')"/>
+                        </div>
+                        <div class="col-6 text-right">
+                            <strong>Output:</strong>
+                            <span t-esc="object.output_format"/>
+                        </div>
+                    </div>
+
+                    <!-- Build invoice domain from wizard filters -->
+                    <t t-set="domain" t-value="[]"/>
+                    <t t-if="object.university_id">
+                        <t t-set="domain" t-value="domain + [('university_id', '=', object.university_id.id)]"/>
+                    </t>
+                    <t t-if="object.academic_term_id">
+                        <t t-set="domain" t-value="domain + [('academic_term_id', '=', object.academic_term_id.id)]"/>
+                    </t>
+                    <t t-if="object.date_from">
+                        <t t-set="domain" t-value="domain + [('invoice_date', '&gt;=', object.date_from)]"/>
+                    </t>
+                    <t t-if="object.date_to">
+                        <t t-set="domain" t-value="domain + [('invoice_date', '&lt;=', object.date_to)]"/>
+                    </t>
+
+                    <t t-set="invoices" t-value="object.env['ir.attachment'].browse()"/>
+                    <t t-if="'uni.invoice.student' in object.env">
+                        <t t-set="invoices" t-value="object.env['uni.invoice.student'].search(domain, order='invoice_date desc')"/>
+                    </t>
+
+                    <!-- Compute summary totals (only when finance module is installed) -->
+                    <t t-set="total_billed" t-value="0.0"/>
+                    <t t-set="total_paid" t-value="0.0"/>
+                    <t t-set="total_due" t-value="0.0"/>
+                    <t t-set="currency" t-value="object.env.company.currency_id"/>
+                    <t t-if="invoices">
+                        <t t-set="total_billed" t-value="sum(invoices.mapped('amount_total'))"/>
+                        <t t-set="total_paid" t-value="sum(invoices.mapped('amount_paid'))"/>
+                        <t t-set="total_due" t-value="sum(invoices.mapped('amount_due'))"/>
+                        <t t-set="currency" t-value="invoices[:1].currency_id or object.env.company.currency_id"/>
+                    </t>
+
+                    <!-- Filters summary -->
+                    <table class="table table-sm table-bordered mb-3">
+                        <tbody>
+                            <tr>
+                                <th class="table-light">University</th>
+                                <td><span t-field="object.university_id"/></td>
+                                <th class="table-light">Academic Term</th>
+                                <td><span t-field="object.academic_term_id"/></td>
+                            </tr>
+                            <tr>
+                                <th class="table-light">Date From</th>
+                                <td><span t-field="object.date_from"/></td>
+                                <th class="table-light">Date To</th>
+                                <td><span t-field="object.date_to"/></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- Summary cards -->
+                    <div class="row mb-4">
+                        <div class="col-4 text-center">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h5 class="card-title mb-0">
+                                        <span t-esc="total_billed"/>
+                                        <small t-esc="currency.symbol if currency else ''"/>
+                                    </h5>
+                                    <small class="text-muted">Total Billed</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4 text-center">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h5 class="card-title mb-0">
+                                        <span t-esc="total_paid"/>
+                                        <small t-esc="currency.symbol if currency else ''"/>
+                                    </h5>
+                                    <small class="text-muted">Total Paid</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4 text-center">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h5 class="card-title mb-0">
+                                        <span t-esc="total_due"/>
+                                        <small t-esc="currency.symbol if currency else ''"/>
+                                    </h5>
+                                    <small class="text-muted">Total Outstanding</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <strong>Total invoices:</strong>
+                        <span t-esc="len(invoices)"/>
+                    </div>
+
+                    <!-- Data table -->
+                    <t t-if="not invoices and 'uni.invoice.student' not in object.env">
+                        <div class="alert alert-danger">
+                            <strong>Module not installed:</strong>
+                            The <code>university_finance</code> module is required
+                            to produce this report. Please install it and try again.
+                        </div>
+                    </t>
+                    <t t-elif="not invoices">
+                        <div class="alert alert-warning">
+                            No invoices match the selected filters.
+                        </div>
+                    </t>
+                    <t t-else="">
+                        <table class="table table-sm table-bordered">
+                            <thead>
+                                <tr class="active">
+                                    <th>Reference</th>
+                                    <th>Student</th>
+                                    <th>Term</th>
+                                    <th>Invoice Date</th>
+                                    <th>Due Date</th>
+                                    <th class="text-right">Billed</th>
+                                    <th class="text-right">Paid</th>
+                                    <th class="text-right">Outstanding</th>
+                                    <th class="text-center">State</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="invoices" t-as="inv">
+                                    <td><span t-field="inv.name"/></td>
+                                    <td><span t-field="inv.student_id"/></td>
+                                    <td><span t-field="inv.academic_term_id"/></td>
+                                    <td><span t-field="inv.invoice_date"/></td>
+                                    <td><span t-field="inv.due_date"/></td>
+                                    <td class="text-right">
+                                        <span t-field="inv.amount_total"
+                                              t-options="{'widget': 'monetary', 'display_currency': inv.currency_id}"/>
+                                    </td>
+                                    <td class="text-right">
+                                        <span t-field="inv.amount_paid"
+                                              t-options="{'widget': 'monetary', 'display_currency': inv.currency_id}"/>
+                                    </td>
+                                    <td class="text-right">
+                                        <span t-field="inv.amount_due"
+                                              t-options="{'widget': 'monetary', 'display_currency': inv.currency_id}"/>
+                                    </td>
+                                    <td class="text-center"><span t-field="inv.state"/></td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr class="table-light">
+                                    <th colspan="5" class="text-right">Totals</th>
+                                    <th class="text-right">
+                                        <span t-esc="total_billed"/>
+                                        <small t-esc="currency.symbol if currency else ''"/>
+                                    </th>
+                                    <th class="text-right">
+                                        <span t-esc="total_paid"/>
+                                        <small t-esc="currency.symbol if currency else ''"/>
+                                    </th>
+                                    <th class="text-right">
+                                        <span t-esc="total_due"/>
+                                        <small t-esc="currency.symbol if currency else ''"/>
+                                    </th>
+                                    <th/>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </t>
+
+                    <!-- Footer -->
+                    <div class="row mt-4">
+                        <div class="col-12 text-center text-muted">
+                            <small>Page <span class="page"/> of <span class="topage"/></small>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>

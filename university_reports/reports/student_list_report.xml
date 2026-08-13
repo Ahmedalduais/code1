@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- Paper format — A4 landscape for the student list report      -->
+    <!-- ============================================================ -->
+    <record id="paper_format_student_list" model="report.paperformat">
+        <field name="name">Student List A4 Landscape</field>
+        <field name="default" eval="False"/>
+        <field name="format">A4</field>
+        <field name="orientation">Landscape</field>
+        <field name="margin_top">15</field>
+        <field name="margin_bottom">20</field>
+        <field name="margin_left">8</field>
+        <field name="margin_right">8</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">10</field>
+        <field name="dpi">90</field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- QWeb PDF report action — bound to uni.report.wizard          -->
+    <!-- ============================================================ -->
+    <record id="action_report_uni_student_list" model="ir.actions.report">
+        <field name="name">Student List Report</field>
+        <field name="model">uni.report.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">university_reports.report_student_list_document</field>
+        <field name="report_file">university_reports.report_student_list_document</field>
+        <field name="paperformat_id" ref="paper_format_student_list"/>
+        <field name="print_report_name">'STUDENT-LIST-%s' % (fields.Date.today().strftime('%Y%m%d'))</field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- Wizard action — opens the wizard pre-bound to the template   -->
+    <!-- ============================================================ -->
+    <record id="action_report_uni_student_list_wizard" model="ir.actions.act_window">
+        <field name="name">Student List</field>
+        <field name="res_model">uni.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{
+            'default_template_id': ref('university_reports.template_student_list'),
+            'default_output_format': 'pdf',
+        }</field>
+    </record>
+</odoo>

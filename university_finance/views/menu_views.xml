@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- Finance menu — under university_core.menu_university_root     -->
+    <!-- ============================================================ -->
+    <menuitem id="menu_university_finance_root"
+              name="Finance"
+              parent="university_core.menu_university_root"
+              sequence="60"/>
+
+    <!-- Student Invoices -->
+    <menuitem id="menu_uni_invoice_student"
+              name="Student Invoices"
+              parent="menu_university_finance_root"
+              action="action_uni_invoice_student"
+              sequence="10"/>
+
+    <!-- Fee Structures -->
+    <menuitem id="menu_uni_fee_structure"
+              name="Fee Structures"
+              parent="menu_university_finance_root"
+              action="action_uni_fee_structure"
+              sequence="20"/>
+
+    <!-- Fee Types -->
+    <menuitem id="menu_uni_fee_type"
+              name="Fee Types"
+              parent="menu_university_finance_root"
+              action="action_uni_fee_type"
+              sequence="30"
+              groups="university_core.group_university_manager"/>
+
+    <!-- Scholarships -->
+    <menuitem id="menu_uni_scholarship"
+              name="Scholarships"
+              parent="menu_university_finance_root"
+              action="action_uni_scholarship"
+              sequence="40"/>
+
+    <!-- Scholarship Types -->
+    <menuitem id="menu_uni_scholarship_type"
+              name="Scholarship Types"
+              parent="menu_university_finance_root"
+              action="action_uni_scholarship_type"
+              sequence="50"
+              groups="university_core.group_university_manager"/>
+
+    <!-- Payment Plans -->
+    <menuitem id="menu_uni_payment_plan"
+              name="Payment Plans"
+              parent="menu_university_finance_root"
+              action="action_uni_payment_plan"
+              sequence="60"/>
+</odoo>

@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- uni.admission.criteria — List View                           -->
+    <!-- ============================================================ -->
+    <record id="view_uni_admission_criteria_list" model="ir.ui.view">
+        <field name="name">uni.admission.criteria.list</field>
+        <field name="model">uni.admission.criteria</field>
+        <field name="arch" type="xml">
+            <list string="Admission Criteria"
+                  decoration-success="is_active"
+                  decoration-muted="not is_active">
+                <field name="sequence" widget="handle"/>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="university_id"/>
+                <field name="college_id" optional="show"/>
+                <field name="program_id" optional="show"/>
+                <field name="level_id" optional="hide"/>
+                <field name="min_high_school_grade"/>
+                <field name="min_gpa"/>
+                <field name="min_test_score"/>
+                <field name="test_type"/>
+                <field name="interview_required" widget="boolean_toggle"/>
+                <field name="min_age" optional="hide"/>
+                <field name="max_age" optional="hide"/>
+                <field name="application_fee"/>
+                <field name="application_fee_currency_id"/>
+                <field name="is_active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.admission.criteria — Form View                           -->
+    <!-- ============================================================ -->
+    <record id="view_uni_admission_criteria_form" model="ir.ui.view">
+        <field name="name">uni.admission.criteria.form</field>
+        <field name="model">uni.admission.criteria</field>
+        <field name="arch" type="xml">
+            <form string="Admission Criteria">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" string="Admission Criteria"/>
+                        <h1><field name="name" placeholder="e.g. Engineering — Bachelor Min 80%"/></h1>
+                        <h3><field name="code" placeholder="e.g. ENG-BS-80"/></h3>
+                    </div>
+                    <group>
+                        <group string="Scope (empty = applies to all)">
+                            <field name="university_id"
+                                   options="{'no_create': True}"/>
+                            <field name="college_id"
+                                   options="{'no_create': True}"/>
+                            <field name="program_id"
+                                   options="{'no_create': True}"/>
+                            <field name="level_id"
+                                   options="{'no_create': True}"/>
+                            <field name="sequence"/>
+                        </group>
+                        <group string="Status">
+                            <field name="is_active"/>
+                            <field name="active"/>
+                            <field name="color"/>
+                        </group>
+                    </group>
+                    <group string="Academic Thresholds">
+                        <group>
+                            <field name="min_high_school_grade"/>
+                            <field name="min_gpa"/>
+                            <field name="min_test_score"/>
+                            <field name="test_type"/>
+                            <field name="interview_required"/>
+                        </group>
+                        <group>
+                            <field name="min_age"/>
+                            <field name="max_age"/>
+                        </group>
+                    </group>
+                    <group string="Application Fee">
+                        <group>
+                            <field name="application_fee"/>
+                            <field name="application_fee_currency_id"
+                                   options="{'no_create': True}"/>
+                        </group>
+                    </group>
+                    <group string="Description">
+                        <field name="description" nolabel="1"/>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.admission.criteria — Search View                         -->
+    <!-- ============================================================ -->
+    <record id="view_uni_admission_criteria_search" model="ir.ui.view">
+        <field name="name">uni.admission.criteria.search</field>
+        <field name="model">uni.admission.criteria</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="university_id"/>
+                <field name="college_id"/>
+                <field name="program_id"/>
+                <field name="level_id"/>
+                <filter string="Active" name="filter_active"
+                        domain="[('is_active', '=', True)]"/>
+                <filter string="Inactive" name="filter_inactive"
+                        domain="[('is_active', '=', False)]"/>
+                <filter string="Interview Required" name="filter_interview"
+                        domain="[('interview_required', '=', True)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="University" name="group_university"
+                            context="{'group_by': 'university_id'}"/>
+                    <filter string="College" name="group_college"
+                            context="{'group_by': 'college_id'}"/>
+                    <filter string="Program" name="group_program"
+                            context="{'group_by': 'program_id'}"/>
+                    <filter string="Level" name="group_level"
+                            context="{'group_by': 'level_id'}"/>
+                    <filter string="Test Type" name="group_test"
+                            context="{'group_by': 'test_type'}"/>
+                    <filter string="Active" name="group_active"
+                            context="{'group_by': 'is_active'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.admission.criteria — Action                              -->
+    <!-- ============================================================ -->
+    <record id="action_uni_admission_criteria" model="ir.actions.act_window">
+        <field name="name">Admission Criteria</field>
+        <field name="res_model">uni.admission.criteria</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_admission_criteria_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Define a new admission criterion
+            </p>
+            <p>Admission criteria are rules used to evaluate incoming applications
+               (minimum high school grade, GPA, test score, age range, interview
+               requirement and application fee). They can be scoped per program,
+               per college, or applied university-wide.</p>
+        </field>
+    </record>
+</odoo>

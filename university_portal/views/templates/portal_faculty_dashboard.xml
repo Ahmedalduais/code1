@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- Faculty dashboard page                                        -->
+    <!-- ============================================================ -->
+    <template id="portal_faculty_dashboard_page"
+              name="University Portal — Faculty Dashboard">
+        <t t-call="university_portal.portal_layout">
+            <t t-set="is_student" t-value="False"/>
+            <t t-set="is_faculty" t-value="True"/>
+            <t t-set="unread_count" t-value="unread_count or 0"/>
+
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <h2 class="mb-1">
+                        <i class="fa fa-chalkboard-teacher text-primary me-2"/>
+                        Faculty Dashboard
+                    </h2>
+                    <p class="text-muted mb-0">
+                        Welcome back,
+                        <strong t-esc="faculty.name if faculty else portal_faculty.name"/>.
+                    </p>
+                </div>
+                <span class="badge text-bg-success"
+                      t-esc="portal_faculty.state.title()"/>
+            </div>
+
+            <!-- Quick stats -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-3 col-sm-6">
+                    <div class="card text-bg-primary h-100 shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="small text-uppercase">Unread</div>
+                                    <h3 class="mb-0" t-esc="unread_count or 0"/>
+                                </div>
+                                <i class="fa fa-bell fa-2x opacity-75"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="card text-bg-info h-100 shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="small text-uppercase">Faculty Code</div>
+                                    <h5 class="mb-0" t-esc="faculty.faculty_code or '—'"/>
+                                </div>
+                                <i class="fa fa-id-card fa-2x opacity-75"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="card text-bg-success h-100 shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="small text-uppercase">Assignments</div>
+                                    <h3 class="mb-0"
+                                        t-esc="faculty.active_assignment_count if faculty else 0"/>
+                                </div>
+                                <i class="fa fa-book fa-2x opacity-75"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="card text-bg-warning h-100 shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="small text-uppercase">Load (Hrs)</div>
+                                    <h3 class="mb-0"
+                                        t-esc="faculty.total_load_hours if faculty else 0.0"
+                                        t-options='{"widget": "float", "precision": 1}'/>
+                                </div>
+                                <i class="fa fa-clock-o fa-2x opacity-75"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-3">
+                <!-- Faculty profile -->
+                <div class="col-lg-5">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0"><i class="fa fa-user-tie me-2"/>Faculty Profile</h5>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-sm table-borderless mb-0">
+                                <tbody>
+                                    <tr>
+                                        <th class="text-muted w-50">Name</th>
+                                        <td t-esc="faculty.name or '—'"/>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-muted">Faculty Code</th>
+                                        <td t-esc="faculty.faculty_code or '—'"/>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-muted">Academic Rank</th>
+                                        <td t-esc="faculty.faculty_rank_id.display_name or '—'"/>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-muted">Department</th>
+                                        <td t-esc="faculty.department_id.display_name or '—'"/>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-muted">College</th>
+                                        <td t-esc="faculty.college_id.display_name or '—'"/>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-muted">Employment Type</th>
+                                        <td t-esc="faculty.employment_type.title() if faculty.employment_type else '—'"/>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-muted">Specialization</th>
+                                        <td t-esc="faculty.specialization or '—'"/>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-muted">State</th>
+                                        <td>
+                                            <span class="badge text-bg-info"
+                                                  t-esc="faculty.state.title()"/>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent notifications -->
+                <div class="col-lg-7">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0"><i class="fa fa-bell me-2"/>Recent Notifications</h5>
+                            <a t-attf-href="/university/portal/notifications"
+                               class="btn btn-sm btn-outline-primary">View All</a>
+                        </div>
+                        <div class="card-body p-0">
+                            <t t-if="notifications">
+                                <ul class="list-group list-group-flush">
+                                    <t t-foreach="notifications" t-as="notif">
+                                        <li class="list-group-item list-group-item-action"
+                                            t-att-class="'list-group-item-' + ('warning' if notif.priority in ('high', 'urgent') else ('secondary' if notif.is_read else 'light'))">
+                                            <div class="d-flex w-100 justify-content-between">
+                                                <h6 class="mb-1">
+                                                    <i t-attf-class="fa {{ 'fa-star text-warning' if notif.priority == 'urgent' else 'fa-info-circle text-info' }} me-1"/>
+                                                    <t t-esc="notif.title"/>
+                                                </h6>
+                                                <small t-esc="notif.send_date"
+                                                       t-options='{"widget": "datetime"}'/>
+                                            </div>
+                                            <p class="mb-1 text-muted small"
+                                               t-esc="notif.message[:200] + ('…' if len(notif.message) > 200 else '')"/>
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <span class="badge text-bg-secondary"
+                                                      t-esc="notif.notification_type.title()"/>
+                                                <t t-if="notif.action_url and not notif.is_read">
+                                                    <a t-attf-href="/university/portal/notifications/{{notif.id}}/read"
+                                                       class="btn btn-sm btn-link">Open ›</a>
+                                                </t>
+                                                <t t-elif="not notif.is_read">
+                                                    <a t-attf-href="/university/portal/notifications/{{notif.id}}/read"
+                                                       class="btn btn-sm btn-outline-secondary">Mark read</a>
+                                                </t>
+                                            </div>
+                                        </li>
+                                    </t>
+                                </ul>
+                            </t>
+                            <t t-else="">
+                                <div class="text-center text-muted py-5">
+                                    <i class="fa fa-bell-slash fa-3x mb-2"/>
+                                    <p class="mb-0">No notifications yet.</p>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick links -->
+            <div class="card shadow-sm mt-3">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0"><i class="fa fa-link me-2"/>Quick Links</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex flex-wrap gap-2">
+                        <a t-attf-href="/university/portal/notifications"
+                           class="btn btn-outline-primary">
+                            <i class="fa fa-bell me-1"/>My Notifications
+                        </a>
+                        <a t-attf-href="/web#action=university_faculty.action_uni_faculty&amp;view_type=form&amp;id={{faculty.id if faculty else 0}}"
+                           class="btn btn-outline-secondary"
+                           t-if="faculty">
+                            <i class="fa fa-user-tie me-1"/>My Faculty Record
+                        </a>
+                        <a t-attf-href="/web#action=university_faculty.action_uni_faculty_assignment"
+                           class="btn btn-outline-secondary">
+                            <i class="fa fa-book me-1"/>My Assignments
+                        </a>
+                        <a t-attf-href="/web#action=university_faculty.action_uni_faculty_load"
+                           class="btn btn-outline-secondary">
+                            <i class="fa fa-clock-o me-1"/>My Teaching Load
+                        </a>
+                        <a t-attf-href="/web#action=university_faculty.action_uni_faculty_publication"
+                           class="btn btn-outline-secondary">
+                            <i class="fa fa-file-text me-1"/>My Publications
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>

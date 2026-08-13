@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- uni.research.journal — List View                              -->
+    <!-- ============================================================ -->
+    <record id="view_uni_research_journal_list" model="ir.ui.view">
+        <field name="name">uni.research.journal.list</field>
+        <field name="model">uni.research.journal</field>
+        <field name="arch" type="xml">
+            <list string="Journals"
+                  decoration-success="is_indexed"
+                  decoration-muted="not is_indexed">
+                <field name="name"/>
+                <field name="publisher"/>
+                <field name="country_id"/>
+                <field name="issn"/>
+                <field name="e_issn"/>
+                <field name="impact_factor" avg="Average IF"/>
+                <field name="publication_frequency"/>
+                <field name="is_indexed" widget="boolean_toggle"/>
+                <field name="open_access" widget="boolean_toggle"/>
+                <field name="publication_count" sum="Total Publications"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.research.journal — Form View                              -->
+    <!-- ============================================================ -->
+    <record id="view_uni_research_journal_form" model="ir.ui.view">
+        <field name="name">uni.research.journal.form</field>
+        <field name="model">uni.research.journal</field>
+        <field name="arch" type="xml">
+            <form string="Journal">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_publications" type="object"
+                                class="oe_stat_button" icon="fa-file-text-o">
+                            <field name="publication_count" widget="statinfo"
+                                   string="Publications"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" string="Journal"/>
+                        <h1><field name="name" placeholder="Journal full name"/></h1>
+                        <h3><field name="code" placeholder="Optional short code"/></h3>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="publisher"/>
+                            <field name="country_id"/>
+                            <field name="website"/>
+                            <field name="publication_frequency"/>
+                            <field name="open_access"/>
+                        </group>
+                        <group>
+                            <field name="issn"/>
+                            <field name="e_issn"/>
+                            <field name="impact_factor"/>
+                            <field name="is_indexed"/>
+                            <field name="indexing_databases"
+                                   invisible="not is_indexed"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="scope"/>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.research.journal — Search View                            -->
+    <!-- ============================================================ -->
+    <record id="view_uni_research_journal_search" model="ir.ui.view">
+        <field name="name">uni.research.journal.search</field>
+        <field name="model">uni.research.journal</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="publisher"/>
+                <field name="issn"/>
+                <field name="e_issn"/>
+                <field name="country_id"/>
+                <filter string="Indexed" name="filter_indexed"
+                        domain="[('is_indexed', '=', True)]"/>
+                <filter string="Open Access" name="filter_open_access"
+                        domain="[('open_access', '=', True)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Country" name="group_country"
+                            context="{'group_by': 'country_id'}"/>
+                    <filter string="Frequency" name="group_frequency"
+                            context="{'group_by': 'publication_frequency'}"/>
+                    <filter string="Publisher" name="group_publisher"
+                            context="{'group_by': 'publisher'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.research.journal — Action                                 -->
+    <!-- ============================================================ -->
+    <record id="action_uni_research_journal" model="ir.actions.act_window">
+        <field name="name">Journals</field>
+        <field name="res_model">uni.research.journal</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_research_journal_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Register a new scientific journal
+            </p>
+            <p>Track journals used for publishing research, including ISSN,
+               impact factor, indexing databases and publication frequency.</p>
+        </field>
+    </record>
+</odoo>

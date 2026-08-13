@@ -1,0 +1,11 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_uni_grade_letter_user,uni.grade.letter.user,model_uni_grade_letter,university_core.group_university_user,1,0,0,0
+access_uni_grade_letter_manager,uni.grade.letter.manager,model_uni_grade_letter,university_core.group_university_manager,1,1,1,1
+access_uni_grading_system_user,uni.grading.system.user,model_uni_grading_system,university_core.group_university_user,1,0,0,0
+access_uni_grading_system_manager,uni.grading.system.manager,model_uni_grading_system,university_core.group_university_manager,1,1,1,1
+access_uni_grading_scale_line_user,uni.grading.scale.line.user,model_uni_grading_scale_line,university_core.group_university_user,1,0,0,0
+access_uni_grading_scale_line_manager,uni.grading.scale.line.manager,model_uni_grading_scale_line,university_core.group_university_manager,1,1,1,1
+access_uni_grading_calculator_user,uni.grading.calculator.user,model_uni_grading_calculator,university_core.group_university_user,1,0,0,0
+access_uni_grading_calculator_manager,uni.grading.calculator.manager,model_uni_grading_calculator,university_core.group_university_manager,1,1,1,1
+access_uni_grade_conversion_user,uni.grade.conversion.user,model_uni_grade_conversion,university_core.group_university_user,1,0,0,0
+access_uni_grade_conversion_manager,uni.grade.conversion.manager,model_uni_grade_conversion,university_core.group_university_manager,1,1,1,1

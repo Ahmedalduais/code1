@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- uni.faculty.assignment — List View                            -->
+    <!-- ============================================================ -->
+    <record id="view_uni_faculty_assignment_list" model="ir.ui.view">
+        <field name="name">uni.faculty.assignment.list</field>
+        <field name="model">uni.faculty.assignment</field>
+        <field name="arch" type="xml">
+            <list string="Teaching Assignments"
+                  decoration-muted="state == 'cancelled'"
+                  decoration-success="state == 'active'"
+                  decoration-info="state == 'completed'">
+                <field name="name"/>
+                <field name="faculty_id"/>
+                <field name="course_name"/>
+                <field name="course_code"/>
+                <field name="program_id"/>
+                <field name="academic_term_id"/>
+                <field name="assignment_type"/>
+                <field name="section"/>
+                <field name="student_count"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'active'"
+                       decoration-info="state == 'completed'"
+                       decoration-danger="state == 'cancelled'"
+                       decoration-muted="state == 'draft'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.faculty.assignment — Form View                            -->
+    <!-- ============================================================ -->
+    <record id="view_uni_faculty_assignment_form" model="ir.ui.view">
+        <field name="name">uni.faculty.assignment.form</field>
+        <field name="model">uni.faculty.assignment</field>
+        <field name="arch" type="xml">
+            <form string="Teaching Assignment">
+                <header>
+                    <button name="action_activate" string="Activate"
+                            type="object" class="oe_highlight"
+                            invisible="state not in ('draft', 'cancelled')"/>
+                    <button name="action_complete" string="Complete"
+                            type="object"
+                            invisible="state != 'active'"/>
+                    <button name="action_cancel" string="Cancel"
+                            type="object"
+                            invisible="state in ('cancelled', 'completed')"/>
+                    <button name="action_draft" string="Reset to Draft"
+                            type="object"
+                            invisible="state not in ('cancelled', 'completed')"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,active,completed"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" string="Assignment"/>
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="faculty_id"/>
+                            <field name="course_name"/>
+                            <field name="course_code"/>
+                            <field name="program_id"/>
+                            <field name="academic_term_id"/>
+                            <field name="university_id" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="assignment_type"/>
+                            <field name="section"/>
+                            <field name="student_count"/>
+                            <field name="start_date"/>
+                            <field name="end_date"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="notes"/>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.faculty.assignment — Search View                          -->
+    <!-- ============================================================ -->
+    <record id="view_uni_faculty_assignment_search" model="ir.ui.view">
+        <field name="name">uni.faculty.assignment.search</field>
+        <field name="model">uni.faculty.assignment</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="faculty_id"/>
+                <field name="course_name"/>
+                <field name="course_code"/>
+                <field name="academic_term_id"/>
+                <field name="program_id"/>
+                <field name="university_id"/>
+                <filter string="Active" name="filter_active"
+                        domain="[('state', '=', 'active')]"/>
+                <filter string="Draft" name="filter_draft"
+                        domain="[('state', '=', 'draft')]"/>
+                <filter string="Completed" name="filter_completed"
+                        domain="[('state', '=', 'completed')]"/>
+                <filter string="Cancelled" name="filter_cancelled"
+                        domain="[('state', '=', 'cancelled')]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Faculty" name="group_faculty"
+                            context="{'group_by': 'faculty_id'}"/>
+                    <filter string="Academic Term" name="group_term"
+                            context="{'group_by': 'academic_term_id'}"/>
+                    <filter string="Program" name="group_program"
+                            context="{'group_by': 'program_id'}"/>
+                    <filter string="Type" name="group_type"
+                            context="{'group_by': 'assignment_type'}"/>
+                    <filter string="Status" name="group_state"
+                            context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.faculty.assignment — Action                               -->
+    <!-- ============================================================ -->
+    <record id="action_uni_faculty_assignment" model="ir.actions.act_window">
+        <field name="name">Faculty Assignments</field>
+        <field name="res_model">uni.faculty.assignment</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_faculty_assignment_search"/>
+        <field name="context">{'search_default_filter_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new teaching assignment
+            </p>
+        </field>
+    </record>
+</odoo>

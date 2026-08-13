@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- uni.exam.invigilator — List View                              -->
+    <!-- ============================================================ -->
+    <record id="view_uni_exam_invigilator_list" model="ir.ui.view">
+        <field name="name">uni.exam.invigilator.list</field>
+        <field name="model">uni.exam.invigilator</field>
+        <field name="arch" type="xml">
+            <list string="Invigilators"
+                  decoration-success="is_available == True"
+                  decoration-muted="is_available == False">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="faculty_name"/>
+                <field name="employee_id"/>
+                <field name="role"/>
+                <field name="phone"/>
+                <field name="email"/>
+                <field name="is_available" widget="boolean_toggle"/>
+                <field name="assigned_exam_count"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.exam.invigilator — Form View                              -->
+    <!-- ============================================================ -->
+    <record id="view_uni_exam_invigilator_form" model="ir.ui.view">
+        <field name="name">uni.exam.invigilator.form</field>
+        <field name="model">uni.exam.invigilator</field>
+        <field name="arch" type="xml">
+            <form string="Invigilator">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_open_assigned_exams" type="object"
+                                class="oe_stat_button" icon="fa-file-text-o">
+                            <field name="assigned_exam_count" widget="statinfo"
+                                   string="Assigned Exams"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" string="Invigilator"/>
+                        <h1><field name="name" placeholder="e.g. Dr. Ahmed Ali"/></h1>
+                        <h3><field name="code" placeholder="Optional code"/></h3>
+                    </div>
+                    <group>
+                        <group string="Affiliation">
+                            <field name="faculty_name"/>
+                            <field name="employee_id"
+                                   options="{'no_create': True}"/>
+                            <field name="role"/>
+                        </group>
+                        <group string="Contact &amp; Status">
+                            <field name="phone"/>
+                            <field name="email"/>
+                            <field name="is_available"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Assigned Exams" name="exams">
+                            <field name="assigned_exam_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="course_id"/>
+                                    <field name="exam_date"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.exam.invigilator — Search View                            -->
+    <!-- ============================================================ -->
+    <record id="view_uni_exam_invigilator_search" model="ir.ui.view">
+        <field name="name">uni.exam.invigilator.search</field>
+        <field name="model">uni.exam.invigilator</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="faculty_name"/>
+                <field name="employee_id"/>
+                <field name="email"/>
+                <field name="phone"/>
+                <filter string="Available" name="filter_available"
+                        domain="[('is_available', '=', True)]"/>
+                <filter string="Chief Invigilators" name="filter_chief"
+                        domain="[('role', '=', 'chief_invigilator')]"/>
+                <separator/>
+                <filter string="Archived" name="filter_archived"
+                        domain="[('active', '=', False)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Role" name="group_role"
+                            context="{'group_by': 'role'}"/>
+                    <filter string="Available" name="group_available"
+                            context="{'group_by': 'is_available'}"/>
+                    <filter string="Faculty" name="group_faculty"
+                            context="{'group_by': 'faculty_name'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.exam.invigilator — Action                                 -->
+    <!-- ============================================================ -->
+    <record id="action_uni_exam_invigilator" model="ir.actions.act_window">
+        <field name="name">Invigilators</field>
+        <field name="res_model">uni.exam.invigilator</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_exam_invigilator_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new invigilator
+            </p>
+            <p>Invigilators supervise exams. They can be linked to a faculty
+               member or an employee record, or simply be external persons
+               identified by name, phone, and email.</p>
+        </field>
+    </record>
+</odoo>

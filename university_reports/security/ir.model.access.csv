@@ -1,0 +1,11 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_uni_report_template_user,uni.report.template.user,model_uni_report_template,university_core.group_university_user,1,0,0,0
+access_uni_report_template_manager,uni.report.template.manager,model_uni_report_template,university_core.group_university_manager,1,1,1,1
+access_uni_report_builder_user,uni.report.builder.user,model_uni_report_builder,university_core.group_university_user,1,1,1,0
+access_uni_report_builder_manager,uni.report.builder.manager,model_uni_report_builder,university_core.group_university_manager,1,1,1,1
+access_uni_report_schedule_user,uni.report.schedule.user,model_uni_report_schedule,university_core.group_university_user,1,1,1,0
+access_uni_report_schedule_manager,uni.report.schedule.manager,model_uni_report_schedule,university_core.group_university_manager,1,1,1,1
+access_uni_dashboard_widget_user,uni.dashboard.widget.user,model_uni_dashboard_widget,university_core.group_university_user,1,1,1,0
+access_uni_dashboard_widget_manager,uni.dashboard.widget.manager,model_uni_dashboard_widget,university_core.group_university_manager,1,1,1,1
+access_uni_report_wizard_user,uni.report.wizard.user,model_uni_report_wizard,university_core.group_university_user,1,1,1,1
+access_uni_report_wizard_manager,uni.report.wizard.manager,model_uni_report_wizard,university_core.group_university_manager,1,1,1,1

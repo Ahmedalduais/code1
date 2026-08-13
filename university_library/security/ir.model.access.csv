@@ -1,0 +1,13 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_uni_library_author_user,uni.library.author.user,model_uni_library_author,university_core.group_university_user,1,0,0,0
+access_uni_library_author_manager,uni.library.author.manager,model_uni_library_author,university_core.group_university_manager,1,1,1,1
+access_uni_library_category_user,uni.library.category.user,model_uni_library_category,university_core.group_university_user,1,0,0,0
+access_uni_library_category_manager,uni.library.category.manager,model_uni_library_category,university_core.group_university_manager,1,1,1,1
+access_uni_library_book_user,uni.library.book.user,model_uni_library_book,university_core.group_university_user,1,0,0,0
+access_uni_library_book_manager,uni.library.book.manager,model_uni_library_book,university_core.group_university_manager,1,1,1,1
+access_uni_library_borrow_user,uni.library.borrow.user,model_uni_library_borrow,university_core.group_university_user,1,0,0,0
+access_uni_library_borrow_manager,uni.library.borrow.manager,model_uni_library_borrow,university_core.group_university_manager,1,1,1,1
+access_uni_library_digital_user,uni.library.digital.user,model_uni_library_digital,university_core.group_university_user,1,0,0,0
+access_uni_library_digital_manager,uni.library.digital.manager,model_uni_library_digital,university_core.group_university_manager,1,1,1,1
+access_uni_library_fine_user,uni.library.fine.user,model_uni_library_fine,university_core.group_university_user,1,0,0,0
+access_uni_library_fine_manager,uni.library.fine.manager,model_uni_library_fine,university_core.group_university_manager,1,1,1,1

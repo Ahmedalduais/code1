@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- uni.exam — List View                                          -->
+    <!-- ============================================================ -->
+    <record id="view_uni_exam_list" model="ir.ui.view">
+        <field name="name">uni.exam.list</field>
+        <field name="model">uni.exam</field>
+        <field name="arch" type="xml">
+            <list string="Exams" decoration-info="state == 'draft'"
+                  decoration-success="state == 'completed'"
+                  decoration-warning="state == 'ongoing'"
+                  decoration-muted="state == 'cancelled'"
+                  decoration-danger="state == 'scheduled'">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="course_id"/>
+                <field name="exam_type_id"/>
+                <field name="academic_term_id"/>
+                <field name="exam_date"/>
+                <field name="duration" widget="float_time"/>
+                <field name="max_score"/>
+                <field name="total_students"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'draft'"
+                       decoration-success="state == 'completed'"
+                       decoration-warning="state == 'ongoing'"
+                       decoration-danger="state == 'scheduled'"
+                       decoration-muted="state == 'cancelled'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.exam — Form View                                          -->
+    <!-- ============================================================ -->
+    <record id="view_uni_exam_form" model="ir.ui.view">
+        <field name="name">uni.exam.form</field>
+        <field name="model">uni.exam</field>
+        <field name="arch" type="xml">
+            <form string="Exam">
+                <header>
+                    <button name="action_schedule" type="object"
+                            string="Schedule" class="oe_highlight"
+                            invisible="state != 'draft'"/>
+                    <button name="action_start" type="object"
+                            string="Start Exam" class="oe_highlight"
+                            invisible="state != 'scheduled'"/>
+                    <button name="action_complete" type="object"
+                            string="Complete" class="oe_highlight"
+                            invisible="state != 'ongoing'"/>
+                    <button name="action_cancel" type="object"
+                            string="Cancel"
+                            invisible="state in ('completed', 'cancelled')"/>
+                    <button name="action_draft" type="object"
+                            string="Reset to Draft"
+                            invisible="state in ('draft', 'ongoing')"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,scheduled,ongoing,completed"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_violations" type="object"
+                                class="oe_stat_button" icon="fa-exclamation-triangle">
+                            <field name="violation_count" widget="statinfo"
+                                   string="Violations"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" string="Exam"/>
+                        <h1><field name="name" readonly="1"/></h1>
+                        <h3><field name="code" placeholder="Optional code"/></h3>
+                    </div>
+                    <group>
+                        <group string="Academic Context">
+                            <field name="course_id"
+                                   options="{'no_create': True}"/>
+                            <field name="academic_term_id"
+                                   options="{'no_create': True}"/>
+                            <field name="exam_type_id"
+                                   options="{'no_create': True}"/>
+                            <field name="program_id"
+                                   options="{'no_create': True}"/>
+                            <field name="faculty_name"/>
+                        </group>
+                        <group string="Hierarchy">
+                            <field name="university_id" readonly="1"/>
+                            <field name="college_id" readonly="1"/>
+                            <field name="department_id" readonly="1"/>
+                            <field name="academic_year_id" readonly="1"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Schedule">
+                            <field name="exam_date"/>
+                            <field name="duration" widget="float_time"/>
+                            <field name="start_time" widget="float_time"/>
+                            <field name="end_time" widget="float_time"/>
+                        </group>
+                        <group string="Grading">
+                            <field name="max_score"/>
+                            <field name="passing_score"/>
+                            <field name="weight_percentage"/>
+                            <field name="total_students"/>
+                            <field name="total_capacity" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Rooms &amp; Invigilators" name="rooms">
+                            <group>
+                                <field name="room_ids"
+                                       context="{'default_university_id': university_id}">
+                                    <list>
+                                        <field name="code"/>
+                                        <field name="name"/>
+                                        <field name="building"/>
+                                        <field name="floor"/>
+                                        <field name="capacity"/>
+                                        <field name="state" widget="badge"/>
+                                    </list>
+                                </field>
+                                <field name="invigilator_ids">
+                                    <list>
+                                        <field name="name"/>
+                                        <field name="code"/>
+                                        <field name="role"/>
+                                        <field name="phone"/>
+                                        <field name="email"/>
+                                        <field name="is_available"
+                                               widget="boolean_toggle"/>
+                                    </list>
+                                </field>
+                            </group>
+                        </page>
+                        <page string="Schedules" name="schedules">
+                            <field name="schedule_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="code"/>
+                                    <field name="academic_term_id"/>
+                                    <field name="publish_date"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Violations" name="violations">
+                            <field name="violation_ids">
+                                <list decoration-danger="severity == 'critical'"
+                                      decoration-warning="severity == 'major'"
+                                      decoration-info="severity == 'minor'">
+                                    <field name="name"/>
+                                    <field name="student_name"/>
+                                    <field name="student_code" optional="hide"/>
+                                    <field name="violation_type"/>
+                                    <field name="severity" widget="badge"/>
+                                    <field name="action_taken"/>
+                                    <field name="state" widget="badge"/>
+                                    <field name="violation_date"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="notes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.exam — Search View                                        -->
+    <!-- ============================================================ -->
+    <record id="view_uni_exam_search" model="ir.ui.view">
+        <field name="name">uni.exam.search</field>
+        <field name="model">uni.exam</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="course_id"/>
+                <field name="exam_type_id"/>
+                <field name="academic_term_id"/>
+                <field name="program_id"/>
+                <field name="faculty_name"/>
+                <filter string="Draft" name="filter_draft"
+                        domain="[('state', '=', 'draft')]"/>
+                <filter string="Scheduled" name="filter_scheduled"
+                        domain="[('state', '=', 'scheduled')]"/>
+                <filter string="Ongoing" name="filter_ongoing"
+                        domain="[('state', '=', 'ongoing')]"/>
+                <filter string="Completed" name="filter_completed"
+                        domain="[('state', '=', 'completed')]"/>
+                <filter string="Cancelled" name="filter_cancelled"
+                        domain="[('state', '=', 'cancelled')]"/>
+                <filter string="Final Exams" name="filter_final"
+                        domain="[('exam_type_id.is_final', '=', True)]"/>
+                <filter string="Midterm Exams" name="filter_midterm"
+                        domain="[('exam_type_id.is_midterm', '=', True)]"/>
+                <separator/>
+                <filter string="Archived" name="filter_archived"
+                        domain="[('active', '=', False)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="State" name="group_state"
+                            context="{'group_by': 'state'}"/>
+                    <filter string="Exam Type" name="group_type"
+                            context="{'group_by': 'exam_type_id'}"/>
+                    <filter string="Course" name="group_course"
+                            context="{'group_by': 'course_id'}"/>
+                    <filter string="Academic Term" name="group_term"
+                            context="{'group_by': 'academic_term_id'}"/>
+                    <filter string="University" name="group_university"
+                            context="{'group_by': 'university_id'}"/>
+                    <filter string="College" name="group_college"
+                            context="{'group_by': 'college_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.exam — Calendar View                                      -->
+    <!-- ============================================================ -->
+    <record id="view_uni_exam_calendar" model="ir.ui.view">
+        <field name="name">uni.exam.calendar</field>
+        <field name="model">uni.exam</field>
+        <field name="arch" type="xml">
+            <calendar string="Exam Calendar" date_start="exam_date"
+                      color="exam_type_id"
+                      event_open_popup="true">
+                <field name="name"/>
+                <field name="course_id"/>
+                <field name="exam_type_id"/>
+            </calendar>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.exam — Action (list, form, calendar)                      -->
+    <!-- ============================================================ -->
+    <record id="action_uni_exam" model="ir.actions.act_window">
+        <field name="name">Exams</field>
+        <field name="res_model">uni.exam</field>
+        <field name="view_mode">list,form,calendar</field>
+        <field name="search_view_id" ref="view_uni_exam_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new exam
+            </p>
+            <p>Exams are linked to a course, an academic term and an exam type.
+               You can schedule them, assign rooms and invigilators, then track
+               violations reported during the exam.</p>
+        </field>
+    </record>
+</odoo>

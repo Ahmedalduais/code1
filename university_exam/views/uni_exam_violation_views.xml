@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- uni.exam.violation — List View                                -->
+    <!-- ============================================================ -->
+    <record id="view_uni_exam_violation_list" model="ir.ui.view">
+        <field name="name">uni.exam.violation.list</field>
+        <field name="model">uni.exam.violation</field>
+        <field name="arch" type="xml">
+            <list string="Violations"
+                  decoration-info="state == 'reported'"
+                  decoration-warning="state == 'investigated'"
+                  decoration-primary="state == 'decided'"
+                  decoration-muted="state == 'closed'"
+                  decoration-danger="severity == 'critical'">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="exam_id"/>
+                <field name="student_name"/>
+                <field name="student_code" optional="hide"/>
+                <field name="course_id"/>
+                <field name="violation_type"/>
+                <field name="severity" widget="badge"
+                       decoration-info="severity == 'minor'"
+                       decoration-warning="severity == 'major'"
+                       decoration-danger="severity == 'critical'"/>
+                <field name="action_taken"/>
+                <field name="violation_date"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'reported'"
+                       decoration-warning="state == 'investigated'"
+                       decoration-primary="state == 'decided'"
+                       decoration-muted="state == 'closed'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.exam.violation — Form View                                -->
+    <!-- ============================================================ -->
+    <record id="view_uni_exam_violation_form" model="ir.ui.view">
+        <field name="name">uni.exam.violation.form</field>
+        <field name="model">uni.exam.violation</field>
+        <field name="arch" type="xml">
+            <form string="Exam Violation">
+                <header>
+                    <button name="action_investigate" type="object"
+                            string="Investigate" class="oe_highlight"
+                            invisible="state != 'reported'"/>
+                    <button name="action_decide" type="object"
+                            string="Decide" class="oe_highlight"
+                            invisible="state != 'investigated'"/>
+                    <button name="action_close" type="object"
+                            string="Close" class="oe_highlight"
+                            invisible="state != 'decided'"/>
+                    <button name="action_reopen" type="object"
+                            string="Reopen"
+                            invisible="state not in ('decided', 'closed')"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="reported,investigated,decided,closed"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" string="Violation"/>
+                        <h1><field name="name" readonly="1"/></h1>
+                        <h3><field name="code" placeholder="Optional code"/></h3>
+                    </div>
+                    <group>
+                        <group string="Context">
+                            <field name="exam_id"
+                                   options="{'no_create': True}"/>
+                            <field name="student_name"/>
+                            <field name="student_code"/>
+                            <field name="course_id" readonly="1"/>
+                            <field name="academic_term_id" readonly="1"/>
+                            <field name="university_id" readonly="1"/>
+                            <field name="reported_by"/>
+                        </group>
+                        <group string="Details">
+                            <field name="violation_type"/>
+                            <field name="severity" widget="badge"
+                                   decoration-info="severity == 'minor'"
+                                   decoration-warning="severity == 'major'"
+                                   decoration-danger="severity == 'critical'"/>
+                            <field name="violation_date"/>
+                            <field name="action_taken"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="description"/>
+                    </group>
+                    <group>
+                        <group string="Action Details">
+                            <field name="action_details"/>
+                        </group>
+                        <group string="Evidence">
+                            <field name="evidence_filename" invisible="not evidence_file"/>
+                            <field name="evidence_file" filename="evidence_filename"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="notes"/>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.exam.violation — Search View                              -->
+    <!-- ============================================================ -->
+    <record id="view_uni_exam_violation_search" model="ir.ui.view">
+        <field name="name">uni.exam.violation.search</field>
+        <field name="model">uni.exam.violation</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="exam_id"/>
+                <field name="student_name"/>
+                <field name="course_id"/>
+                <field name="reported_by"/>
+                <filter string="Reported" name="filter_reported"
+                        domain="[('state', '=', 'reported')]"/>
+                <filter string="Investigated" name="filter_investigated"
+                        domain="[('state', '=', 'investigated')]"/>
+                <filter string="Decided" name="filter_decided"
+                        domain="[('state', '=', 'decided')]"/>
+                <filter string="Closed" name="filter_closed"
+                        domain="[('state', '=', 'closed')]"/>
+                <separator/>
+                <filter string="Critical Severity" name="filter_critical"
+                        domain="[('severity', '=', 'critical')]"/>
+                <filter string="Major Severity" name="filter_major"
+                        domain="[('severity', '=', 'major')]"/>
+                <filter string="Minor Severity" name="filter_minor"
+                        domain="[('severity', '=', 'minor')]"/>
+                <group expand="0" string="Group By">
+                    <filter string="State" name="group_state"
+                            context="{'group_by': 'state'}"/>
+                    <filter string="Severity" name="group_severity"
+                            context="{'group_by': 'severity'}"/>
+                    <filter string="Violation Type" name="group_type"
+                            context="{'group_by': 'violation_type'}"/>
+                    <filter string="Action Taken" name="group_action"
+                            context="{'group_by': 'action_taken'}"/>
+                    <filter string="Exam" name="group_exam"
+                            context="{'group_by': 'exam_id'}"/>
+                    <filter string="Student" name="group_student"
+                            context="{'group_by': 'student_name'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.exam.violation — Action                                   -->
+    <!-- ============================================================ -->
+    <record id="action_uni_exam_violation" model="ir.actions.act_window">
+        <field name="name">Exam Violations</field>
+        <field name="res_model">uni.exam.violation</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_exam_violation_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Report a new exam violation
+            </p>
+            <p>Use this form to document violations committed by students
+               during exams: cheating, impersonation, late arrival, etc.
+               Each violation moves through the workflow: reported →
+               investigated → decided → closed.</p>
+        </field>
+    </record>
+</odoo>

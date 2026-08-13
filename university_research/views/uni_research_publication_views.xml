@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- uni.research.publication — List View                          -->
+    <!-- ============================================================ -->
+    <record id="view_uni_research_publication_list" model="ir.ui.view">
+        <field name="name">uni.research.publication.list</field>
+        <field name="model">uni.research.publication</field>
+        <field name="arch" type="xml">
+            <list string="Publications"
+                  decoration-info="state in ('draft', 'submitted')"
+                  decoration-success="state == 'published'"
+                  decoration-primary="state == 'accepted'"
+                  decoration-danger="state == 'rejected'">
+                <field name="name"/>
+                <field name="title"/>
+                <field name="faculty_id"/>
+                <field name="publication_type"/>
+                <field name="journal_id" optional="show"/>
+                <field name="conference_id" optional="hide"/>
+                <field name="publication_date"/>
+                <field name="publication_year" optional="hide"/>
+                <field name="is_peer_reviewed" widget="boolean_toggle"/>
+                <field name="is_indexed" widget="boolean_toggle"/>
+                <field name="impact_factor" avg="Average IF"/>
+                <field name="citation_count" sum="Total Citations"/>
+                <field name="state" widget="badge"
+                       decoration-info="state in ('draft', 'submitted')"
+                       decoration-success="state == 'published'"
+                       decoration-primary="state == 'accepted'"
+                       decoration-danger="state == 'rejected'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.research.publication — Form View                          -->
+    <!-- ============================================================ -->
+    <record id="view_uni_research_publication_form" model="ir.ui.view">
+        <field name="name">uni.research.publication.form</field>
+        <field name="model">uni.research.publication</field>
+        <field name="arch" type="xml">
+            <form string="Publication">
+                <header>
+                    <button name="action_submit" string="Submit"
+                            type="object" class="oe_highlight"
+                            invisible="state != 'draft'"/>
+                    <button name="action_accept" string="Accept"
+                            type="object" class="oe_highlight"
+                            invisible="state != 'submitted'"/>
+                    <button name="action_publish" string="Publish"
+                            type="object" class="oe_highlight"
+                            invisible="state != 'accepted'"/>
+                    <button name="action_reject" string="Reject"
+                            type="object"
+                            invisible="state != 'submitted'"
+                            confirm="Are you sure you want to mark this publication as rejected?"/>
+                    <button name="action_draft" string="Back to Draft"
+                            type="object"
+                            invisible="state != 'rejected'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,submitted,accepted,published"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_download_file" type="object"
+                                class="oe_stat_button" icon="fa-download"
+                                invisible="not file">
+                            <span class="o_stat_text">File</span>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="title" string="Publication"/>
+                        <h1><field name="title" placeholder="Publication title"/></h1>
+                        <h3><field name="name" readonly="1"/></h3>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="faculty_id"
+                                   options="{'no_create': True}"/>
+                            <field name="project_id"
+                                   options="{'no_create': True}"/>
+                            <field name="publication_type"/>
+                            <field name="publication_date"/>
+                            <field name="publisher"/>
+                        </group>
+                        <group>
+                            <field name="journal_id"
+                                   invisible="publication_type != 'journal_article'"
+                                   options="{'no_create': True}"/>
+                            <field name="conference_id"
+                                   invisible="publication_type != 'conference_paper'"
+                                   options="{'no_create': True}"/>
+                            <field name="volume"/>
+                            <field name="issue"/>
+                            <field name="pages"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="doi"/>
+                            <field name="isbn"/>
+                            <field name="issn"/>
+                            <field name="url" widget="url"/>
+                        </group>
+                        <group>
+                            <field name="is_peer_reviewed"/>
+                            <field name="is_indexed"/>
+                            <field name="indexing_databases"
+                                   invisible="not is_indexed"/>
+                            <field name="impact_factor"/>
+                            <field name="citation_count"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="abstract"/>
+                    </group>
+                    <group>
+                        <field name="keywords"/>
+                    </group>
+                    <group>
+                        <field name="co_authors"/>
+                    </group>
+                    <group>
+                        <field name="file" filename="filename"/>
+                        <field name="filename" invisible="1"/>
+                    </group>
+                    <notebook>
+                        <page string="Notes">
+                            <field name="notes" placeholder="Internal notes..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.research.publication — Search View                        -->
+    <!-- ============================================================ -->
+    <record id="view_uni_research_publication_search" model="ir.ui.view">
+        <field name="name">uni.research.publication.search</field>
+        <field name="model">uni.research.publication</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="title"/>
+                <field name="faculty_id"/>
+                <field name="project_id"/>
+                <field name="journal_id"/>
+                <field name="conference_id"/>
+                <field name="doi"/>
+                <field name="isbn"/>
+                <field name="issn"/>
+                <field name="keywords"/>
+                <field name="university_id"/>
+                <separator/>
+                <filter string="My Publications" name="filter_mine"
+                        domain="[('faculty_id.user_id', '=', uid)]"/>
+                <separator/>
+                <filter string="Draft" name="filter_draft"
+                        domain="[('state', '=', 'draft')]"/>
+                <filter string="Submitted" name="filter_submitted"
+                        domain="[('state', '=', 'submitted')]"/>
+                <filter string="Accepted" name="filter_accepted"
+                        domain="[('state', '=', 'accepted')]"/>
+                <filter string="Published" name="filter_published"
+                        domain="[('state', '=', 'published')]"/>
+                <filter string="Rejected" name="filter_rejected"
+                        domain="[('state', '=', 'rejected')]"/>
+                <separator/>
+                <filter string="Peer Reviewed" name="filter_peer"
+                        domain="[('is_peer_reviewed', '=', True)]"/>
+                <filter string="Indexed" name="filter_indexed"
+                        domain="[('is_indexed', '=', True)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Faculty" name="group_faculty"
+                            context="{'group_by': 'faculty_id'}"/>
+                    <filter string="Project" name="group_project"
+                            context="{'group_by': 'project_id'}"/>
+                    <filter string="Type" name="group_type"
+                            context="{'group_by': 'publication_type'}"/>
+                    <filter string="Journal" name="group_journal"
+                            context="{'group_by': 'journal_id'}"/>
+                    <filter string="State" name="group_state"
+                            context="{'group_by': 'state'}"/>
+                    <filter string="Year" name="group_year"
+                            context="{'group_by': 'publication_year'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.research.publication — Graph View (by year)               -->
+    <!-- ============================================================ -->
+    <record id="view_uni_research_publication_graph" model="ir.ui.view">
+        <field name="name">uni.research.publication.graph</field>
+        <field name="model">uni.research.publication</field>
+        <field name="arch" type="xml">
+            <graph string="Publications by Year" type="bar">
+                <field name="publication_year" type="row"/>
+                <field name="publication_type" type="col"/>
+                <field name="citation_count" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.research.publication — Pivot View                         -->
+    <!-- ============================================================ -->
+    <record id="view_uni_research_publication_pivot" model="ir.ui.view">
+        <field name="name">uni.research.publication.pivot</field>
+        <field name="model">uni.research.publication</field>
+        <field name="arch" type="xml">
+            <pivot string="Publications Analysis">
+                <field name="publication_year" type="row"/>
+                <field name="publication_type" type="col"/>
+                <field name="citation_count" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.research.publication — Action                             -->
+    <!-- ============================================================ -->
+    <record id="action_uni_research_publication" model="ir.actions.act_window">
+        <field name="name">Publications</field>
+        <field name="res_model">uni.research.publication</field>
+        <field name="view_mode">list,form,graph,pivot</field>
+        <field name="search_view_id" ref="view_uni_research_publication_search"/>
+        <field name="context">{'search_default_filter_published': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Register a new publication
+            </p>
+            <p>Track journal articles, conference papers, books, theses and
+               patents produced by faculty, with DOI/ISBN/ISSN, impact factor,
+               indexing databases, and citation counts.</p>
+        </field>
+    </record>
+</odoo>

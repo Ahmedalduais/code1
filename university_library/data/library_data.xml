@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- ============================================================ -->
+    <!-- Default library categories                                     -->
+    <!-- ============================================================ -->
+
+    <!-- Computer Science -->
+    <record id="library_category_computer_science" model="uni.library.category">
+        <field name="name">Computer Science</field>
+        <field name="code">CS</field>
+        <field name="classification_system">dewey_decimal</field>
+        <field name="classification_code">004</field>
+        <field name="sequence">10</field>
+        <field name="description">Books on computer science, programming, software engineering, and IT.</field>
+    </record>
+
+    <!-- Mathematics -->
+    <record id="library_category_mathematics" model="uni.library.category">
+        <field name="name">Mathematics</field>
+        <field name="code">MATH</field>
+        <field name="classification_system">dewey_decimal</field>
+        <field name="classification_code">510</field>
+        <field name="sequence">20</field>
+        <field name="description">Books on pure and applied mathematics, statistics, and probability.</field>
+    </record>
+
+    <!-- Physics -->
+    <record id="library_category_physics" model="uni.library.category">
+        <field name="name">Physics</field>
+        <field name="code">PHYS</field>
+        <field name="classification_system">dewey_decimal</field>
+        <field name="classification_code">530</field>
+        <field name="sequence">30</field>
+        <field name="description">Books on classical and modern physics, mechanics, and thermodynamics.</field>
+    </record>
+
+    <!-- Chemistry -->
+    <record id="library_category_chemistry" model="uni.library.category">
+        <field name="name">Chemistry</field>
+        <field name="code">CHEM</field>
+        <field name="classification_system">dewey_decimal</field>
+        <field name="classification_code">540</field>
+        <field name="sequence">40</field>
+        <field name="description">Books on organic, inorganic, analytical, and physical chemistry.</field>
+    </record>
+
+    <!-- Biology -->
+    <record id="library_category_biology" model="uni.library.category">
+        <field name="name">Biology</field>
+        <field name="code">BIO</field>
+        <field name="classification_system">dewey_decimal</field>
+        <field name="classification_code">570</field>
+        <field name="sequence">50</field>
+        <field name="description">Books on biology, ecology, genetics, and life sciences.</field>
+    </record>
+
+    <!-- Literature -->
+    <record id="library_category_literature" model="uni.library.category">
+        <field name="name">Literature</field>
+        <field name="code">LIT</field>
+        <field name="classification_system">dewey_decimal</field>
+        <field name="classification_code">800</field>
+        <field name="sequence">60</field>
+        <field name="description">Books on literature, poetry, drama, and literary criticism.</field>
+    </record>
+
+    <!-- History -->
+    <record id="library_category_history" model="uni.library.category">
+        <field name="name">History</field>
+        <field name="code">HIST</field>
+        <field name="classification_system">dewey_decimal</field>
+        <field name="classification_code">900</field>
+        <field name="sequence">70</field>
+        <field name="description">Books on world, regional, and topical history.</field>
+    </record>
+
+    <!-- Philosophy -->
+    <record id="library_category_philosophy" model="uni.library.category">
+        <field name="name">Philosophy</field>
+        <field name="code">PHIL</field>
+        <field name="classification_system">dewey_decimal</field>
+        <field name="classification_code">100</field>
+        <field name="sequence">80</field>
+        <field name="description">Books on philosophy, ethics, logic, and metaphysics.</field>
+    </record>
+
+    <!-- Religion -->
+    <record id="library_category_religion" model="uni.library.category">
+        <field name="name">Religion</field>
+        <field name="code">REL</field>
+        <field name="classification_system">dewey_decimal</field>
+        <field name="classification_code">200</field>
+        <field name="sequence">90</field>
+        <field name="description">Books on religion, theology, and spirituality.</field>
+    </record>
+
+    <!-- Social Sciences -->
+    <record id="library_category_social_sciences" model="uni.library.category">
+        <field name="name">Social Sciences</field>
+        <field name="code">SOC</field>
+        <field name="classification_system">dewey_decimal</field>
+        <field name="classification_code">300</field>
+        <field name="sequence">100</field>
+        <field name="description">Books on sociology, economics, political science, and anthropology.</field>
+    </record>
+</odoo>

@@ -1,0 +1,432 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!--
+        Default time slots for Saturday → Wednesday work week (5 days).
+        Each day gets the same 9-slot layout:
+            P1 08:00-09:00
+            P2 09:00-10:00
+            P3 10:00-11:00
+            BRK1 11:00-11:15 (Break)
+            P4 11:15-12:15
+            P5 12:15-13:15
+            LUNCH 13:15-14:00 (Lunch break)
+            P6 14:00-15:00
+            P7 15:00-16:00
+        Start times are stored as Float (float_time): 08:00 → 8.0, 11:15 → 11.25, ...
+    -->
+
+    <!-- ============== SATURDAY ============== -->
+    <record id="slot_sat_p1" model="uni.timetable.slot">
+        <field name="name">Period 1</field>
+        <field name="code">SAT-P1</field>
+        <field name="sequence">10</field>
+        <field name="day_of_week">saturday</field>
+        <field name="start_time">8.0</field>
+        <field name="end_time">9.0</field>
+        <field name="break_slot" eval="False"/>
+    </record>
+    <record id="slot_sat_p2" model="uni.timetable.slot">
+        <field name="name">Period 2</field>
+        <field name="code">SAT-P2</field>
+        <field name="sequence">20</field>
+        <field name="day_of_week">saturday</field>
+        <field name="start_time">9.0</field>
+        <field name="end_time">10.0</field>
+        <field name="break_slot" eval="False"/>
+    </record>
+    <record id="slot_sat_p3" model="uni.timetable.slot">
+        <field name="name">Period 3</field>
+        <field name="code">SAT-P3</field>
+        <field name="sequence">30</field>
+        <field name="day_of_week">saturday</field>
+        <field name="start_time">10.0</field>
+        <field name="end_time">11.0</field>
+        <field name="break_slot" eval="False"/>
+    </record>
+    <record id="slot_sat_break1" model="uni.timetable.slot">
+        <field name="name">Break</field>
+        <field name="code">SAT-BRK1</field>
+        <field name="sequence">35</field>
+        <field name="day_of_week">saturday</field>
+        <field name="start_time">11.0</field>
+        <field name="end_time">11.25</field>
+        <field name="break_slot" eval="True"/>
+    </record>
+    <record id="slot_sat_p4" model="uni.timetable.slot">
+        <field name="name">Period 4</field>
+        <field name="code">SAT-P4</field>
+        <field name="sequence">40</field>
+        <field name="day_of_week">saturday</field>
+        <field name="start_time">11.25</field>
+        <field name="end_time">12.25</field>
+        <field name="break_slot" eval="False"/>
+    </record>
+    <record id="slot_sat_p5" model="uni.timetable.slot">
+        <field name="name">Period 5</field>
+        <field name="code">SAT-P5</field>
+        <field name="sequence">50</field>
+        <field name="day_of_week">saturday</field>
+        <field name="start_time">12.25</field>
+        <field name="end_time">13.25</field>
+        <field name="break_slot" eval="False"/>
+    </record>
+    <record id="slot_sat_lunch" model="uni.timetable.slot">
+        <field name="name">Lunch Break</field>
+        <field name="code">SAT-LUNCH</field>
+        <field name="sequence">55</field>
+        <field name="day_of_week">saturday</field>
+        <field name="start_time">13.25</field>
+        <field name="end_time">14.0</field>
+        <field name="break_slot" eval="True"/>
+    </record>
+    <record id="slot_sat_p6" model="uni.timetable.slot">
+        <field name="name">Period 6</field>
+        <field name="code">SAT-P6</field>
+        <field name="sequence">60</field>
+        <field name="day_of_week">saturday</field>
+        <field name="start_time">14.0</field>
+        <field name="end_time">15.0</field>
+        <field name="break_slot" eval="False"/>
+    </record>
+    <record id="slot_sat_p7" model="uni.timetable.slot">
+        <field name="name">Period 7</field>
+        <field name="code">SAT-P7</field>
+        <field name="sequence">70</field>
+        <field name="day_of_week">saturday</field>
+        <field name="start_time">15.0</field>
+        <field name="end_time">16.0</field>
+        <field name="break_slot" eval="False"/>
+    </record>
+
+    <!-- ============== SUNDAY ============== -->
+    <record id="slot_sun_p1" model="uni.timetable.slot">
+        <field name="name">Period 1</field>
+        <field name="code">SUN-P1</field>
+        <field name="sequence">10</field>
+        <field name="day_of_week">sunday</field>
+        <field name="start_time">8.0</field>
+        <field name="end_time">9.0</field>
+        <field name="break_slot" eval="False"/>
+    </record>
+    <record id="slot_sun_p2" model="uni.timetable.slot">
+        <field name="name">Period 2</field>
+        <field name="code">SUN-P2</field>
+        <field name="sequence">20</field>
+        <field name="day_of_week">sunday</field>
+        <field name="start_time">9.0</field>
+        <field name="end_time">10.0</field>
+        <field name="break_slot" eval="False"/>
+    </record>
+    <record id="slot_sun_p3" model="uni.timetable.slot">
+        <field name="name">Period 3</field>
+        <field name="code">SUN-P3</field>
+        <field name="sequence">30</field>
+        <field name="day_of_week">sunday</field>
+        <field name="start_time">10.0</field>
+        <field name="end_time">11.0</field>
+        <field name="break_slot" eval="False"/>
+    </record>
+    <record id="slot_sun_break1" model="uni.timetable.slot">
+        <field name="name">Break</field>
+        <field name="code">SUN-BRK1</field>
+        <field name="sequence">35</field>
+        <field name="day_of_week">sunday</field>
+        <field name="start_time">11.0</field>
+        <field name="end_time">11.25</field>
+        <field name="break_slot" eval="True"/>
+    </record>
+    <record id="slot_sun_p4" model="uni.timetable.slot">
+        <field name="name">Period 4</field>
+        <field name="code">SUN-P4</field>
+        <field name="sequence">40</field>
+        <field name="day_of_week">sunday</field>
+        <field name="start_time">11.25</field>
+        <field name="end_time">12.25</field>
+        <field name="break_slot" eval="False"/>
+    </record>
+    <record id="slot_sun_p5" model="uni.timetable.slot">
+        <field name="name">Period 5</field>
+        <field name="code">SUN-P5</field>
+        <field name="sequence">50</field>
+        <field name="day_of_week">sunday</field>
+        <field name="start_time">12.25</field>
+        <field name="end_time">13.25</field>
+        <field name="break_slot" eval="False"/>
+    </record>
+    <record id="slot_sun_lunch" model="uni.timetable.slot">
+        <field name="name">Lunch Break</field>
+        <field name="code">SUN-LUNCH</field>
+        <field name="sequence">55</field>
+        <field name="day_of_week">sunday</field>
+        <field name="start_time">13.25</field>
+        <field name="end_time">14.0</field>
+        <field name="break_slot" eval="True"/>
+    </record>
+    <record id="slot_sun_p6" model="uni.timetable.slot">
+        <field name="name">Period 6</field>
+        <field name="code">SUN-P6</field>
+        <field name="sequence">60</field>
+        <field name="day_of_week">sunday</field>
+        <field name="start_time">14.0</field>
+        <field name="end_time">15.0</field>
+        <field name="break_slot" eval="False"/>
+    </record>
+    <record id="slot_sun_p7" model="uni.timetable.slot">
+        <field name="name">Period 7</field>
+        <field name="code">SUN-P7</field>
+        <field name="sequence">70</field>
+        <field name="day_of_week">sunday</field>
+        <field name="start_time">15.0</field>
+        <field name="end_time">16.0</field>
+        <field name="break_slot" eval="False"/>
+    </record>
+
+    <!-- ============== MONDAY ============== -->
+    <record id="slot_mon_p1" model="uni.timetable.slot">
+        <field name="name">Period 1</field>
+        <field name="code">MON-P1</field>
+        <field name="sequence">10</field>
+        <field name="day_of_week">monday</field>
+        <field name="start_time">8.0</field>
+        <field name="end_time">9.0</field>
+        <field name="break_slot" eval="False"/>
+    </record>
+    <record id="slot_mon_p2" model="uni.timetable.slot">
+        <field name="name">Period 2</field>
+        <field name="code">MON-P2</field>
+        <field name="sequence">20</field>
+        <field name="day_of_week">monday</field>
+        <field name="start_time">9.0</field>
+        <field name="end_time">10.0</field>
+        <field name="break_slot" eval="False"/>
+    </record>
+    <record id="slot_mon_p3" model="uni.timetable.slot">
+        <field name="name">Period 3</field>
+        <field name="code">MON-P3</field>
+        <field name="sequence">30</field>
+        <field name="day_of_week">monday</field>
+        <field name="start_time">10.0</field>
+        <field name="end_time">11.0</field>
+        <field name="break_slot" eval="False"/>
+    </record>
+    <record id="slot_mon_break1" model="uni.timetable.slot">
+        <field name="name">Break</field>
+        <field name="code">MON-BRK1</field>
+        <field name="sequence">35</field>
+        <field name="day_of_week">monday</field>
+        <field name="start_time">11.0</field>
+        <field name="end_time">11.25</field>
+        <field name="break_slot" eval="True"/>
+    </record>
+    <record id="slot_mon_p4" model="uni.timetable.slot">
+        <field name="name">Period 4</field>
+        <field name="code">MON-P4</field>
+        <field name="sequence">40</field>
+        <field name="day_of_week">monday</field>
+        <field name="start_time">11.25</field>
+        <field name="end_time">12.25</field>
+        <field name="break_slot" eval="False"/>
+    </record>
+    <record id="slot_mon_p5" model="uni.timetable.slot">
+        <field name="name">Period 5</field>
+        <field name="code">MON-P5</field>
+        <field name="sequence">50</field>
+        <field name="day_of_week">monday</field>
+        <field name="start_time">12.25</field>
+        <field name="end_time">13.25</field>
+        <field name="break_slot" eval="False"/>
+    </record>
+    <record id="slot_mon_lunch" model="uni.timetable.slot">
+        <field name="name">Lunch Break</field>
+        <field name="code">MON-LUNCH</field>
+        <field name="sequence">55</field>
+        <field name="day_of_week">monday</field>
+        <field name="start_time">13.25</field>
+        <field name="end_time">14.0</field>
+        <field name="break_slot" eval="True"/>
+    </record>
+    <record id="slot_mon_p6" model="uni.timetable.slot">
+        <field name="name">Period 6</field>
+        <field name="code">MON-P6</field>
+        <field name="sequence">60</field>
+        <field name="day_of_week">monday</field>
+        <field name="start_time">14.0</field>
+        <field name="end_time">15.0</field>
+        <field name="break_slot" eval="False"/>
+    </record>
+    <record id="slot_mon_p7" model="uni.timetable.slot">
+        <field name="name">Period 7</field>
+        <field name="code">MON-P7</field>
+        <field name="sequence">70</field>
+        <field name="day_of_week">monday</field>
+        <field name="start_time">15.0</field>
+        <field name="end_time">16.0</field>
+        <field name="break_slot" eval="False"/>
+    </record>
+
+    <!-- ============== TUESDAY ============== -->
+    <record id="slot_tue_p1" model="uni.timetable.slot">
+        <field name="name">Period 1</field>
+        <field name="code">TUE-P1</field>
+        <field name="sequence">10</field>
+        <field name="day_of_week">tuesday</field>
+        <field name="start_time">8.0</field>
+        <field name="end_time">9.0</field>
+        <field name="break_slot" eval="False"/>
+    </record>
+    <record id="slot_tue_p2" model="uni.timetable.slot">
+        <field name="name">Period 2</field>
+        <field name="code">TUE-P2</field>
+        <field name="sequence">20</field>
+        <field name="day_of_week">tuesday</field>
+        <field name="start_time">9.0</field>
+        <field name="end_time">10.0</field>
+        <field name="break_slot" eval="False"/>
+    </record>
+    <record id="slot_tue_p3" model="uni.timetable.slot">
+        <field name="name">Period 3</field>
+        <field name="code">TUE-P3</field>
+        <field name="sequence">30</field>
+        <field name="day_of_week">tuesday</field>
+        <field name="start_time">10.0</field>
+        <field name="end_time">11.0</field>
+        <field name="break_slot" eval="False"/>
+    </record>
+    <record id="slot_tue_break1" model="uni.timetable.slot">
+        <field name="name">Break</field>
+        <field name="code">TUE-BRK1</field>
+        <field name="sequence">35</field>
+        <field name="day_of_week">tuesday</field>
+        <field name="start_time">11.0</field>
+        <field name="end_time">11.25</field>
+        <field name="break_slot" eval="True"/>
+    </record>
+    <record id="slot_tue_p4" model="uni.timetable.slot">
+        <field name="name">Period 4</field>
+        <field name="code">TUE-P4</field>
+        <field name="sequence">40</field>
+        <field name="day_of_week">tuesday</field>
+        <field name="start_time">11.25</field>
+        <field name="end_time">12.25</field>
+        <field name="break_slot" eval="False"/>
+    </record>
+    <record id="slot_tue_p5" model="uni.timetable.slot">
+        <field name="name">Period 5</field>
+        <field name="code">TUE-P5</field>
+        <field name="sequence">50</field>
+        <field name="day_of_week">tuesday</field>
+        <field name="start_time">12.25</field>
+        <field name="end_time">13.25</field>
+        <field name="break_slot" eval="False"/>
+    </record>
+    <record id="slot_tue_lunch" model="uni.timetable.slot">
+        <field name="name">Lunch Break</field>
+        <field name="code">TUE-LUNCH</field>
+        <field name="sequence">55</field>
+        <field name="day_of_week">tuesday</field>
+        <field name="start_time">13.25</field>
+        <field name="end_time">14.0</field>
+        <field name="break_slot" eval="True"/>
+    </record>
+    <record id="slot_tue_p6" model="uni.timetable.slot">
+        <field name="name">Period 6</field>
+        <field name="code">TUE-P6</field>
+        <field name="sequence">60</field>
+        <field name="day_of_week">tuesday</field>
+        <field name="start_time">14.0</field>
+        <field name="end_time">15.0</field>
+        <field name="break_slot" eval="False"/>
+    </record>
+    <record id="slot_tue_p7" model="uni.timetable.slot">
+        <field name="name">Period 7</field>
+        <field name="code">TUE-P7</field>
+        <field name="sequence">70</field>
+        <field name="day_of_week">tuesday</field>
+        <field name="start_time">15.0</field>
+        <field name="end_time">16.0</field>
+        <field name="break_slot" eval="False"/>
+    </record>
+
+    <!-- ============== WEDNESDAY ============== -->
+    <record id="slot_wed_p1" model="uni.timetable.slot">
+        <field name="name">Period 1</field>
+        <field name="code">WED-P1</field>
+        <field name="sequence">10</field>
+        <field name="day_of_week">wednesday</field>
+        <field name="start_time">8.0</field>
+        <field name="end_time">9.0</field>
+        <field name="break_slot" eval="False"/>
+    </record>
+    <record id="slot_wed_p2" model="uni.timetable.slot">
+        <field name="name">Period 2</field>
+        <field name="code">WED-P2</field>
+        <field name="sequence">20</field>
+        <field name="day_of_week">wednesday</field>
+        <field name="start_time">9.0</field>
+        <field name="end_time">10.0</field>
+        <field name="break_slot" eval="False"/>
+    </record>
+    <record id="slot_wed_p3" model="uni.timetable.slot">
+        <field name="name">Period 3</field>
+        <field name="code">WED-P3</field>
+        <field name="sequence">30</field>
+        <field name="day_of_week">wednesday</field>
+        <field name="start_time">10.0</field>
+        <field name="end_time">11.0</field>
+        <field name="break_slot" eval="False"/>
+    </record>
+    <record id="slot_wed_break1" model="uni.timetable.slot">
+        <field name="name">Break</field>
+        <field name="code">WED-BRK1</field>
+        <field name="sequence">35</field>
+        <field name="day_of_week">wednesday</field>
+        <field name="start_time">11.0</field>
+        <field name="end_time">11.25</field>
+        <field name="break_slot" eval="True"/>
+    </record>
+    <record id="slot_wed_p4" model="uni.timetable.slot">
+        <field name="name">Period 4</field>
+        <field name="code">WED-P4</field>
+        <field name="sequence">40</field>
+        <field name="day_of_week">wednesday</field>
+        <field name="start_time">11.25</field>
+        <field name="end_time">12.25</field>
+        <field name="break_slot" eval="False"/>
+    </record>
+    <record id="slot_wed_p5" model="uni.timetable.slot">
+        <field name="name">Period 5</field>
+        <field name="code">WED-P5</field>
+        <field name="sequence">50</field>
+        <field name="day_of_week">wednesday</field>
+        <field name="start_time">12.25</field>
+        <field name="end_time">13.25</field>
+        <field name="break_slot" eval="False"/>
+    </record>
+    <record id="slot_wed_lunch" model="uni.timetable.slot">
+        <field name="name">Lunch Break</field>
+        <field name="code">WED-LUNCH</field>
+        <field name="sequence">55</field>
+        <field name="day_of_week">wednesday</field>
+        <field name="start_time">13.25</field>
+        <field name="end_time">14.0</field>
+        <field name="break_slot" eval="True"/>
+    </record>
+    <record id="slot_wed_p6" model="uni.timetable.slot">
+        <field name="name">Period 6</field>
+        <field name="code">WED-P6</field>
+        <field name="sequence">60</field>
+        <field name="day_of_week">wednesday</field>
+        <field name="start_time">14.0</field>
+        <field name="end_time">15.0</field>
+        <field name="break_slot" eval="False"/>
+    </record>
+    <record id="slot_wed_p7" model="uni.timetable.slot">
+        <field name="name">Period 7</field>
+        <field name="code">WED-P7</field>
+        <field name="sequence">70</field>
+        <field name="day_of_week">wednesday</field>
+        <field name="start_time">15.0</field>
+        <field name="end_time">16.0</field>
+        <field name="break_slot" eval="False"/>
+    </record>
+</odoo>

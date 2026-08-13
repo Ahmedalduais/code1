@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- List View -->
+    <record id="view_uni_internship_placement_list" model="ir.ui.view">
+        <field name="name">uni.internship.placement.list</field>
+        <field name="model">uni.internship.placement</field>
+        <field name="arch" type="xml">
+            <list string="Student Placements"
+                  decoration-success="status == 'confirmed'"
+                  decoration-danger="status == 'rejected'"
+                  decoration-warning="status == 'pending'"
+                  decoration-muted="status == 'withdrawn'"
+                  decoration-info="status == 'completed'">
+                <field name="name"/>
+                <field name="placement_date"/>
+                <field name="student_id"/>
+                <field name="training_entity_id"/>
+                <field name="opportunity_id" optional="show"/>
+                <field name="position" optional="show"/>
+                <field name="department" optional="hide"/>
+                <field name="start_date" optional="show"/>
+                <field name="end_date" optional="show"/>
+                <field name="is_confirmed" optional="hide"/>
+                <field name="status" widget="badge"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_uni_internship_placement_form" model="ir.ui.view">
+        <field name="name">uni.internship.placement.form</field>
+        <field name="model">uni.internship.placement</field>
+        <field name="arch" type="xml">
+            <form string="Student Placement">
+                <header>
+                    <button name="action_confirm" type="object" string="Confirm"
+                            class="oe_highlight"
+                            invisible="status != 'pending'"/>
+                    <button name="action_reject" type="object" string="Reject"
+                            invisible="status != 'pending'"/>
+                    <button name="action_withdraw" type="object" string="Withdraw"
+                            invisible="status not in ('pending', 'confirmed')"
+                            confirm="Are you sure you want to withdraw this placement?"/>
+                    <button name="action_complete" type="object" string="Mark Completed"
+                            class="oe_highlight"
+                            invisible="status != 'confirmed'"/>
+                    <button name="action_pending" type="object" string="Back to Pending"
+                            invisible="status not in ('confirmed', 'rejected', 'withdrawn', 'completed')"/>
+                    <field name="status" widget="statusbar"
+                           statusbar_visible="pending,confirmed,completed"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group string="Student">
+                            <field name="student_id"/>
+                            <field name="student_name" invisible="1"/>
+                            <field name="opportunity_id"/>
+                            <field name="application_id"/>
+                            <field name="internship_id"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                        <group string="Placement">
+                            <field name="training_entity_id"/>
+                            <field name="placement_date"/>
+                            <field name="start_date"/>
+                            <field name="end_date"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Position">
+                            <field name="position"/>
+                            <field name="department"/>
+                        </group>
+                        <group string="Confirmation">
+                            <field name="is_confirmed"/>
+                            <field name="confirmed_by"/>
+                            <field name="confirmed_date"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Notes" name="notes">
+                            <field name="notes" placeholder="Additional notes about this placement..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_uni_internship_placement_search" model="ir.ui.view">
+        <field name="name">uni.internship.placement.search</field>
+        <field name="model">uni.internship.placement</field>
+        <field name="arch" type="xml">
+            <search string="Search Placements">
+                <field name="name"/>
+                <field name="student_id"/>
+                <field name="training_entity_id"/>
+                <field name="opportunity_id"/>
+                <field name="application_id"/>
+                <separator/>
+                <filter name="filter_pending" string="Pending"
+                        domain="[('status', '=', 'pending')]"/>
+                <filter name="filter_confirmed" string="Confirmed"
+                        domain="[('status', '=', 'confirmed')]"/>
+                <filter name="filter_completed" string="Completed"
+                        domain="[('status', '=', 'completed')]"/>
+                <filter name="filter_rejected" string="Rejected"
+                        domain="[('status', '=', 'rejected')]"/>
+                <filter name="filter_withdrawn" string="Withdrawn"
+                        domain="[('status', '=', 'withdrawn')]"/>
+                <separator/>
+                <group expand="0" string="Group By">
+                    <filter name="group_student" string="Student"
+                            context="{'group_by': 'student_id'}"/>
+                    <filter name="group_entity" string="Training Entity"
+                            context="{'group_by': 'training_entity_id'}"/>
+                    <filter name="group_opportunity" string="Opportunity"
+                            context="{'group_by': 'opportunity_id'}"/>
+                    <filter name="group_status" string="Status"
+                            context="{'group_by': 'status'}"/>
+                    <filter name="group_placement_date" string="Placement Date"
+                            context="{'group_by': 'placement_date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_uni_internship_placement" model="ir.actions.act_window">
+        <field name="name">Placements</field>
+        <field name="res_model">uni.internship.placement</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_internship_placement_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new student placement
+            </p>
+            <p>
+                Placements record the assignment of a student to a training entity,
+                optionally linked to an opportunity, application and internship record.
+            </p>
+        </field>
+    </record>
+</odoo>

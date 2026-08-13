@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============ Curriculum Submenu under University root ============ -->
+    <menuitem id="menu_university_curriculum"
+              name="Curriculum"
+              parent="university_core.menu_university_root"
+              sequence="30"
+              groups="university_core.group_university_user"/>
+
+    <!-- ============ Courses ============ -->
+    <menuitem id="menu_uni_curriculum_courses"
+              name="Courses"
+              parent="menu_university_curriculum"
+              sequence="10"/>
+
+    <menuitem id="menu_uni_course"
+              name="Courses"
+              parent="menu_uni_curriculum_courses"
+              action="action_uni_course"
+              sequence="10"/>
+
+    <menuitem id="menu_uni_course_prerequisite"
+              name="Prerequisites"
+              parent="menu_uni_curriculum_courses"
+              action="action_uni_course_prerequisite"
+              sequence="20"
+              groups="university_core.group_university_manager"/>
+
+    <menuitem id="menu_uni_course_equivalent"
+              name="Equivalents"
+              parent="menu_uni_curriculum_courses"
+              action="action_uni_course_equivalent"
+              sequence="30"
+              groups="university_core.group_university_manager"/>
+
+    <menuitem id="menu_uni_course_outcome"
+              name="Learning Outcomes"
+              parent="menu_uni_curriculum_courses"
+              action="action_uni_course_outcome"
+              sequence="40"
+              groups="university_core.group_university_manager"/>
+
+    <menuitem id="menu_uni_course_syllabus"
+              name="Syllabus"
+              parent="menu_uni_curriculum_courses"
+              action="action_uni_course_syllabus"
+              sequence="50"
+              groups="university_core.group_university_manager"/>
+
+    <menuitem id="menu_uni_course_type"
+              name="Course Types"
+              parent="menu_uni_curriculum_courses"
+              action="action_uni_course_type"
+              sequence="60"
+              groups="university_core.group_university_manager"/>
+
+    <menuitem id="menu_uni_course_delivery"
+              name="Delivery Modes"
+              parent="menu_uni_curriculum_courses"
+              action="action_uni_course_delivery"
+              sequence="70"
+              groups="university_core.group_university_manager"/>
+
+    <!-- ============ Evaluations ============ -->
+    <menuitem id="menu_uni_curriculum_evaluations"
+              name="Evaluations"
+              parent="menu_university_curriculum"
+              sequence="20"/>
+
+    <menuitem id="menu_uni_course_evaluation"
+              name="Course Evaluations"
+              parent="menu_uni_curriculum_evaluations"
+              action="action_uni_course_evaluation"
+              sequence="10"/>
+
+    <menuitem id="menu_uni_evaluation_type"
+              name="Evaluation Types"
+              parent="menu_uni_curriculum_evaluations"
+              action="action_uni_evaluation_type"
+              sequence="20"
+              groups="university_core.group_university_manager"/>
+
+    <!-- ============ Program-Course Links ============ -->
+    <menuitem id="menu_uni_curriculum_program_courses"
+              name="Program Courses"
+              parent="menu_university_curriculum"
+              sequence="30"/>
+
+    <menuitem id="menu_uni_program_course"
+              name="Program-Course Links"
+              parent="menu_uni_curriculum_program_courses"
+              action="action_uni_program_course"
+              sequence="10"/>
+
+    <menuitem id="menu_uni_program_course_line"
+              name="Program Course Lines"
+              parent="menu_uni_curriculum_program_courses"
+              action="action_uni_program_course_line"
+              sequence="20"
+              groups="university_core.group_university_manager"/>
+</odoo>

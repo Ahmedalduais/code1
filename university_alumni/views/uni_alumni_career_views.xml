@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- uni.alumni.career — List View                                -->
+    <!-- ============================================================ -->
+    <record id="view_uni_alumni_career_list" model="ir.ui.view">
+        <field name="name">uni.alumni.career.list</field>
+        <field name="model">uni.alumni.career</field>
+        <field name="arch" type="xml">
+            <list string="Alumni Careers"
+                  decoration-success="is_current"
+                  decoration-muted="not is_current">
+                <field name="name"/>
+                <field name="code" optional="hide"/>
+                <field name="member_id" options="{'no_create': True}"/>
+                <field name="university_id" optional="hide"/>
+                <field name="job_title"/>
+                <field name="employer"/>
+                <field name="industry" optional="hide"/>
+                <field name="employment_type"/>
+                <field name="start_date"/>
+                <field name="end_date" optional="hide"/>
+                <field name="is_current" widget="boolean_toggle"/>
+                <field name="salary_range" optional="hide"/>
+                <field name="country_id" optional="hide"/>
+                <field name="mentor_available" optional="hide"/>
+                <field name="active" invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.alumni.career — Form View                                -->
+    <!-- ============================================================ -->
+    <record id="view_uni_alumni_career_form" model="ir.ui.view">
+        <field name="name">uni.alumni.career.form</field>
+        <field name="model">uni.alumni.career</field>
+        <field name="arch" type="xml">
+            <form string="Alumni Career">
+                <header>
+                    <button name="action_end_position" string="End Position"
+                            type="object" class="oe_highlight"
+                            invisible="not is_current"
+                            confirm="End this position? End date will be set to today."/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button type="object" class="oe_stat_button" icon="fa-circle">
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">Current</span>
+                                <span class="o_stat_value">
+                                    <field name="is_current" widget="boolean_toggle"/>
+                                </span>
+                            </div>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" string="Career"/>
+                        <h1><field name="name" readonly="1"/></h1>
+                        <h3><field name="job_title" placeholder="e.g. Senior Software Engineer"/></h3>
+                        <h4><field name="employer" placeholder="Employer name"/></h4>
+                    </div>
+                    <group>
+                        <group string="Member">
+                            <field name="code"/>
+                            <field name="member_id"
+                                   options="{'no_create': True}"
+                                   placeholder="Select the alumni member..."/>
+                            <field name="university_id" options="{'no_create': True}"/>
+                        </group>
+                        <group string="Employment">
+                            <field name="employment_type"/>
+                            <field name="industry"/>
+                            <field name="salary_range"/>
+                            <field name="mentor_available"/>
+                        </group>
+                    </group>
+                    <group string="Dates &amp; Location">
+                        <group>
+                            <field name="start_date"/>
+                            <field name="end_date"
+                                   readonly="is_current"/>
+                            <field name="is_current"/>
+                        </group>
+                        <group>
+                            <field name="location"/>
+                            <field name="country_id"
+                                   options="{'no_create': True}"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Responsibilities" name="responsibilities">
+                            <field name="responsibilities" nolabel="1"
+                                   placeholder="Key responsibilities of the role..."/>
+                        </page>
+                        <page string="Achievements" name="achievements">
+                            <field name="achievements" nolabel="1"
+                                   placeholder="Notable achievements and impact..."/>
+                        </page>
+                        <page string="Skills &amp; Notes" name="skills">
+                            <group>
+                                <field name="skills_used"
+                                       placeholder="Comma-separated list of skills applied..."/>
+                            </group>
+                            <separator string="Notes"/>
+                            <field name="notes" nolabel="1"
+                                   placeholder="Internal notes..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.alumni.career — Graph View                               -->
+    <!-- ============================================================ -->
+    <record id="view_uni_alumni_career_graph" model="ir.ui.view">
+        <field name="name">uni.alumni.career.graph</field>
+        <field name="model">uni.alumni.career</field>
+        <field name="arch" type="xml">
+            <graph string="Careers by Industry" type="bar">
+                <field name="industry" type="row"/>
+                <field name="member_id" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.alumni.career — Search View                              -->
+    <!-- ============================================================ -->
+    <record id="view_uni_alumni_career_search" model="ir.ui.view">
+        <field name="name">uni.alumni.career.search</field>
+        <field name="model">uni.alumni.career</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="member_id"/>
+                <field name="job_title"/>
+                <field name="employer"/>
+                <field name="industry"/>
+                <field name="employment_type"/>
+                <field name="salary_range"/>
+                <field name="country_id"/>
+                <field name="university_id"/>
+                <separator/>
+                <filter string="Current Positions" name="filter_current"
+                        domain="[('is_current', '=', True)]"/>
+                <filter string="Past Positions" name="filter_past"
+                        domain="[('is_current', '=', False)]"/>
+                <separator/>
+                <filter string="Mentor Available" name="filter_mentor"
+                        domain="[('mentor_available', '=', True)]"/>
+                <separator/>
+                <filter string="Full-Time" name="filter_full_time"
+                        domain="[('employment_type', '=', 'full_time')]"/>
+                <filter string="Part-Time" name="filter_part_time"
+                        domain="[('employment_type', '=', 'part_time')]"/>
+                <filter string="Internship" name="filter_internship"
+                        domain="[('employment_type', '=', 'internship')]"/>
+                <separator/>
+                <filter string="Archived" name="filter_archived"
+                        domain="[('active', '=', False)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Member" name="group_member"
+                            context="{'group_by': 'member_id'}"/>
+                    <filter string="Employer" name="group_employer"
+                            context="{'group_by': 'employer'}"/>
+                    <filter string="Industry" name="group_industry"
+                            context="{'group_by': 'industry'}"/>
+                    <filter string="Employment Type" name="group_type"
+                            context="{'group_by': 'employment_type'}"/>
+                    <filter string="Salary Range" name="group_salary"
+                            context="{'group_by': 'salary_range'}"/>
+                    <filter string="Country" name="group_country"
+                            context="{'group_by': 'country_id'}"/>
+                    <filter string="Start Date" name="group_start"
+                            context="{'group_by': 'start_date:year'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.alumni.career — Action                                   -->
+    <!-- ============================================================ -->
+    <record id="action_uni_alumni_career" model="ir.actions.act_window">
+        <field name="name">Alumni Careers</field>
+        <field name="res_model">uni.alumni.career</field>
+        <field name="view_mode">list,form,graph</field>
+        <field name="search_view_id" ref="view_uni_alumni_career_search"/>
+        <field name="context">{'default_is_current': True}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Add a new career record
+            </p>
+            <p>Career records track the full professional path of each
+               alumni member: job title, employer, employment type,
+               salary range, skills, achievements, and mentorship
+               availability.</p>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.alumni.career — Reporting Action (graph-first)           -->
+    <!-- ============================================================ -->
+    <record id="action_uni_alumni_career_report" model="ir.actions.act_window">
+        <field name="name">Careers Analysis</field>
+        <field name="res_model">uni.alumni.career</field>
+        <field name="view_mode">graph,pivot,list</field>
+        <field name="search_view_id" ref="view_uni_alumni_career_search"/>
+        <field name="context">{'search_default_filter_current': True}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Analyze alumni careers
+            </p>
+            <p>Visualize career distribution by industry, employer,
+               employment type, or salary range.</p>
+        </field>
+    </record>
+</odoo>

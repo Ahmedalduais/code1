@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- uni.research.grant — List View                                -->
+    <!-- ============================================================ -->
+    <record id="view_uni_research_grant_list" model="ir.ui.view">
+        <field name="name">uni.research.grant.list</field>
+        <field name="model">uni.research.grant</field>
+        <field name="arch" type="xml">
+            <list string="Research Grants"
+                  decoration-info="state in ('draft', 'applied')"
+                  decoration-success="state == 'active'"
+                  decoration-primary="state == 'awarded'"
+                  decoration-muted="state == 'closed'"
+                  decoration-danger="state == 'rejected'">
+                <field name="name"/>
+                <field name="title"/>
+                <field name="funding_agency"/>
+                <field name="funding_agency_country_id" optional="hide"/>
+                <field name="grant_type"/>
+                <field name="principal_investigator_id"/>
+                <field name="amount" sum="Total Amount"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="amount_allocated" sum="Total Allocated"/>
+                <field name="amount_remaining" sum="Total Remaining"/>
+                <field name="start_date"/>
+                <field name="end_date"/>
+                <field name="duration_months"/>
+                <field name="project_count" sum="Total Projects"/>
+                <field name="state" widget="badge"
+                       decoration-info="state in ('draft', 'applied')"
+                       decoration-success="state == 'active'"
+                       decoration-primary="state == 'awarded'"
+                       decoration-muted="state == 'closed'"
+                       decoration-danger="state == 'rejected'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.research.grant — Form View                                -->
+    <!-- ============================================================ -->
+    <record id="view_uni_research_grant_form" model="ir.ui.view">
+        <field name="name">uni.research.grant.form</field>
+        <field name="model">uni.research.grant</field>
+        <field name="arch" type="xml">
+            <form string="Research Grant">
+                <header>
+                    <button name="action_apply" string="Apply"
+                            type="object" class="oe_highlight"
+                            invisible="state != 'draft'"/>
+                    <button name="action_award" string="Award"
+                            type="object" class="oe_highlight"
+                            invisible="state != 'applied'"/>
+                    <button name="action_activate" string="Activate"
+                            type="object" class="oe_highlight"
+                            invisible="state != 'awarded'"/>
+                    <button name="action_close" string="Close"
+                            type="object" class="oe_highlight"
+                            invisible="state != 'active'"/>
+                    <button name="action_reject" string="Reject"
+                            type="object"
+                            invisible="state not in ('applied', 'awarded')"
+                            confirm="Are you sure you want to reject this grant?"/>
+                    <button name="action_draft" string="Back to Draft"
+                            type="object"
+                            invisible="state != 'rejected'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,applied,awarded,active,closed"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_projects" type="object"
+                                class="oe_stat_button" icon="fa-flask">
+                            <field name="project_count" widget="statinfo"
+                                   string="Projects"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="title" string="Grant"/>
+                        <h1><field name="title" placeholder="Grant title"/></h1>
+                        <h3><field name="name" readonly="1"/></h3>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="code"/>
+                            <field name="funding_agency"/>
+                            <field name="funding_agency_country_id"/>
+                            <field name="grant_type"/>
+                            <field name="principal_investigator_id"
+                                   options="{'no_create': True}"/>
+                        </group>
+                        <group>
+                            <field name="amount"/>
+                            <field name="currency_id"/>
+                            <field name="amount_allocated"/>
+                            <field name="amount_remaining"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="application_date"/>
+                            <field name="award_date"/>
+                            <field name="start_date"/>
+                            <field name="end_date"/>
+                            <field name="duration_months"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Description">
+                            <group>
+                                <field name="description"/>
+                            </group>
+                        </page>
+                        <page string="Conditions">
+                            <group>
+                                <field name="conditions"
+                                       placeholder="Terms and conditions imposed by the funding agency..."/>
+                            </group>
+                        </page>
+                        <page string="Funded Projects">
+                            <field name="project_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="title"/>
+                                    <field name="principal_investigator_id"/>
+                                    <field name="budget"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Notes">
+                            <field name="notes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.research.grant — Search View                              -->
+    <!-- ============================================================ -->
+    <record id="view_uni_research_grant_search" model="ir.ui.view">
+        <field name="name">uni.research.grant.search</field>
+        <field name="model">uni.research.grant</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="title"/>
+                <field name="code"/>
+                <field name="funding_agency"/>
+                <field name="principal_investigator_id"/>
+                <field name="funding_agency_country_id"/>
+                <separator/>
+                <filter string="My Grants" name="filter_my_grants"
+                        domain="[('principal_investigator_id.user_id', '=', uid)]"/>
+                <separator/>
+                <filter string="Draft" name="filter_draft"
+                        domain="[('state', '=', 'draft')]"/>
+                <filter string="Applied" name="filter_applied"
+                        domain="[('state', '=', 'applied')]"/>
+                <filter string="Awarded" name="filter_awarded"
+                        domain="[('state', '=', 'awarded')]"/>
+                <filter string="Active" name="filter_active"
+                        domain="[('state', '=', 'active')]"/>
+                <filter string="Closed" name="filter_closed"
+                        domain="[('state', '=', 'closed')]"/>
+                <filter string="Rejected" name="filter_rejected"
+                        domain="[('state', '=', 'rejected')]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Funding Agency" name="group_agency"
+                            context="{'group_by': 'funding_agency'}"/>
+                    <filter string="Grant Type" name="group_type"
+                            context="{'group_by': 'grant_type'}"/>
+                    <filter string="PI" name="group_pi"
+                            context="{'group_by': 'principal_investigator_id'}"/>
+                    <filter string="Country" name="group_country"
+                            context="{'group_by': 'funding_agency_country_id'}"/>
+                    <filter string="State" name="group_state"
+                            context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.research.grant — Action                                   -->
+    <!-- ============================================================ -->
+    <record id="action_uni_research_grant" model="ir.actions.act_window">
+        <field name="name">Research Grants</field>
+        <field name="res_model">uni.research.grant</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_research_grant_search"/>
+        <field name="context">{
+            'search_default_filter_draft': 1,
+            'search_default_filter_active': 1,
+        }</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new research grant
+            </p>
+            <p>Track funding from government, private, internal, international
+               or corporate agencies. Allocate grant amounts to research
+               projects and monitor remaining balances.</p>
+        </field>
+    </record>
+</odoo>

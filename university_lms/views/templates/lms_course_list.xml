@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- LMS Course List (catalog) page                                -->
+    <!-- ============================================================ -->
+    <template id="lms_course_list_page" name="LMS Course Catalog">
+        <t t-call="university_lms.lms_layout">
+            <t t-if="not courses">
+                <div class="alert alert-info">
+                    <i class="fa fa-info-circle me-2"/>
+                    No courses are currently published.
+                </div>
+            </t>
+            <t t-else="">
+                <div class="row">
+                    <t t-foreach="courses" t-as="course">
+                        <div class="col-lg-4 col-md-6 mb-4">
+                            <div class="card h-100 shadow-sm">
+                                <t t-if="course.cover_image">
+                                    <img class="card-img-top"
+                                         t-att-src=" '/web/image/uni.lms.course/%s/cover_image' % course.id"
+                                         t-att-alt="course.display_name"
+                                         style="max-height: 180px; object-fit: cover;"/>
+                                </t>
+                                <t t-else="">
+                                    <div class="card-img-top bg-light d-flex align-items-center justify-content-center"
+                                         style="height: 180px;">
+                                        <i class="fa fa-book fa-3x text-muted"/>
+                                    </div>
+                                </t>
+                                <div class="card-body d-flex flex-column">
+                                    <h5 class="card-title">
+                                        <t t-esc="course.course_id.display_name or course.display_name"/>
+                                    </h5>
+                                    <h6 class="card-subtitle mb-2 text-muted">
+                                        <t t-esc="course.code"/>
+                                        <t t-if="course.academic_term_id">
+                                            — <t t-esc="course.academic_term_id.display_name"/>
+                                        </t>
+                                    </h6>
+                                    <p class="card-text flex-grow-1">
+                                        <t t-esc="(course.description or '')[:200]"/>
+                                        <t t-if="len(course.description or '') > 200">…</t>
+                                    </p>
+                                    <div class="d-flex justify-content-between align-items-center mt-2">
+                                        <small class="text-muted">
+                                            <i class="fa fa-user me-1"/>
+                                            <t t-esc="course.faculty_name or 'TBA'"/>
+                                        </small>
+                                        <small class="text-muted">
+                                            <i class="fa fa-users me-1"/>
+                                            <t t-esc="course.enrolled_count"/>
+                                            <t t-if="course.max_students">/<t t-esc="course.max_students"/></t>
+                                        </small>
+                                    </div>
+                                </div>
+                                <div class="card-footer bg-transparent">
+                                    <a t-attf-href="/university/lms/course/#{course.id}"
+                                       class="btn btn-primary btn-sm w-100">
+                                        <i class="fa fa-eye me-1"/>View Course
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>

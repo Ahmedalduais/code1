@@ -1,0 +1,366 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- uni.admission.application — List View                        -->
+    <!-- ============================================================ -->
+    <record id="view_uni_admission_application_list" model="ir.ui.view">
+        <field name="name">uni.admission.application.list</field>
+        <field name="model">uni.admission.application</field>
+        <field name="arch" type="xml">
+            <list string="Applications"
+                  decoration-success="status in ('accepted', 'enrolled')"
+                  decoration-info="status == 'interview_scheduled'"
+                  decoration-warning="status in ('submitted', 'waitlisted')"
+                  decoration-muted="status == 'draft'"
+                  decoration-danger="status == 'rejected'">
+                <field name="name"/>
+                <field name="applicant_name"/>
+                <field name="applicant_email"/>
+                <field name="applicant_mobile" optional="hide"/>
+                <field name="university_id" optional="hide"/>
+                <field name="college_id" optional="hide"/>
+                <field name="program_id"/>
+                <field name="academic_term_id" optional="hide"/>
+                <field name="application_date"/>
+                <field name="assigned_to" optional="hide"/>
+                <field name="high_school_grade" optional="hide"/>
+                <field name="fulfilled_requirements_count" optional="hide"/>
+                <field name="mandatory_requirements_count" optional="hide"/>
+                <field name="interview_count" optional="hide"/>
+                <field name="status" widget="badge"
+                       decoration-success="status in ('accepted', 'enrolled')"
+                       decoration-info="status == 'interview_scheduled'"
+                       decoration-warning="status in ('submitted', 'waitlisted')"
+                       decoration-muted="status == 'draft'"
+                       decoration-danger="status == 'rejected'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.admission.application — Form View                        -->
+    <!-- ============================================================ -->
+    <record id="view_uni_admission_application_form" model="ir.ui.view">
+        <field name="name">uni.admission.application.form</field>
+        <field name="model">uni.admission.application</field>
+        <field name="arch" type="xml">
+            <form string="Admission Application">
+                <header>
+                    <button name="action_submit" string="Submit"
+                            type="object" class="oe_highlight"
+                            invisible="status != 'draft'"/>
+                    <button name="action_review" string="Start Review"
+                            type="object" class="oe_highlight"
+                            invisible="status not in ('submitted', 'interview_scheduled')"/>
+                    <button name="action_schedule_interview" string="Confirm Interview"
+                            type="object"
+                            invisible="status not in ('submitted', 'under_review')"/>
+                    <button name="action_accept" string="Accept"
+                            type="object" class="oe_highlight"
+                            invisible="status not in ('under_review', 'interview_scheduled', 'waitlisted')"/>
+                    <button name="action_waitlist" string="Waitlist"
+                            type="object"
+                            invisible="status not in ('under_review', 'interview_scheduled')"/>
+                    <button name="action_reject" string="Reject"
+                            type="object"
+                            invisible="status not in ('under_review', 'interview_scheduled', 'waitlisted')"/>
+                    <button name="action_enroll" string="Enroll as Student"
+                            type="object" class="oe_highlight"
+                            invisible="status != 'accepted'"
+                            confirm="This will create a new student record. Proceed?"/>
+                    <field name="status" widget="statusbar"
+                           statusbar_visible="draft,submitted,under_review,interview_scheduled,accepted,enrolled"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_interviews" type="object"
+                                class="oe_stat_button" icon="fa-users">
+                            <field name="interview_count" widget="statinfo"
+                                   string="Interviews"/>
+                        </button>
+                        <button name="action_view_requirements" type="object"
+                                class="oe_stat_button" icon="fa-check-square-o">
+                            <field name="fulfilled_requirements_count" widget="statinfo"
+                                   string="Requirements"/>
+                        </button>
+                        <button name="action_view_student" type="object"
+                                class="oe_stat_button" icon="fa-user-plus"
+                                invisible="not student_id">
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">Student</span>
+                                <span class="o_stat_text"><field name="student_id"/></span>
+                            </div>
+                        </button>
+                    </div>
+                    <field name="applicant_photo" widget="image" class="oe_avatar"/>
+                    <div class="oe_title">
+                        <label for="name" string="Application"/>
+                        <h1><field name="name" readonly="1"/></h1>
+                        <h3><field name="applicant_name" placeholder="Applicant's full name"/></h3>
+                    </div>
+                    <group>
+                        <group string="Contact">
+                            <field name="applicant_email"/>
+                            <field name="applicant_phone"/>
+                            <field name="applicant_mobile"/>
+                            <field name="applicant_user_id"
+                                   options="{'no_create': True}"/>
+                        </group>
+                        <group string="Identity">
+                            <field name="applicant_gender"/>
+                            <field name="applicant_birth_date"/>
+                            <field name="applicant_nationality_id"
+                                   options="{'no_create': True}"/>
+                            <field name="applicant_national_id"/>
+                        </group>
+                    </group>
+                    <group string="Academic Target">
+                        <group>
+                            <field name="university_id"
+                                   options="{'no_create': True}"/>
+                            <field name="college_id"
+                                   options="{'no_create': True}"/>
+                            <field name="department_id"
+                                   options="{'no_create': True}"/>
+                            <field name="program_id"
+                                   options="{'no_create': True}"/>
+                        </group>
+                        <group>
+                            <field name="level_id"
+                                   options="{'no_create': True}"/>
+                            <field name="academic_term_id"
+                                   options="{'no_create': True}"/>
+                            <field name="branch_id" invisible="1"/>
+                            <field name="assigned_to"
+                                   options="{'no_create': True}"/>
+                        </group>
+                    </group>
+                    <group string="Academic Background">
+                        <group>
+                            <field name="high_school_name"/>
+                            <field name="high_school_graduation_year"/>
+                            <field name="high_school_grade"/>
+                            <field name="high_school_grade_type"/>
+                        </group>
+                        <group>
+                            <field name="transcript_file" filename="transcript_filename"/>
+                            <field name="transcript_filename" invisible="1"/>
+                            <field name="recommendation_letters"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Requirements">
+                            <field name="requirements_line_ids">
+                                <list editable="bottom">
+                                    <field name="requirement_id"
+                                           options="{'no_create': True}"/>
+                                    <field name="requirement_type"/>
+                                    <field name="is_mandatory"/>
+                                    <field name="is_fulfilled" widget="boolean_toggle"/>
+                                    <field name="fulfilled_date"/>
+                                    <field name="file" filename="filename"/>
+                                    <field name="filename" invisible="1"/>
+                                    <field name="notes"/>
+                                </list>
+                            </field>
+                            <group class="oe_subtotal_footer">
+                                <button name="action_apply_default_requirements"
+                                        type="object" string="Load Default Requirements"
+                                        class="oe_highlight"/>
+                            </group>
+                        </page>
+                        <page string="Interviews">
+                            <field name="interview_ids">
+                                <list>
+                                    <field name="interviewer_name"/>
+                                    <field name="interview_date"/>
+                                    <field name="start_time" widget="float_time"/>
+                                    <field name="end_time" widget="float_time"/>
+                                    <field name="is_online"/>
+                                    <field name="score"/>
+                                    <field name="score_max"/>
+                                    <field name="recommendation"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Personal Statement">
+                            <field name="personal_statement"
+                                   placeholder="Applicant's personal statement..."/>
+                        </page>
+                        <page string="Decision">
+                            <group>
+                                <group>
+                                    <field name="decision_id"
+                                           options="{'no_create': True}"/>
+                                </group>
+                                <group>
+                                    <field name="student_id" readonly="1"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Notes">
+                            <field name="notes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.admission.application — Kanban View                      -->
+    <!-- ============================================================ -->
+    <record id="view_uni_admission_application_kanban" model="ir.ui.view">
+        <field name="name">uni.admission.application.kanban</field>
+        <field name="model">uni.admission.application</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="status" class="o_kanban_small_column">
+                <field name="name"/>
+                <field name="applicant_name"/>
+                <field name="program_id"/>
+                <field name="academic_term_id"/>
+                <field name="application_date"/>
+                <field name="status"/>
+                <field name="applicant_email"/>
+                <field name="applicant_mobile"/>
+                <field name="applicant_photo"/>
+                <field name="assigned_to"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_card oe_kanban_global_click">
+                            <div class="o_kanban_image">
+                                <img t-att-src="kanban_image('uni.admission.application', 'applicant_photo', record.id.raw_value)"
+                                     alt="Photo" class="oe_avatar"/>
+                            </div>
+                            <div class="oe_kanban_details">
+                                <strong class="o_kanban_record_title">
+                                    <field name="applicant_name"/>
+                                </strong>
+                                <div><field name="name"/></div>
+                                <div>
+                                    <field name="program_id"/>
+                                </div>
+                                <div>
+                                    <field name="academic_term_id"/>
+                                </div>
+                                <div>
+                                    <field name="status" widget="badge"/>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.admission.application — Search View                      -->
+    <!-- ============================================================ -->
+    <record id="view_uni_admission_application_search" model="ir.ui.view">
+        <field name="name">uni.admission.application.search</field>
+        <field name="model">uni.admission.application</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="applicant_name"/>
+                <field name="applicant_email"/>
+                <field name="applicant_mobile"/>
+                <field name="applicant_national_id"/>
+                <field name="university_id"/>
+                <field name="college_id"/>
+                <field name="department_id"/>
+                <field name="program_id"/>
+                <field name="academic_term_id"/>
+                <field name="level_id"/>
+                <field name="assigned_to"/>
+                <separator/>
+                <filter string="Draft" name="filter_draft"
+                        domain="[('status', '=', 'draft')]"/>
+                <filter string="Submitted" name="filter_submitted"
+                        domain="[('status', '=', 'submitted')]"/>
+                <filter string="Under Review" name="filter_review"
+                        domain="[('status', '=', 'under_review')]"/>
+                <filter string="Interview Scheduled" name="filter_interview"
+                        domain="[('status', '=', 'interview_scheduled')]"/>
+                <filter string="Accepted" name="filter_accepted"
+                        domain="[('status', '=', 'accepted')]"/>
+                <filter string="Waitlisted" name="filter_waitlisted"
+                        domain="[('status', '=', 'waitlisted')]"/>
+                <filter string="Rejected" name="filter_rejected"
+                        domain="[('status', '=', 'rejected')]"/>
+                <filter string="Enrolled" name="filter_enrolled"
+                        domain="[('status', '=', 'enrolled')]"/>
+                <separator/>
+                <filter string="My Applications" name="filter_my_applications"
+                        domain="[('assigned_to', '=', uid)]"/>
+                <filter string="Submitted Today" name="filter_today"
+                        domain="[('submission_date', '>=', context_today().strftime('%Y-%m-%d 00:00:00'))]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Status" name="group_status"
+                            context="{'group_by': 'status'}"/>
+                    <filter string="University" name="group_university"
+                            context="{'group_by': 'university_id'}"/>
+                    <filter string="College" name="group_college"
+                            context="{'group_by': 'college_id'}"/>
+                    <filter string="Department" name="group_department"
+                            context="{'group_by': 'department_id'}"/>
+                    <filter string="Program" name="group_program"
+                            context="{'group_by': 'program_id'}"/>
+                    <filter string="Academic Term" name="group_term"
+                            context="{'group_by': 'academic_term_id'}"/>
+                    <filter string="Assigned To" name="group_assigned"
+                            context="{'group_by': 'assigned_to'}"/>
+                    <filter string="Application Month" name="group_month"
+                            context="{'group_by': 'application_date:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.admission.application — Action                           -->
+    <!-- ============================================================ -->
+    <record id="action_uni_admission_application" model="ir.actions.act_window">
+        <field name="name">Applications</field>
+        <field name="res_model">uni.admission.application</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="search_view_id" ref="view_uni_admission_application_search"/>
+        <field name="context">{
+            'default_status': 'draft',
+        }</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new admission application
+            </p>
+            <p>Track prospective students through the admission workflow:
+               draft → submitted → review → interview → accept/reject/waitlist
+               → enroll as a student.</p>
+        </field>
+    </record>
+
+    <record id="action_uni_admission_application_view_kanban" model="ir.actions.act_window.view">
+        <field name="sequence" eval="1"/>
+        <field name="view_mode">kanban</field>
+        <field name="view_id" ref="view_uni_admission_application_kanban"/>
+        <field name="act_window_id" ref="action_uni_admission_application"/>
+    </record>
+    <record id="action_uni_admission_application_view_list" model="ir.actions.act_window.view">
+        <field name="sequence" eval="2"/>
+        <field name="view_mode">list</field>
+        <field name="view_id" ref="view_uni_admission_application_list"/>
+        <field name="act_window_id" ref="action_uni_admission_application"/>
+    </record>
+    <record id="action_uni_admission_application_view_form" model="ir.actions.act_window.view">
+        <field name="sequence" eval="3"/>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_uni_admission_application_form"/>
+        <field name="act_window_id" ref="action_uni_admission_application"/>
+    </record>
+</odoo>

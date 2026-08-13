@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- uni.scholarship.type — List View                              -->
+    <!-- ============================================================ -->
+    <record id="view_uni_scholarship_type_list" model="ir.ui.view">
+        <field name="name">uni.scholarship.type.list</field>
+        <field name="model">uni.scholarship.type</field>
+        <field name="arch" type="xml">
+            <list string="Scholarship Types"
+                  decoration-success="is_active == True"
+                  decoration-muted="is_active == False">
+                <field name="sequence" widget="handle"/>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="scholarship_nature"/>
+                <field name="default_percentage"/>
+                <field name="default_amount" widget="monetary"
+                       options="{'currency_field': 'currency_id'}"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="is_active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.scholarship.type — Form View                              -->
+    <!-- ============================================================ -->
+    <record id="view_uni_scholarship_type_form" model="ir.ui.view">
+        <field name="name">uni.scholarship.type.form</field>
+        <field name="model">uni.scholarship.type</field>
+        <field name="arch" type="xml">
+            <form string="Scholarship Type">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" string="Scholarship Type"/>
+                        <h1><field name="name" placeholder="e.g. Merit Scholarship"/></h1>
+                        <h3><field name="code" placeholder="e.g. MERIT"/></h3>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="scholarship_nature"/>
+                            <field name="default_percentage"/>
+                            <field name="default_amount" widget="monetary"
+                                   options="{'currency_field': 'currency_id'}"/>
+                            <field name="currency_id"
+                                   options="{'no_create': True}"/>
+                            <field name="sequence"/>
+                            <field name="is_active"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                        <group string="Description">
+                            <field name="description" nolabel="1"
+                                   placeholder="Describe the eligibility and scope of this scholarship type..."/>
+                        </group>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.scholarship.type — Search View                            -->
+    <!-- ============================================================ -->
+    <record id="view_uni_scholarship_type_search" model="ir.ui.view">
+        <field name="name">uni.scholarship.type.search</field>
+        <field name="model">uni.scholarship.type</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="scholarship_nature"/>
+                <filter string="Currently Offered" name="filter_offered"
+                        domain="[('is_active', '=', True)]"/>
+                <filter string="Retired" name="filter_retired"
+                        domain="[('is_active', '=', False)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Nature" name="group_nature"
+                            context="{'group_by': 'scholarship_nature'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.scholarship.type — Action                                 -->
+    <!-- ============================================================ -->
+    <record id="action_uni_scholarship_type" model="ir.actions.act_window">
+        <field name="name">Scholarship Types</field>
+        <field name="res_model">uni.scholarship.type</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_scholarship_type_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new scholarship type
+            </p>
+            <p>Scholarship types classify the discounts offered to students:
+               full, partial, merit, need-based, sports, employee dependent.</p>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.scholarship — List View                                   -->
+    <!-- ============================================================ -->
+    <record id="view_uni_scholarship_list" model="ir.ui.view">
+        <field name="name">uni.scholarship.list</field>
+        <field name="model">uni.scholarship</field>
+        <field name="arch" type="xml">
+            <list string="Scholarships"
+                  decoration-success="approval_status == 'active'"
+                  decoration-info="approval_status == 'approved'"
+                  decoration-warning="approval_status == 'pending'"
+                  decoration-danger="approval_status == 'rejected'"
+                  decoration-muted="approval_status == 'terminated'">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="student_id"/>
+                <field name="scholarship_type_id"/>
+                <field name="academic_term_id" optional="hide"/>
+                <field name="academic_year_id" optional="hide"/>
+                <field name="start_date"/>
+                <field name="end_date"/>
+                <field name="discount_percentage"/>
+                <field name="discount_amount" widget="monetary"
+                       options="{'currency_field': 'currency_id'}"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="approval_status" widget="badge"
+                       decoration-success="approval_status == 'active'"
+                       decoration-info="approval_status == 'approved'"
+                       decoration-warning="approval_status == 'pending'"
+                       decoration-danger="approval_status == 'rejected'"
+                       decoration-muted="approval_status == 'terminated'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.scholarship — Form View                                   -->
+    <!-- ============================================================ -->
+    <record id="view_uni_scholarship_form" model="ir.ui.view">
+        <field name="name">uni.scholarship.form</field>
+        <field name="model">uni.scholarship</field>
+        <field name="arch" type="xml">
+            <form string="Scholarship">
+                <header>
+                    <button name="action_submit" string="Submit"
+                            type="object" class="oe_highlight"
+                            invisible="approval_status != 'draft'"/>
+                    <button name="action_approve" string="Approve"
+                            type="object" class="oe_highlight"
+                            invisible="approval_status != 'pending'"
+                            groups="university_core.group_university_manager"/>
+                    <button name="action_reject" string="Reject"
+                            type="object"
+                            invisible="approval_status != 'pending'"
+                            groups="university_core.group_university_manager"/>
+                    <button name="action_activate" string="Activate"
+                            type="object" class="oe_highlight"
+                            invisible="approval_status != 'approved'"/>
+                    <button name="action_terminate" string="Terminate"
+                            type="object"
+                            invisible="approval_status != 'active'"
+                            confirm="Are you sure you want to terminate this scholarship?"/>
+                    <button name="action_draft" string="Set to Draft"
+                            type="object"
+                            invisible="approval_status != 'rejected'"/>
+                    <field name="approval_status" widget="statusbar"
+                           statusbar_visible="draft,pending,approved,active"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_invoices" type="object"
+                                class="oe_stat_button" icon="fa-file-text-o">
+                            <field name="invoice_count" widget="statinfo"
+                                   string="Invoices"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" string="Scholarship"/>
+                        <h1><field name="name" readonly="1"/></h1>
+                        <h3><field name="code" placeholder="Auto-filled from reference"/></h3>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="student_id"
+                                   options="{'no_create': True}"/>
+                            <field name="scholarship_type_id"
+                                   options="{'no_create': True}"/>
+                            <field name="university_id" readonly="1"
+                                   options="{'no_create': True}"/>
+                            <field name="academic_term_id"
+                                   options="{'no_create': True}"/>
+                            <field name="academic_year_id"
+                                   options="{'no_create': True}"/>
+                        </group>
+                        <group>
+                            <field name="start_date"/>
+                            <field name="end_date"/>
+                            <field name="discount_percentage"/>
+                            <field name="discount_amount" widget="monetary"
+                                   options="{'currency_field': 'currency_id'}"/>
+                            <field name="currency_id"
+                                   options="{'no_create': True}"/>
+                        </group>
+                    </group>
+                    <group string="Covered Fee Types">
+                        <field name="covered_fee_type_ids" nolabel="1"
+                               options="{'no_create': True}"
+                               widget="many2many_tags"/>
+                    </group>
+                    <group>
+                        <group string="Approval Info">
+                            <field name="approved_by" readonly="1"/>
+                            <field name="approved_date" readonly="1"/>
+                        </group>
+                        <group string="Reason">
+                            <field name="reason" nolabel="1"/>
+                        </group>
+                    </group>
+                    <group string="Notes">
+                        <field name="notes" nolabel="1"/>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.scholarship — Search View                                 -->
+    <!-- ============================================================ -->
+    <record id="view_uni_scholarship_search" model="ir.ui.view">
+        <field name="name">uni.scholarship.search</field>
+        <field name="model">uni.scholarship</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="student_id"/>
+                <field name="scholarship_type_id"/>
+                <field name="university_id"/>
+                <field name="academic_term_id"/>
+                <field name="academic_year_id"/>
+                <filter string="Draft" name="filter_draft"
+                        domain="[('approval_status', '=', 'draft')]"/>
+                <filter string="Pending" name="filter_pending"
+                        domain="[('approval_status', '=', 'pending')]"/>
+                <filter string="Active" name="filter_active"
+                        domain="[('approval_status', '=', 'active')]"/>
+                <filter string="Terminated" name="filter_terminated"
+                        domain="[('approval_status', '=', 'terminated')]"/>
+                <separator/>
+                <filter string="Full Discount" name="filter_full"
+                        domain="[('discount_percentage', '=', 100)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Student" name="group_student"
+                            context="{'group_by': 'student_id'}"/>
+                    <filter string="Scholarship Type" name="group_type"
+                            context="{'group_by': 'scholarship_type_id'}"/>
+                    <filter string="Term" name="group_term"
+                            context="{'group_by': 'academic_term_id'}"/>
+                    <filter string="Year" name="group_year"
+                            context="{'group_by': 'academic_year_id'}"/>
+                    <filter string="Status" name="group_status"
+                            context="{'group_by': 'approval_status'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.scholarship — Action                                      -->
+    <!-- ============================================================ -->
+    <record id="action_uni_scholarship" model="ir.actions.act_window">
+        <field name="name">Scholarships</field>
+        <field name="res_model">uni.scholarship</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_scholarship_search"/>
+        <field name="context">{'default_approval_status': 'draft'}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new scholarship
+            </p>
+            <p>Scholarships grant financial discounts to students based on
+               a chosen scholarship type. Each scholarship follows a full
+               approval workflow (draft → pending → approved → active).</p>
+        </field>
+    </record>
+</odoo>

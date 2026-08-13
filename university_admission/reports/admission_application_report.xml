@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- Paper format — A4 portrait for the admission report           -->
+    <!-- ============================================================ -->
+    <record id="paper_format_admission_application" model="report.paperformat">
+        <field name="name">Admission Application Paper Format</field>
+        <field name="default" eval="False"/>
+        <field name="format">A4</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">7</field>
+        <field name="margin_bottom">7</field>
+        <field name="margin_left">5</field>
+        <field name="margin_right">5</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">10</field>
+        <field name="dpi">90</field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- QWeb template — admission application summary                 -->
+    <!-- ============================================================ -->
+    <template id="report_admission_application_document">
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <div class="page">
+                    <h2 class="text-center">
+                        Admission Application
+                    </h2>
+                    <h3 class="text-center text-muted">
+                        <span t-field="doc.name"/>
+                    </h3>
+
+                    <div class="row mt-4">
+                        <div class="col-6">
+                            <strong>Applicant:</strong>
+                            <span t-field="doc.applicant_name"/>
+                        </div>
+                        <div class="col-6">
+                            <strong>Application Date:</strong>
+                            <span t-field="doc.application_date" t-options="{'widget': 'datetime'}"/>
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-6">
+                            <strong>Email:</strong>
+                            <span t-field="doc.applicant_email"/>
+                        </div>
+                        <div class="col-6">
+                            <strong>Mobile:</strong>
+                            <span t-field="doc.applicant_mobile"/>
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-6">
+                            <strong>Date of Birth:</strong>
+                            <span t-field="doc.applicant_birth_date"/>
+                        </div>
+                        <div class="col-6">
+                            <strong>Gender:</strong>
+                            <span t-field="doc.applicant_gender"/>
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-6">
+                            <strong>Nationality:</strong>
+                            <span t-field="doc.applicant_nationality_id"/>
+                        </div>
+                        <div class="col-6">
+                            <strong>National ID:</strong>
+                            <span t-field="doc.applicant_national_id"/>
+                        </div>
+                    </div>
+
+                    <h4 class="mt-4">Academic Target</h4>
+                    <table class="table table-sm table-bordered">
+                        <tbody>
+                            <tr>
+                                <th class="table-light">University</th>
+                                <td><span t-field="doc.university_id"/></td>
+                                <th class="table-light">College</th>
+                                <td><span t-field="doc.college_id"/></td>
+                            </tr>
+                            <tr>
+                                <th class="table-light">Department</th>
+                                <td><span t-field="doc.department_id"/></td>
+                                <th class="table-light">Program</th>
+                                <td><span t-field="doc.program_id"/></td>
+                            </tr>
+                            <tr>
+                                <th class="table-light">Program Level</th>
+                                <td><span t-field="doc.level_id"/></td>
+                                <th class="table-light">Academic Term</th>
+                                <td><span t-field="doc.academic_term_id"/></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h4 class="mt-4">Academic Background</h4>
+                    <table class="table table-sm table-bordered">
+                        <tbody>
+                            <tr>
+                                <th class="table-light">High School</th>
+                                <td><span t-field="doc.high_school_name"/></td>
+                                <th class="table-light">Graduation Year</th>
+                                <td><span t-field="doc.high_school_graduation_year"/></td>
+                            </tr>
+                            <tr>
+                                <th class="table-light">Grade Type</th>
+                                <td><span t-field="doc.high_school_grade_type"/></td>
+                                <th class="table-light">Grade</th>
+                                <td><span t-field="doc.high_school_grade"/></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h4 class="mt-4">Requirements</h4>
+                    <table class="table table-sm table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Requirement</th>
+                                <th>Type</th>
+                                <th class="text-center">Mandatory</th>
+                                <th class="text-center">Fulfilled</th>
+                                <th>Fulfilled Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="doc.requirements_line_ids" t-as="line">
+                                <td><span t-field="line.requirement_id"/></td>
+                                <td><span t-field="line.requirement_type"/></td>
+                                <td class="text-center">
+                                    <span t-if="line.is_mandatory">✓</span>
+                                </td>
+                                <td class="text-center">
+                                    <span t-if="line.is_fulfilled">✓</span>
+                                </td>
+                                <td>
+                                    <span t-field="line.fulfilled_date"
+                                          t-options="{'widget': 'datetime'}"/>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h4 class="mt-4">Interviews</h4>
+                    <table class="table table-sm table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Interviewer</th>
+                                <th>Date</th>
+                                <th>Score</th>
+                                <th>Recommendation</th>
+                                <th class="text-center">State</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="doc.interview_ids" t-as="iv">
+                                <td><span t-field="iv.interviewer_name"/></td>
+                                <td><span t-field="iv.interview_date"/></td>
+                                <td>
+                                    <span t-field="iv.score"/> /
+                                    <span t-field="iv.score_max"/>
+                                </td>
+                                <td><span t-field="iv.recommendation"/></td>
+                                <td class="text-center"><span t-field="iv.state"/></td>
+                            </tr>
+                            <tr t-if="not doc.interview_ids">
+                                <td colspan="5" class="text-muted text-center">
+                                    No interviews scheduled.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h4 class="mt-4">Personal Statement</h4>
+                    <p t-field="doc.personal_statement"/>
+
+                    <h4 class="mt-4">Notes</h4>
+                    <p t-field="doc.notes"/>
+
+                    <div class="row mt-4">
+                        <div class="col-6">
+                            <strong>Status:</strong>
+                            <span t-field="doc.status"/>
+                        </div>
+                        <div class="col-6">
+                            <strong>Submission Date:</strong>
+                            <span t-field="doc.submission_date"
+                                  t-options="{'widget': 'datetime'}"/>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <!-- ============================================================ -->
+    <!-- Report action — bound to uni.admission.application             -->
+    <!-- ============================================================ -->
+    <record id="action_report_admission_application" model="ir.actions.report">
+        <field name="name">Admission Application</field>
+        <field name="model">uni.admission.application</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">university_admission.report_admission_application_document</field>
+        <field name="report_file">university_admission.report_admission_application_document</field>
+        <field name="paperformat_id" ref="paper_format_admission_application"/>
+        <field name="binding_model_id" ref="model_uni_admission_application"/>
+        <field name="binding_type">report</field>
+    </record>
+</odoo>

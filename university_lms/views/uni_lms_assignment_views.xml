@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============ uni.lms.assignment — List View ============ -->
+    <record id="view_uni_lms_assignment_list" model="ir.ui.view">
+        <field name="name">uni.lms.assignment.list</field>
+        <field name="model">uni.lms.assignment</field>
+        <field name="arch" type="xml">
+            <list string="LMS Assignments"
+                  decoration-success="state=='published'"
+                  decoration-warning="state=='draft'"
+                  decoration-muted="state=='closed'">
+                <field name="name"/>
+                <field name="code" optional="hide"/>
+                <field name="lms_course_id"/>
+                <field name="title"/>
+                <field name="assignment_type"/>
+                <field name="due_date"/>
+                <field name="max_score" optional="hide"/>
+                <field name="weight" optional="hide"/>
+                <field name="submission_format" optional="hide"/>
+                <field name="submission_count"/>
+                <field name="pending_count" optional="show"/>
+                <field name="graded_count" optional="show"/>
+                <field name="state" widget="badge"/>
+                <field name="active" widget="boolean_toggle" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============ uni.lms.assignment — Form View ============ -->
+    <record id="view_uni_lms_assignment_form" model="ir.ui.view">
+        <field name="name">uni.lms.assignment.form</field>
+        <field name="model">uni.lms.assignment</field>
+        <field name="arch" type="xml">
+            <form string="LMS Assignment">
+                <header>
+                    <button name="action_publish" type="object" string="Publish"
+                            class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_close" type="object" string="Close"
+                            class="btn-danger" invisible="state != 'published'"/>
+                    <button name="action_draft" type="object" string="Set to Draft"
+                            class="btn-secondary" invisible="state == 'draft'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,published,closed"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" type="object"
+                                name="action_view_submissions" icon="fa-inbox">
+                            <field name="submission_count" widget="statinfo"
+                                   string="Submissions"/>
+                        </button>
+                        <button class="oe_stat_button" type="object" icon="fa-hourglass-half">
+                            <field name="pending_count" widget="statinfo" string="Pending"/>
+                        </button>
+                        <button class="oe_stat_button" type="object" icon="fa-check-circle">
+                            <field name="graded_count" widget="statinfo" string="Graded"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" string="Reference"/>
+                        <h1><field name="name" placeholder="e.g. LMA/2024/00001"/></h1>
+                        <h3><field name="code" placeholder="Optional short code"/></h3>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="lms_course_id" options="{'no_create': True}"/>
+                            <field name="title"/>
+                            <field name="assignment_type"/>
+                            <field name="submission_format"/>
+                            <field name="due_date"/>
+                            <field name="active" widget="boolean_toggle"/>
+                        </group>
+                        <group>
+                            <field name="max_score"/>
+                            <field name="weight"/>
+                            <field name="allow_late_submission" widget="boolean_toggle"/>
+                            <field name="late_penalty_percentage"
+                                   invisible="not allow_late_submission"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Description" name="description">
+                            <field name="description" nolabel="1"
+                                   placeholder="Detailed description of the assignment..."/>
+                        </page>
+                        <page string="Instructions" name="instructions">
+                            <field name="instructions" nolabel="1"/>
+                        </page>
+                        <page string="Attachment" name="attachment">
+                            <group>
+                                <field name="attachment" filename="attachment_filename"/>
+                                <field name="attachment_filename"/>
+                            </group>
+                        </page>
+                        <page string="Submissions" name="submissions">
+                            <field name="submission_ids">
+                                <list>
+                                    <field name="student_name"/>
+                                    <field name="student_code" optional="hide"/>
+                                    <field name="submission_date"/>
+                                    <field name="submitted_late" widget="boolean_toggle"/>
+                                    <field name="score"/>
+                                    <field name="grade_letter"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="notes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============ uni.lms.assignment — Search View ============ -->
+    <record id="view_uni_lms_assignment_search" model="ir.ui.view">
+        <field name="name">uni.lms.assignment.search</field>
+        <field name="model">uni.lms.assignment</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="title"/>
+                <field name="lms_course_id"/>
+                <filter string="Published" name="filter_published"
+                        domain="[('state', '=', 'published')]"/>
+                <filter string="Closed" name="filter_closed"
+                        domain="[('state', '=', 'closed')]"/>
+                <separator/>
+                <filter string="Individual" name="filter_individual"
+                        domain="[('assignment_type', '=', 'individual')]"/>
+                <filter string="Group" name="filter_group"
+                        domain="[('assignment_type', '=', 'group')]"/>
+                <separator/>
+                <filter string="Allow Late Submission" name="filter_late"
+                        domain="[('allow_late_submission', '=', True)]"/>
+                <separator/>
+                <filter string="Active Only" name="filter_active"
+                        domain="[('active', '=', True)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="LMS Course" name="group_course"
+                            context="{'group_by': 'lms_course_id'}"/>
+                    <filter string="Type" name="group_type"
+                            context="{'group_by': 'assignment_type'}"/>
+                    <filter string="Submission Format" name="group_format"
+                            context="{'group_by': 'submission_format'}"/>
+                    <filter string="Status" name="group_state"
+                            context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============ uni.lms.assignment — Action ============ -->
+    <record id="action_uni_lms_assignment" model="ir.actions.act_window">
+        <field name="name">LMS Assignments</field>
+        <field name="res_model">uni.lms.assignment</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_lms_assignment_search"/>
+        <field name="context">{'search_default_filter_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new assignment
+            </p>
+            <p>
+                LMS assignments let students submit files, text, or URLs by a
+                due date. Late submissions can be allowed with a configurable
+                penalty percentage. Each submission is graded against a max
+                score and mapped to a grade letter.
+            </p>
+        </field>
+    </record>
+
+    <!-- ============ uni.lms.assignment.submission — List View ============ -->
+    <record id="view_uni_lms_assignment_submission_list" model="ir.ui.view">
+        <field name="name">uni.lms.assignment.submission.list</field>
+        <field name="model">uni.lms.assignment.submission</field>
+        <field name="arch" type="xml">
+            <list string="Submissions"
+                  decoration-success="state=='graded'"
+                  decoration-warning="state=='submitted'"
+                  decoration-info="state=='resubmit'"
+                  decoration-muted="state=='draft'">
+                <field name="assignment_id"/>
+                <field name="lms_course_id" optional="show"/>
+                <field name="student_name"/>
+                <field name="student_code" optional="hide"/>
+                <field name="submission_date"/>
+                <field name="submitted_late" widget="boolean_toggle"/>
+                <field name="score"/>
+                <field name="grade_letter"/>
+                <field name="state" widget="badge"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============ uni.lms.assignment.submission — Form View ============ -->
+    <record id="view_uni_lms_assignment_submission_form" model="ir.ui.view">
+        <field name="name">uni.lms.assignment.submission.form</field>
+        <field name="model">uni.lms.assignment.submission</field>
+        <field name="arch" type="xml">
+            <form string="Submission">
+                <header>
+                    <button name="action_submit" type="object" string="Submit"
+                            class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_grade" type="object" string="Grade"
+                            class="btn-primary" invisible="state != 'submitted'"/>
+                    <button name="action_request_resubmission" type="object"
+                            string="Request Resubmission"
+                            invisible="state not in ('submitted', 'graded')"/>
+                    <button name="action_reset_to_draft" type="object"
+                            string="Reset to Draft" class="btn-secondary"
+                            invisible="state == 'draft'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,submitted,graded,resubmit"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="assignment_id" options="{'no_create': True}"/>
+                            <field name="lms_course_id" options="{'no_create': True}"/>
+                            <field name="student_name" placeholder="e.g. John Doe"/>
+                            <field name="student_code" placeholder="e.g. ST-2024-001"/>
+                            <field name="submission_date"/>
+                            <field name="submitted_late" widget="boolean_toggle"/>
+                        </group>
+                        <group>
+                            <field name="score"/>
+                            <field name="grade_letter" placeholder="e.g. A, B+, C"/>
+                            <field name="file" filename="filename"
+                                   invisible="assignment_id.submission_format not in ('file', 'both')"/>
+                            <field name="filename"
+                                   invisible="assignment_id.submission_format not in ('file', 'both')"/>
+                            <field name="url_submission" widget="url"
+                                   invisible="assignment_id.submission_format != 'url'"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Text Submission" name="text_submission"
+                              invisible="assignment_id.submission_format not in ('text', 'both')">
+                            <field name="text_submission" nolabel="1"/>
+                        </page>
+                        <page string="Feedback" name="feedback">
+                            <field name="feedback" nolabel="1"
+                                   placeholder="Feedback shown to the student..."/>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="notes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============ uni.lms.assignment.submission — Search View ============ -->
+    <record id="view_uni_lms_assignment_submission_search" model="ir.ui.view">
+        <field name="name">uni.lms.assignment.submission.search</field>
+        <field name="model">uni.lms.assignment.submission</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="assignment_id"/>
+                <field name="student_name"/>
+                <field name="student_code"/>
+                <field name="lms_course_id"/>
+                <filter string="Submitted" name="filter_submitted"
+                        domain="[('state', '=', 'submitted')]"/>
+                <filter string="Graded" name="filter_graded"
+                        domain="[('state', '=', 'graded')]"/>
+                <filter string="Needs Resubmission" name="filter_resubmit"
+                        domain="[('state', '=', 'resubmit')]"/>
+                <separator/>
+                <filter string="Late" name="filter_late"
+                        domain="[('submitted_late', '=', True)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Assignment" name="group_assignment"
+                            context="{'group_by': 'assignment_id'}"/>
+                    <filter string="LMS Course" name="group_course"
+                            context="{'group_by': 'lms_course_id'}"/>
+                    <filter string="Student Name" name="group_student"
+                            context="{'group_by': 'student_name'}"/>
+                    <filter string="Grade" name="group_grade"
+                            context="{'group_by': 'grade_letter'}"/>
+                    <filter string="Status" name="group_state"
+                            context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============ uni.lms.assignment.submission — Action ============ -->
+    <record id="action_uni_lms_assignment_submission" model="ir.actions.act_window">
+        <field name="name">Assignment Submissions</field>
+        <field name="res_model">uni.lms.assignment.submission</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_lms_assignment_submission_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No submissions yet
+            </p>
+            <p>
+                Submissions are created automatically when a student submits
+                an assignment via the LMS website, or manually from the
+                assignment form.
+            </p>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============ LMS Submenu under University root ============ -->
+    <menuitem id="menu_university_lms"
+              name="LMS"
+              parent="university_core.menu_university_root"
+              sequence="27"
+              groups="university_core.group_university_user"/>
+
+    <!-- ============ Courses ============ -->
+    <menuitem id="menu_uni_lms_courses"
+              name="Courses"
+              parent="menu_university_lms"
+              sequence="10"/>
+
+    <menuitem id="menu_uni_lms_course"
+              name="LMS Courses"
+              parent="menu_uni_lms_courses"
+              action="action_uni_lms_course"
+              sequence="10"/>
+
+    <menuitem id="menu_uni_lms_content"
+              name="Contents"
+              parent="menu_uni_lms_courses"
+              action="action_uni_lms_content"
+              sequence="20"/>
+
+    <!-- ============ Assignments ============ -->
+    <menuitem id="menu_uni_lms_assignments"
+              name="Assignments"
+              parent="menu_university_lms"
+              sequence="20"/>
+
+    <menuitem id="menu_uni_lms_assignment"
+              name="Assignments"
+              parent="menu_uni_lms_assignments"
+              action="action_uni_lms_assignment"
+              sequence="10"/>
+
+    <menuitem id="menu_uni_lms_assignment_submission"
+              name="Submissions"
+              parent="menu_uni_lms_assignments"
+              action="action_uni_lms_assignment_submission"
+              sequence="20"/>
+
+    <!-- ============ Quizzes ============ -->
+    <menuitem id="menu_uni_lms_quizzes"
+              name="Quizzes"
+              parent="menu_university_lms"
+              sequence="30"/>
+
+    <menuitem id="menu_uni_lms_quiz"
+              name="Quizzes"
+              parent="menu_uni_lms_quizzes"
+              action="action_uni_lms_quiz"
+              sequence="10"/>
+
+    <menuitem id="menu_uni_lms_quiz_question"
+              name="Questions"
+              parent="menu_uni_lms_quizzes"
+              action="action_uni_lms_quiz_question"
+              sequence="20"
+              groups="university_core.group_university_manager"/>
+
+    <menuitem id="menu_uni_lms_quiz_attempt"
+              name="Attempts"
+              parent="menu_uni_lms_quizzes"
+              action="action_uni_lms_quiz_attempt"
+              sequence="30"/>
+
+    <!-- ============ Forums ============ -->
+    <menuitem id="menu_uni_lms_forums"
+              name="Forums"
+              parent="menu_university_lms"
+              sequence="40"/>
+
+    <menuitem id="menu_uni_lms_forum"
+              name="Forums"
+              parent="menu_uni_lms_forums"
+              action="action_uni_lms_forum"
+              sequence="10"/>
+
+    <menuitem id="menu_uni_lms_forum_post"
+              name="Posts"
+              parent="menu_uni_lms_forums"
+              action="action_uni_lms_forum_post"
+              sequence="20"/>
+
+    <!-- ============ Progress ============ -->
+    <menuitem id="menu_uni_lms_progress"
+              name="Progress"
+              parent="menu_university_lms"
+              sequence="50"
+              action="action_uni_lms_progress"/>
+
+    <!-- ============ Website: Open Course Catalog (URL action) ============ -->
+    <record id="action_open_lms_catalog" model="ir.actions.act_url">
+        <field name="name">Open Course Catalog</field>
+        <field name="url">/university/lms/courses</field>
+        <field name="target">self</field>
+    </record>
+
+    <menuitem id="menu_uni_lms_website"
+              name="View Course Catalog"
+              parent="menu_university_lms"
+              sequence="99"
+              action="action_open_lms_catalog"
+              groups="university_core.group_university_user"/>
+</odoo>

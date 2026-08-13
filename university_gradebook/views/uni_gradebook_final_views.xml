@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- uni.gradebook.final — List View                              -->
+    <!-- ============================================================ -->
+    <record id="view_uni_gradebook_final_list" model="ir.ui.view">
+        <field name="name">uni.gradebook.final.list</field>
+        <field name="model">uni.gradebook.final</field>
+        <field name="arch" type="xml">
+            <list string="Final Grades"
+                  decoration-success="is_passing"
+                  decoration-danger="not is_passing"
+                  decoration-muted="state == 'locked'">
+                <field name="name" optional="hide"/>
+                <field name="gradebook_id"/>
+                <field name="student_id"/>
+                <field name="course_id"/>
+                <field name="academic_term_id" optional="hide"/>
+                <field name="credit_hours" optional="hide"/>
+                <field name="final_score"/>
+                <field name="final_percentage" widget="progressbar"/>
+                <field name="grade_letter_id"/>
+                <field name="gpa_value"/>
+                <field name="is_passing" optional="hide" widget="boolean_toggle"/>
+                <field name="rank"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'computed'"
+                       decoration-warning="state == 'locked'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.gradebook.final — Form View                              -->
+    <!-- ============================================================ -->
+    <record id="view_uni_gradebook_final_form" model="ir.ui.view">
+        <field name="name">uni.gradebook.final.form</field>
+        <field name="model">uni.gradebook.final</field>
+        <field name="arch" type="xml">
+            <form string="Final Grade">
+                <header>
+                    <button name="action_recompute" string="Recompute"
+                            type="object" class="oe_highlight"
+                            invisible="state == 'locked'"/>
+                    <button name="action_lock" string="Lock"
+                            type="object"
+                            invisible="state != 'computed'"/>
+                    <button name="action_unlock" string="Unlock"
+                            type="object"
+                            invisible="state != 'locked'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="computed,locked"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" string="Final Grade"/>
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="gradebook_id"
+                                   options="{'no_create': True}"
+                                   readonly="1"/>
+                            <field name="gradebook_line_id"
+                                   options="{'no_create': True}"
+                                   readonly="1"/>
+                            <field name="student_id" readonly="1"/>
+                            <field name="course_id" readonly="1"/>
+                            <field name="academic_term_id" readonly="1"/>
+                            <field name="credit_hours" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="final_score" widget="progressbar" readonly="1"/>
+                            <field name="final_percentage" widget="progressbar" readonly="1"/>
+                            <field name="grade_letter_id" readonly="1"/>
+                            <field name="gpa_value" readonly="1"/>
+                            <field name="is_passing" widget="boolean_toggle" readonly="1"/>
+                            <field name="rank" readonly="1"/>
+                            <field name="computation_date" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Remarks">
+                            <field name="remarks" nolabel="1" colspan="2"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.gradebook.final — Search View                            -->
+    <!-- ============================================================ -->
+    <record id="view_uni_gradebook_final_search" model="ir.ui.view">
+        <field name="name">uni.gradebook.final.search</field>
+        <field name="model">uni.gradebook.final</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="gradebook_id"/>
+                <field name="student_id"/>
+                <field name="course_id"/>
+                <field name="academic_term_id"/>
+                <field name="grade_letter_id"/>
+                <separator/>
+                <filter string="Passing" name="filter_passing"
+                        domain="[('is_passing', '=', True)]"/>
+                <filter string="Failing" name="filter_failing"
+                        domain="[('is_passing', '=', False)]"/>
+                <filter string="Locked" name="filter_locked"
+                        domain="[('state', '=', 'locked')]"/>
+                <filter string="High GPA (≥ 3.5)" name="filter_high_gpa"
+                        domain="[('gpa_value', '&gt;=', 3.5)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Gradebook" name="group_gradebook"
+                            context="{'group_by': 'gradebook_id'}"/>
+                    <filter string="Student" name="group_student"
+                            context="{'group_by': 'student_id'}"/>
+                    <filter string="Course" name="group_course"
+                            context="{'group_by': 'course_id'}"/>
+                    <filter string="Term" name="group_term"
+                            context="{'group_by': 'academic_term_id'}"/>
+                    <filter string="Grade Letter" name="group_letter"
+                            context="{'group_by': 'grade_letter_id'}"/>
+                    <filter string="State" name="group_state"
+                            context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.gradebook.final — Pivot View                             -->
+    <!-- ============================================================ -->
+    <record id="view_uni_gradebook_final_pivot" model="ir.ui.view">
+        <field name="name">uni.gradebook.final.pivot</field>
+        <field name="model">uni.gradebook.final</field>
+        <field name="arch" type="xml">
+            <pivot string="Final Grades Analysis">
+                <field name="student_id" type="row"/>
+                <field name="course_id" type="col"/>
+                <field name="final_percentage" type="measure"/>
+                <field name="gpa_value" type="measure"/>
+                <field name="credit_hours" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.gradebook.final — Action                                 -->
+    <!-- ============================================================ -->
+    <record id="action_uni_gradebook_final" model="ir.actions.act_window">
+        <field name="name">Final Grades</field>
+        <field name="res_model">uni.gradebook.final</field>
+        <field name="view_mode">list,form,pivot</field>
+        <field name="search_view_id" ref="view_uni_gradebook_final_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No final grades yet
+            </p>
+            <p>Final grades are computed automatically from grade entries.
+               Use the &lt;b&gt;Compute Finals&lt;/b&gt; button on a
+               gradebook to generate them.</p>
+        </field>
+    </record>
+</odoo>

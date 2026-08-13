@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- University Code Sequence -->
+    <record id="seq_uni_university" model="ir.sequence">
+        <field name="name">University Sequence</field>
+        <field name="code">uni.university</field>
+        <field name="prefix">UNI/%(year)s/</field>
+        <field name="padding">4</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <!-- Branch Sequence -->
+    <record id="seq_uni_branch" model="ir.sequence">
+        <field name="name">Branch Sequence</field>
+        <field name="code">uni.branch</field>
+        <field name="prefix">BR/%(year)s/</field>
+        <field name="padding">4</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <!-- College Sequence -->
+    <record id="seq_uni_college" model="ir.sequence">
+        <field name="name">College Sequence</field>
+        <field name="code">uni.college</field>
+        <field name="prefix">COL/%(year)s/</field>
+        <field name="padding">4</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <!-- Department Sequence -->
+    <record id="seq_uni_department" model="ir.sequence">
+        <field name="name">Department Sequence</field>
+        <field name="code">uni.department</field>
+        <field name="prefix">DEP/%(year)s/</field>
+        <field name="padding">4</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <!-- Program Sequence -->
+    <record id="seq_uni_program" model="ir.sequence">
+        <field name="name">Program Sequence</field>
+        <field name="code">uni.program</field>
+        <field name="prefix">PRG/%(year)s/</field>
+        <field name="padding">4</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <!-- Academic Year Sequence -->
+    <record id="seq_uni_academic_year" model="ir.sequence">
+        <field name="name">Academic Year Sequence</field>
+        <field name="code">uni.academic.year</field>
+        <field name="prefix">AY/</field>
+        <field name="padding">4</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <!-- Academic Term Sequence -->
+    <record id="seq_uni_academic_term" model="ir.sequence">
+        <field name="name">Academic Term Sequence</field>
+        <field name="code">uni.academic.term</field>
+        <field name="prefix">AT/</field>
+        <field name="padding">4</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <!-- Person Sequence -->
+    <record id="seq_uni_person" model="ir.sequence">
+        <field name="name">Person Sequence</field>
+        <field name="code">uni.person</field>
+        <field name="prefix">PER/%(year)s/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+</odoo>

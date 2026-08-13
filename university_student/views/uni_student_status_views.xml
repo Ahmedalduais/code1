@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- uni.student.status — List View                                -->
+    <!-- ============================================================ -->
+    <record id="view_uni_student_status_list" model="ir.ui.view">
+        <field name="name">uni.student.status.list</field>
+        <field name="model">uni.student.status</field>
+        <field name="arch" type="xml">
+            <list string="Student Statuses">
+                <field name="sequence" widget="handle"/>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="is_active_status" widget="boolean_toggle"/>
+                <field name="is_graduated_status" widget="boolean_toggle"/>
+                <field name="is_blocked_status" widget="boolean_toggle"/>
+                <field name="student_count"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.student.status — Form View                                -->
+    <!-- ============================================================ -->
+    <record id="view_uni_student_status_form" model="ir.ui.view">
+        <field name="name">uni.student.status.form</field>
+        <field name="model">uni.student.status</field>
+        <field name="arch" type="xml">
+            <form string="Student Status">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_open_students" type="object"
+                                class="oe_stat_button" icon="fa-users">
+                            <field name="student_count" widget="statinfo"
+                                   string="Students"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" string="Student Status"/>
+                        <h1><field name="name" placeholder="e.g. Active"/></h1>
+                        <h3><field name="code" placeholder="e.g. ACTIVE"/></h3>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="sequence"/>
+                            <field name="color"/>
+                            <field name="active"/>
+                        </group>
+                        <group>
+                            <field name="is_active_status"/>
+                            <field name="is_graduated_status"/>
+                            <field name="is_blocked_status"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="description"/>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.student.status — Search View                              -->
+    <!-- ============================================================ -->
+    <record id="view_uni_student_status_search" model="ir.ui.view">
+        <field name="name">uni.student.status.search</field>
+        <field name="model">uni.student.status</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="code"/>
+                <filter string="Active Status" name="filter_is_active"
+                        domain="[('is_active_status', '=', True)]"/>
+                <filter string="Graduated Status" name="filter_is_graduated"
+                        domain="[('is_graduated_status', '=', True)]"/>
+                <filter string="Blocked Status" name="filter_is_blocked"
+                        domain="[('is_blocked_status', '=', True)]"/>
+                <filter string="Archived" name="filter_archived"
+                        domain="[('active', '=', False)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Active Flag" name="group_active_flag"
+                            context="{'group_by': 'is_active_status'}"/>
+                    <filter string="Blocked Flag" name="group_blocked_flag"
+                            context="{'group_by': 'is_blocked_status'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.student.status — Action                                   -->
+    <!-- ============================================================ -->
+    <record id="action_uni_student_status" model="ir.actions.act_window">
+        <field name="name">Student Statuses</field>
+        <field name="res_model">uni.student.status</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_student_status_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new student status
+            </p>
+            <p>Statuses carry logical flags (active / graduated / blocked) that
+               other modules use to decide enrollment eligibility.</p>
+        </field>
+    </record>
+</odoo>

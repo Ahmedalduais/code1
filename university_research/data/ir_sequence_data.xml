@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- Research Project sequence -->
+    <record id="seq_uni_research_project" model="ir.sequence">
+        <field name="name">Research Project Sequence</field>
+        <field name="code">uni.research.project</field>
+        <field name="prefix">RSP/%(year)s/</field>
+        <field name="padding">4</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <!-- Research Publication sequence -->
+    <record id="seq_uni_research_publication" model="ir.sequence">
+        <field name="name">Research Publication Sequence</field>
+        <field name="code">uni.research.publication</field>
+        <field name="prefix">RPB/%(year)s/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <!-- Research Grant sequence -->
+    <record id="seq_uni_research_grant" model="ir.sequence">
+        <field name="name">Research Grant Sequence</field>
+        <field name="code">uni.research.grant</field>
+        <field name="prefix">RSG/%(year)s/</field>
+        <field name="padding">4</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <!-- Research Ethics sequence -->
+    <record id="seq_uni_research_ethics" model="ir.sequence">
+        <field name="name">Research Ethics Sequence</field>
+        <field name="code">uni.research.ethics</field>
+        <field name="prefix">RET/%(year)s/</field>
+        <field name="padding">4</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <!-- Research Collaboration sequence -->
+    <record id="seq_uni_research_collaboration" model="ir.sequence">
+        <field name="name">Research Collaboration Sequence</field>
+        <field name="code">uni.research.collaboration</field>
+        <field name="prefix">RCL/%(year)s/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+</odoo>

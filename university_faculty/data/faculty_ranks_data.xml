@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- Default faculty ranks (junior → senior) -->
+    <record id="faculty_rank_teaching_assistant" model="uni.faculty.rank">
+        <field name="name">Teaching Assistant</field>
+        <field name="code">TA</field>
+        <field name="sequence">10</field>
+        <field name="min_years_experience">0</field>
+        <field name="salary_grade">G1</field>
+        <field name="description">Entry-level position supporting faculty in teaching and grading. Typically held by graduate students.</field>
+    </record>
+
+    <record id="faculty_rank_lecturer" model="uni.faculty.rank">
+        <field name="name">Lecturer</field>
+        <field name="code">LEC</field>
+        <field name="sequence">20</field>
+        <field name="min_years_experience">2</field>
+        <field name="salary_grade">G2</field>
+        <field name="description">Full-time teaching staff responsible for delivering courses, typically holding a Master's degree.</field>
+    </record>
+
+    <record id="faculty_rank_assistant_professor" model="uni.faculty.rank">
+        <field name="name">Assistant Professor</field>
+        <field name="code">ASPROF</field>
+        <field name="sequence">30</field>
+        <field name="min_years_experience">3</field>
+        <field name="salary_grade">G3</field>
+        <field name="description">Tenure-track entry rank requiring a PhD and active research output.</field>
+    </record>
+
+    <record id="faculty_rank_associate_professor" model="uni.faculty.rank">
+        <field name="name">Associate Professor</field>
+        <field name="code">ASOC</field>
+        <field name="sequence">40</field>
+        <field name="min_years_experience">7</field>
+        <field name="salary_grade">G4</field>
+        <field name="description">Mid-career rank with established research portfolio and significant teaching experience.</field>
+    </record>
+
+    <record id="faculty_rank_professor" model="uni.faculty.rank">
+        <field name="name">Professor</field>
+        <field name="code">PROF</field>
+        <field name="sequence">50</field>
+        <field name="min_years_experience">12</field>
+        <field name="salary_grade">G5</field>
+        <field name="description">Senior academic rank recognizing outstanding contributions in research, teaching and service.</field>
+    </record>
+
+    <record id="faculty_rank_distinguished_professor" model="uni.faculty.rank">
+        <field name="name">Distinguished Professor</field>
+        <field name="code">DPROF</field>
+        <field name="sequence">60</field>
+        <field name="min_years_experience">18</field>
+        <field name="salary_grade">G6</field>
+        <field name="description">Honorary rank for faculty with exceptional, internationally-recognized achievements.</field>
+    </record>
+</odoo>

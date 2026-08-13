@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- uni.student.advisor — List View                               -->
+    <!-- ============================================================ -->
+    <record id="view_uni_student_advisor_list" model="ir.ui.view">
+        <field name="name">uni.student.advisor.list</field>
+        <field name="model">uni.student.advisor</field>
+        <field name="arch" type="xml">
+            <list string="Student Advisors"
+                  decoration-success="is_current == True"
+                  decoration-muted="is_current == False">
+                <field name="name"/>
+                <field name="student_id"/>
+                <field name="student_code"/>
+                <field name="advisor_name"/>
+                <field name="advisor_role"/>
+                <field name="program_id"/>
+                <field name="academic_term_id"/>
+                <field name="start_date"/>
+                <field name="end_date"/>
+                <field name="is_current" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.student.advisor — Form View                               -->
+    <!-- ============================================================ -->
+    <record id="view_uni_student_advisor_form" model="ir.ui.view">
+        <field name="name">uni.student.advisor.form</field>
+        <field name="model">uni.student.advisor</field>
+        <field name="arch" type="xml">
+            <form string="Student Advisor">
+                <header>
+                    <button name="action_end_advisory" string="End Advisory"
+                            type="object" class="oe_highlight"
+                            invisible="is_current == False"
+                            confirm="End this advisory relationship now?"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" string="Advisor Assignment"/>
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="student_id"
+                                   options="{'no_create': True}"/>
+                            <field name="student_code"/>
+                            <field name="program_id"/>
+                            <field name="academic_term_id"
+                                   options="{'no_create': True}"/>
+                        </group>
+                        <group>
+                            <field name="advisor_name"/>
+                            <field name="advisor_email"/>
+                            <field name="advisor_phone"/>
+                            <field name="advisor_employee_code"/>
+                            <field name="advisor_role"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="start_date"/>
+                            <field name="end_date"/>
+                            <field name="is_current"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Details">
+                            <group>
+                                <field name="assignment_reason"/>
+                                <field name="notes"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.student.advisor — Search View                             -->
+    <!-- ============================================================ -->
+    <record id="view_uni_student_advisor_search" model="ir.ui.view">
+        <field name="name">uni.student.advisor.search</field>
+        <field name="model">uni.student.advisor</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="student_id"/>
+                <field name="student_code"/>
+                <field name="advisor_name"/>
+                <field name="advisor_email"/>
+                <field name="advisor_employee_code"/>
+                <field name="advisor_role"/>
+                <field name="program_id"/>
+                <field name="academic_term_id"/>
+                <filter string="Current" name="filter_current"
+                        domain="[('is_current', '=', True)]"/>
+                <filter string="Past" name="filter_past"
+                        domain="[('is_current', '=', False)]"/>
+                <separator/>
+                <filter string="Academic Advisor" name="filter_academic"
+                        domain="[('advisor_role', '=', 'academic')]"/>
+                <filter string="Thesis Supervisor" name="filter_thesis"
+                        domain="[('advisor_role', '=', 'thesis')]"/>
+                <filter string="Project Supervisor" name="filter_project"
+                        domain="[('advisor_role', '=', 'project')]"/>
+                <filter string="Coordinator" name="filter_coordinator"
+                        domain="[('advisor_role', '=', 'coordinator')]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Student" name="group_student"
+                            context="{'group_by': 'student_id'}"/>
+                    <filter string="Advisor" name="group_advisor"
+                            context="{'group_by': 'advisor_name'}"/>
+                    <filter string="Role" name="group_role"
+                            context="{'group_by': 'advisor_role'}"/>
+                    <filter string="Program" name="group_program"
+                            context="{'group_by': 'program_id'}"/>
+                    <filter string="Term" name="group_term"
+                            context="{'group_by': 'academic_term_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.student.advisor — Action                                  -->
+    <!-- ============================================================ -->
+    <record id="action_uni_student_advisor" model="ir.actions.act_window">
+        <field name="name">Student Advisors</field>
+        <field name="res_model">uni.student.advisor</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_student_advisor_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new advisor assignment
+            </p>
+            <p>Track academic advisors, thesis supervisors, and project
+               mentors assigned to students. Multiple roles can be assigned
+               per student, but only one current advisor per role.</p>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- uni.classroom.booking — List View                            -->
+    <!-- ============================================================ -->
+    <record id="view_uni_classroom_booking_list" model="ir.ui.view">
+        <field name="name">uni.classroom.booking.list</field>
+        <field name="model">uni.classroom.booking</field>
+        <field name="arch" type="xml">
+            <list string="Classroom Bookings"
+                  decoration-info="state == 'draft'"
+                  decoration-success="state == 'confirmed'"
+                  decoration-muted="state == 'cancelled'"
+                  decoration-primary="state == 'completed'">
+                <field name="name"/>
+                <field name="classroom_id"/>
+                <field name="booking_date"/>
+                <field name="start_time" widget="float_time"/>
+                <field name="end_time" widget="float_time"/>
+                <field name="booked_by"/>
+                <field name="purpose" optional="show"/>
+                <field name="timetable_line_id" optional="hide"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'draft'"
+                       decoration-success="state == 'confirmed'"
+                       decoration-muted="state == 'cancelled'"
+                       decoration-primary="state == 'completed'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.classroom.booking — Form View                            -->
+    <!-- ============================================================ -->
+    <record id="view_uni_classroom_booking_form" model="ir.ui.view">
+        <field name="name">uni.classroom.booking.form</field>
+        <field name="model">uni.classroom.booking</field>
+        <field name="arch" type="xml">
+            <form string="Classroom Booking">
+                <header>
+                    <button name="action_confirm" string="Confirm"
+                            type="object" class="oe_highlight"
+                            invisible="state != 'draft'"/>
+                    <button name="action_complete" string="Complete"
+                            type="object" class="oe_highlight"
+                            invisible="state != 'confirmed'"/>
+                    <button name="action_cancel" string="Cancel"
+                            type="object"
+                            invisible="state in ('cancelled', 'completed')"/>
+                    <button name="action_draft" string="Set to Draft"
+                            type="object"
+                            invisible="state != 'cancelled'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,confirmed,completed"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" string="Booking"/>
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="classroom_id"/>
+                            <field name="university_id" invisible="1"/>
+                            <field name="booking_date"/>
+                            <field name="booked_by"/>
+                        </group>
+                        <group>
+                            <field name="start_time" widget="float_time"/>
+                            <field name="end_time" widget="float_time"/>
+                            <field name="timetable_line_id"/>
+                            <field name="purpose"/>
+                        </group>
+                    </group>
+                    <group string="Notes">
+                        <field name="notes" nolabel="1" colspan="2"
+                               placeholder="Internal notes about this booking..."/>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.classroom.booking — Search View                          -->
+    <!-- ============================================================ -->
+    <record id="view_uni_classroom_booking_search" model="ir.ui.view">
+        <field name="name">uni.classroom.booking.search</field>
+        <field name="model">uni.classroom.booking</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="classroom_id"/>
+                <field name="booking_date"/>
+                <field name="booked_by"/>
+                <field name="purpose"/>
+                <field name="university_id"/>
+                <separator/>
+                <filter string="Draft" name="filter_draft"
+                        domain="[('state', '=', 'draft')]"/>
+                <filter string="Confirmed" name="filter_confirmed"
+                        domain="[('state', '=', 'confirmed')]"/>
+                <filter string="Cancelled" name="filter_cancelled"
+                        domain="[('state', '=', 'cancelled')]"/>
+                <filter string="Completed" name="filter_completed"
+                        domain="[('state', '=', 'completed')]"/>
+                <separator/>
+                <filter string="Today" name="filter_today"
+                        domain="[('booking_date', '=', context_today().strftime('%Y-%m-%d'))]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Classroom" name="group_classroom"
+                            context="{'group_by': 'classroom_id'}"/>
+                    <filter string="Date" name="group_date"
+                            context="{'group_by': 'booking_date'}"/>
+                    <filter string="Booked By" name="group_booked_by"
+                            context="{'group_by': 'booked_by'}"/>
+                    <filter string="Status" name="group_state"
+                            context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.classroom.booking — Calendar View                        -->
+    <!-- ============================================================ -->
+    <record id="view_uni_classroom_booking_calendar" model="ir.ui.view">
+        <field name="name">uni.classroom.booking.calendar</field>
+        <field name="model">uni.classroom.booking</field>
+        <field name="arch" type="xml">
+            <calendar string="Classroom Bookings"
+                      date_start="calendar_start"
+                      date_stop="calendar_stop"
+                      color="classroom_id"
+                      event_open_popup="true">
+                <field name="name"/>
+                <field name="classroom_id"/>
+                <field name="start_time" widget="float_time"/>
+                <field name="end_time" widget="float_time"/>
+            </calendar>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.classroom.booking — Action                               -->
+    <!-- ============================================================ -->
+    <record id="action_uni_classroom_booking" model="ir.actions.act_window">
+        <field name="name">Classroom Bookings</field>
+        <field name="res_model">uni.classroom.booking</field>
+        <field name="view_mode">list,form,calendar</field>
+        <field name="search_view_id" ref="view_uni_classroom_booking_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new classroom booking
+            </p>
+            <p>Bookings reserve a classroom for a specific date and time
+               window. The system prevents overlapping bookings.</p>
+        </field>
+    </record>
+</odoo>

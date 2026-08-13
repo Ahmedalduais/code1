@@ -1,0 +1,380 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- uni.accreditation.program — List View                        -->
+    <!-- ============================================================ -->
+    <record id="view_uni_accreditation_program_list" model="ir.ui.view">
+        <field name="name">uni.accreditation.program.list</field>
+        <field name="model">uni.accreditation.program</field>
+        <field name="arch" type="xml">
+            <list string="Program Accreditations"
+                  decoration-info="accreditation_status in ('pending', 'in_progress')"
+                  decoration-success="accreditation_status == 'granted'"
+                  decoration-warning="accreditation_status == 'probation'"
+                  decoration-danger="accreditation_status == 'revoked'"
+                  decoration-muted="accreditation_status == 'expired'">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="program_id"/>
+                <field name="college_id" optional="hide"/>
+                <field name="department_id" optional="hide"/>
+                <field name="accreditation_body_id" optional="show"/>
+                <field name="accreditation_date" optional="show"/>
+                <field name="expiry_date" optional="show"/>
+                <field name="overall_score" widget="progressbar"/>
+                <field name="standard_count" widget="statinfo"/>
+                <field name="report_count" widget="statinfo"/>
+                <field name="accreditation_status" widget="badge"
+                       decoration-info="accreditation_status in ('pending', 'in_progress')"
+                       decoration-success="accreditation_status == 'granted'"
+                       decoration-warning="accreditation_status == 'probation'"
+                       decoration-danger="accreditation_status == 'revoked'"
+                       decoration-muted="accreditation_status == 'expired'"/>
+                <field name="active" optional="hide" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.accreditation.program — Form View                        -->
+    <!-- ============================================================ -->
+    <record id="view_uni_accreditation_program_form" model="ir.ui.view">
+        <field name="name">uni.accreditation.program.form</field>
+        <field name="model">uni.accreditation.program</field>
+        <field name="arch" type="xml">
+            <form string="Program Accreditation">
+                <header>
+                    <button name="action_start" string="Start"
+                            type="object" class="oe_highlight"
+                            invisible="accreditation_status != 'pending'"/>
+                    <button name="action_load_standards" string="Load Standards"
+                            type="object"
+                            invisible="accreditation_status not in ('pending', 'in_progress')"/>
+                    <button name="action_grant" string="Grant"
+                            type="object" class="oe_highlight"
+                            invisible="accreditation_status not in ('pending', 'in_progress', 'probation')"/>
+                    <button name="action_probation" string="Put on Probation"
+                            type="object"
+                            invisible="accreditation_status != 'granted'"/>
+                    <button name="action_expire" string="Mark Expired"
+                            type="object"
+                            invisible="accreditation_status not in ('granted', 'probation')"/>
+                    <button name="action_revoke" string="Revoke"
+                            type="object"
+                            invisible="accreditation_status not in ('granted', 'probation', 'expired')"
+                            confirm="Are you sure you want to revoke this accreditation?"/>
+                    <button name="action_reopen" string="Reopen"
+                            type="object"
+                            invisible="accreditation_status not in ('expired', 'revoked', 'pending')"/>
+                    <field name="accreditation_status" widget="statusbar"
+                           statusbar_visible="pending,in_progress,granted,expired"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_standards" type="object"
+                                class="oe_stat_button" icon="fa-tasks">
+                            <field name="standard_count" widget="statinfo"
+                                   string="Standards"/>
+                        </button>
+                        <button name="action_view_reports" type="object"
+                                class="oe_stat_button" icon="fa-file-text-o">
+                            <field name="report_count" widget="statinfo"
+                                   string="Reports"/>
+                        </button>
+                        <button name="action_open_self_study" type="object"
+                                class="oe_stat_button" icon="fa-book">
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">Self Study</span>
+                            </div>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" string="Accreditation Program"/>
+                        <h1><field name="name" placeholder="e.g. CS Program Accreditation"/></h1>
+                        <h3><field name="code" placeholder="ACR-CS-NCAAA"/></h3>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="program_id"
+                                   options="{'no_create': True}"
+                                   readonly="accreditation_status in ('granted', 'probation')"/>
+                            <field name="university_id" readonly="1"/>
+                            <field name="college_id" readonly="1"/>
+                            <field name="department_id" readonly="1" optional="hide"/>
+                            <field name="accreditation_body_id"
+                                   options="{'no_create': True}"
+                                   readonly="accreditation_status in ('granted', 'probation')"/>
+                        </group>
+                        <group>
+                            <field name="accreditation_date"
+                                   readonly="accreditation_status in ('pending', 'in_progress')"/>
+                            <field name="duration_years"/>
+                            <field name="expiry_date"/>
+                            <field name="self_study_id"
+                                   options="{'no_create': True}"
+                                   readonly="accreditation_status in ('granted', 'probation')"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="overall_score" widget="progressbar"/>
+                        </group>
+                        <group>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Standards Assessment">
+                            <field name="standards_line_ids"
+                                   context="{'default_accreditation_program_id': id}">
+                                <list editable="bottom">
+                                    <field name="standard_id"
+                                           options="{'no_create': True}"/>
+                                    <field name="standard_code" readonly="1"/>
+                                    <field name="standard_name" readonly="1" optional="hide"/>
+                                    <field name="weight"/>
+                                    <field name="max_score"/>
+                                    <field name="score"/>
+                                    <field name="percentage" readonly="1"/>
+                                    <field name="minimum_score" readonly="1" optional="hide"/>
+                                    <field name="status" widget="badge"
+                                           decoration-success="status == 'compliant'"
+                                           decoration-warning="status == 'partial'"
+                                           decoration-danger="status == 'non_compliant'"
+                                           decoration-muted="status == 'not_applicable'"/>
+                                    <field name="is_met" widget="boolean_toggle" readonly="1"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Reports">
+                            <field name="report_ids"
+                                   context="{'default_accreditation_program_id': id}">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="code" optional="hide"/>
+                                    <field name="report_type"/>
+                                    <field name="report_date"/>
+                                    <field name="submission_date" optional="hide"/>
+                                    <field name="state" widget="badge"
+                                           decoration-info="state in ('draft', 'submitted')"
+                                           decoration-warning="state == 'under_review'"
+                                           decoration-success="state == 'accepted'"
+                                           decoration-danger="state == 'rejected'"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Notes">
+                            <field name="notes" nolabel="1" colspan="2"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.accreditation.program — Search View                      -->
+    <!-- ============================================================ -->
+    <record id="view_uni_accreditation_program_search" model="ir.ui.view">
+        <field name="name">uni.accreditation.program.search</field>
+        <field name="model">uni.accreditation.program</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="program_id"/>
+                <field name="accreditation_body_id"/>
+                <field name="college_id"/>
+                <field name="department_id"/>
+                <field name="university_id"/>
+                <separator/>
+                <filter string="Pending" name="filter_pending"
+                        domain="[('accreditation_status', '=', 'pending')]"/>
+                <filter string="In Progress" name="filter_in_progress"
+                        domain="[('accreditation_status', '=', 'in_progress')]"/>
+                <filter string="Granted" name="filter_granted"
+                        domain="[('accreditation_status', '=', 'granted')]"/>
+                <filter string="Probation" name="filter_probation"
+                        domain="[('accreditation_status', '=', 'probation')]"/>
+                <filter string="Expired" name="filter_expired"
+                        domain="[('accreditation_status', '=', 'expired')]"/>
+                <filter string="Revoked" name="filter_revoked"
+                        domain="[('accreditation_status', '=', 'revoked')]"/>
+                <separator/>
+                <filter string="Expiring in 6 Months" name="filter_expiring_soon"
+                        domain="[('expiry_date', '!=', False),
+                                 ('accreditation_status', 'in', ['granted', 'probation'])]"/>
+                <separator/>
+                <filter string="Archived" name="filter_inactive"
+                        domain="[('active', '=', False)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Program" name="group_program"
+                            context="{'group_by': 'program_id'}"/>
+                    <filter string="College" name="group_college"
+                            context="{'group_by': 'college_id'}"/>
+                    <filter string="Department" name="group_department"
+                            context="{'group_by': 'department_id'}"/>
+                    <filter string="Accreditation Body" name="group_body"
+                            context="{'group_by': 'accreditation_body_id'}"/>
+                    <filter string="Status" name="group_status"
+                            context="{'group_by': 'accreditation_status'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.accreditation.program — Action                           -->
+    <!-- ============================================================ -->
+    <record id="action_uni_accreditation_program" model="ir.actions.act_window">
+        <field name="name">Program Accreditations</field>
+        <field name="res_model">uni.accreditation.program</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_accreditation_program_search"/>
+        <field name="context">{'search_default_filter_granted': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new program accreditation
+            </p>
+            <p>A program accreditation tracks the status of a program's
+               accreditation with a specific accreditation body. Add
+               standards, run assessments and attach self-studies and
+               reports.</p>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.accreditation.program.standard — List View               -->
+    <!-- ============================================================ -->
+    <record id="view_uni_accreditation_program_standard_list" model="ir.ui.view">
+        <field name="name">uni.accreditation.program.standard.list</field>
+        <field name="model">uni.accreditation.program.standard</field>
+        <field name="arch" type="xml">
+            <list string="Standard Assessments">
+                <field name="accreditation_program_id"/>
+                <field name="standard_code"/>
+                <field name="standard_name"/>
+                <field name="weight" optional="show"/>
+                <field name="max_score" optional="show"/>
+                <field name="score"/>
+                <field name="percentage"/>
+                <field name="minimum_score" optional="hide"/>
+                <field name="status" widget="badge"
+                       decoration-success="status == 'compliant'"
+                       decoration-warning="status == 'partial'"
+                       decoration-danger="status == 'non_compliant'"
+                       decoration-muted="status == 'not_applicable'"/>
+                <field name="is_met" widget="boolean_toggle" readonly="1"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.accreditation.program.standard — Form View               -->
+    <!-- ============================================================ -->
+    <record id="view_uni_accreditation_program_standard_form" model="ir.ui.view">
+        <field name="name">uni.accreditation.program.standard.form</field>
+        <field name="model">uni.accreditation.program.standard</field>
+        <field name="arch" type="xml">
+            <form string="Standard Assessment">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="standard_id" string="Standard Assessment"/>
+                        <h1><field name="standard_id"
+                                   options="{'no_create': True}"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="accreditation_program_id"
+                                   options="{'no_create': True}"
+                                   required="1"/>
+                            <field name="accreditation_body_id" readonly="1"/>
+                            <field name="standard_code" readonly="1"/>
+                            <field name="standard_name" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="weight"/>
+                            <field name="max_score"/>
+                            <field name="score"/>
+                            <field name="percentage" widget="progressbar"/>
+                            <field name="minimum_score" readonly="1"/>
+                            <field name="status" widget="badge"
+                                   decoration-success="status == 'compliant'"
+                                   decoration-warning="status == 'partial'"
+                                   decoration-danger="status == 'non_compliant'"
+                                   decoration-muted="status == 'not_applicable'"/>
+                            <field name="is_met" widget="boolean_toggle" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Evidence">
+                            <field name="evidence" nolabel="1" colspan="2"/>
+                        </page>
+                        <page string="Notes">
+                            <field name="notes" nolabel="1" colspan="2"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.accreditation.program.standard — Search View             -->
+    <!-- ============================================================ -->
+    <record id="view_uni_accreditation_program_standard_search" model="ir.ui.view">
+        <field name="name">uni.accreditation.program.standard.search</field>
+        <field name="model">uni.accreditation.program.standard</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="accreditation_program_id"/>
+                <field name="standard_id"/>
+                <field name="standard_code"/>
+                <field name="standard_name"/>
+                <field name="accreditation_body_id"/>
+                <separator/>
+                <filter string="Compliant" name="filter_compliant"
+                        domain="[('status', '=', 'compliant')]"/>
+                <filter string="Partial" name="filter_partial"
+                        domain="[('status', '=', 'partial')]"/>
+                <filter string="Non Compliant" name="filter_non_compliant"
+                        domain="[('status', '=', 'non_compliant')]"/>
+                <filter string="Not Applicable" name="filter_not_applicable"
+                        domain="[('status', '=', 'not_applicable')]"/>
+                <separator/>
+                <filter string="Met" name="filter_met"
+                        domain="[('is_met', '=', True)]"/>
+                <filter string="Not Met" name="filter_not_met"
+                        domain="[('is_met', '=', False)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Program" name="group_program"
+                            context="{'group_by': 'accreditation_program_id'}"/>
+                    <filter string="Standard" name="group_standard"
+                            context="{'group_by': 'standard_id'}"/>
+                    <filter string="Status" name="group_status"
+                            context="{'group_by': 'status'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.accreditation.program.standard — Action                  -->
+    <!-- ============================================================ -->
+    <record id="action_uni_accreditation_program_standard" model="ir.actions.act_window">
+        <field name="name">Standard Assessments</field>
+        <field name="res_model">uni.accreditation.program.standard</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_accreditation_program_standard_search"/>
+    </record>
+</odoo>

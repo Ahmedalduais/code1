@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- Admission application sequence -->
+    <record id="seq_uni_admission_application" model="ir.sequence">
+        <field name="name">Admission Application Sequence</field>
+        <field name="code">uni.admission.application</field>
+        <field name="prefix">ADM/%(year)s/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <!-- Admission interview sequence -->
+    <record id="seq_uni_admission_interview" model="ir.sequence">
+        <field name="name">Admission Interview Sequence</field>
+        <field name="code">uni.admission.interview</field>
+        <field name="prefix">INT/%(year)s/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <!-- Admission decision sequence -->
+    <record id="seq_uni_admission_decision" model="ir.sequence">
+        <field name="name">Admission Decision Sequence</field>
+        <field name="code">uni.admission.decision</field>
+        <field name="prefix">DEC/%(year)s/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+</odoo>

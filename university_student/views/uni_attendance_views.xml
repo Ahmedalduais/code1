@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- uni.attendance — List View                                    -->
+    <!-- ============================================================ -->
+    <record id="view_uni_attendance_list" model="ir.ui.view">
+        <field name="name">uni.attendance.list</field>
+        <field name="model">uni.attendance</field>
+        <field name="arch" type="xml">
+            <list string="Attendance Sessions"
+                  decoration-success="state == 'validated'"
+                  decoration-warning="state == 'draft'">
+                <field name="name"/>
+                <field name="student_id" optional="show"/>
+                <field name="course_id"/>
+                <field name="academic_term_id"/>
+                <field name="faculty_name" optional="hide"/>
+                <field name="date"/>
+                <field name="session_type"/>
+                <field name="line_count"/>
+                <field name="present_count"/>
+                <field name="absent_count"/>
+                <field name="attendance_percentage"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'validated'"
+                       decoration-warning="state == 'draft'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.attendance — Form View                                    -->
+    <!-- ============================================================ -->
+    <record id="view_uni_attendance_form" model="ir.ui.view">
+        <field name="name">uni.attendance.form</field>
+        <field name="model">uni.attendance</field>
+        <field name="arch" type="xml">
+            <form string="Attendance Session">
+                <header>
+                    <button name="action_validate" string="Validate"
+                            type="object" class="oe_highlight"
+                            invisible="state != 'draft'"/>
+                    <button name="action_draft" string="Set to Draft"
+                            type="object"
+                            invisible="state != 'validated'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,validated"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_lines" type="object"
+                                class="oe_stat_button" icon="fa-list">
+                            <field name="line_count" widget="statinfo"
+                                   string="Lines"/>
+                        </button>
+                        <button type="object" class="oe_stat_button" icon="fa-check">
+                            <field name="present_count" widget="statinfo"
+                                   string="Present"/>
+                        </button>
+                        <button type="object" class="oe_stat_button" icon="fa-times">
+                            <field name="absent_count" widget="statinfo"
+                                   string="Absent"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" string="Attendance Session"/>
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="student_id"
+                                   options="{'no_create': True}"/>
+                            <field name="course_id"
+                                   options="{'no_create': True}"/>
+                            <field name="academic_term_id"
+                                   options="{'no_create': True}"/>
+                            <field name="faculty_name"/>
+                            <field name="university_id" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="date"/>
+                            <field name="session_type"/>
+                            <field name="attendance_percentage" widget="progressbar"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Lines">
+                            <field name="line_ids">
+                                <list editable="bottom">
+                                    <field name="student_id"
+                                           options="{'no_create': True}"/>
+                                    <field name="status"/>
+                                    <field name="arrival_time" widget="float_time"/>
+                                    <field name="departure_time" widget="float_time"/>
+                                    <field name="minutes_late"/>
+                                    <field name="attendance_percentage"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Notes">
+                            <group>
+                                <field name="notes"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.attendance — Search View                                  -->
+    <!-- ============================================================ -->
+    <record id="view_uni_attendance_search" model="ir.ui.view">
+        <field name="name">uni.attendance.search</field>
+        <field name="model">uni.attendance</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="student_id"/>
+                <field name="course_id"/>
+                <field name="academic_term_id"/>
+                <field name="faculty_name"/>
+                <filter string="Draft" name="filter_draft"
+                        domain="[('state', '=', 'draft')]"/>
+                <filter string="Validated" name="filter_validated"
+                        domain="[('state', '=', 'validated')]"/>
+                <separator/>
+                <filter string="Lecture" name="filter_lecture"
+                        domain="[('session_type', '=', 'lecture')]"/>
+                <filter string="Lab" name="filter_lab"
+                        domain="[('session_type', '=', 'lab')]"/>
+                <filter string="Tutorial" name="filter_tutorial"
+                        domain="[('session_type', '=', 'tutorial')]"/>
+                <filter string="Exam" name="filter_exam"
+                        domain="[('session_type', '=', 'exam')]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Course" name="group_course"
+                            context="{'group_by': 'course_id'}"/>
+                    <filter string="Term" name="group_term"
+                            context="{'group_by': 'academic_term_id'}"/>
+                    <filter string="Faculty" name="group_faculty"
+                            context="{'group_by': 'faculty_name'}"/>
+                    <filter string="Session Type" name="group_session_type"
+                            context="{'group_by': 'session_type'}"/>
+                    <filter string="Status" name="group_state"
+                            context="{'group_by': 'state'}"/>
+                    <filter string="Date" name="group_date"
+                            context="{'group_by': 'date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.attendance — Action                                       -->
+    <!-- ============================================================ -->
+    <record id="action_uni_attendance" model="ir.actions.act_window">
+        <field name="name">Attendance</field>
+        <field name="res_model">uni.attendance</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_attendance_search"/>
+        <field name="context">{'default_date': context_today()}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new attendance session
+            </p>
+            <p>Each session tracks attendance for a course on a specific date
+               with detailed lines per student.</p>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.attendance.line — List View                               -->
+    <!-- ============================================================ -->
+    <record id="view_uni_attendance_line_list" model="ir.ui.view">
+        <field name="name">uni.attendance.line.list</field>
+        <field name="model">uni.attendance.line</field>
+        <field name="arch" type="xml">
+            <list string="Attendance Lines"
+                  decoration-success="status == 'present'"
+                  decoration-danger="status == 'absent'"
+                  decoration-warning="status == 'late'"
+                  decoration-info="status in ('excused', 'medical_leave')">
+                <field name="attendance_id"/>
+                <field name="student_id"/>
+                <field name="course_id"/>
+                <field name="academic_term_id"/>
+                <field name="status" widget="badge"
+                       decoration-success="status == 'present'"
+                       decoration-danger="status == 'absent'"
+                       decoration-warning="status == 'late'"
+                       decoration-info="status in ('excused', 'medical_leave')"/>
+                <field name="minutes_late"/>
+                <field name="attendance_percentage"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.attendance.line — Form View                               -->
+    <!-- ============================================================ -->
+    <record id="view_uni_attendance_line_form" model="ir.ui.view">
+        <field name="name">uni.attendance.line.form</field>
+        <field name="model">uni.attendance.line</field>
+        <field name="arch" type="xml">
+            <form string="Attendance Line">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="attendance_id"
+                                   options="{'no_create': True}"/>
+                            <field name="student_id"
+                                   options="{'no_create': True}"/>
+                            <field name="course_id" readonly="1"/>
+                            <field name="academic_term_id" readonly="1"/>
+                            <field name="university_id" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="status"/>
+                            <field name="arrival_time" widget="float_time"/>
+                            <field name="departure_time" widget="float_time"/>
+                            <field name="minutes_late"/>
+                            <field name="attendance_percentage" widget="progressbar"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="notes"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.attendance.line — Search View                             -->
+    <!-- ============================================================ -->
+    <record id="view_uni_attendance_line_search" model="ir.ui.view">
+        <field name="name">uni.attendance.line.search</field>
+        <field name="model">uni.attendance.line</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="attendance_id"/>
+                <field name="student_id"/>
+                <field name="course_id"/>
+                <field name="academic_term_id"/>
+                <filter string="Present" name="filter_present"
+                        domain="[('status', '=', 'present')]"/>
+                <filter string="Absent" name="filter_absent"
+                        domain="[('status', '=', 'absent')]"/>
+                <filter string="Late" name="filter_late"
+                        domain="[('status', '=', 'late')]"/>
+                <filter string="Excused" name="filter_excused"
+                        domain="[('status', '=', 'excused')]"/>
+                <filter string="Medical Leave" name="filter_medical"
+                        domain="[('status', '=', 'medical_leave')]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Student" name="group_student"
+                            context="{'group_by': 'student_id'}"/>
+                    <filter string="Course" name="group_course"
+                            context="{'group_by': 'course_id'}"/>
+                    <filter string="Status" name="group_status"
+                            context="{'group_by': 'status'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.attendance.line — Action                                  -->
+    <!-- ============================================================ -->
+    <record id="action_uni_attendance_line" model="ir.actions.act_window">
+        <field name="name">Attendance Lines</field>
+        <field name="res_model">uni.attendance.line</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_attendance_line_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Open an attendance session to add lines
+            </p>
+        </field>
+    </record>
+</odoo>

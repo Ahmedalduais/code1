@@ -1,0 +1,13 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_uni_transport_vehicle_user,uni.transport.vehicle.user,model_uni_transport_vehicle,university_core.group_university_user,1,0,0,0
+access_uni_transport_vehicle_manager,uni.transport.vehicle.manager,model_uni_transport_vehicle,university_core.group_university_manager,1,1,1,1
+access_uni_transport_route_user,uni.transport.route.user,model_uni_transport_route,university_core.group_university_user,1,0,0,0
+access_uni_transport_route_manager,uni.transport.route.manager,model_uni_transport_route,university_core.group_university_manager,1,1,1,1
+access_uni_transport_stop_user,uni.transport.stop.user,model_uni_transport_stop,university_core.group_university_user,1,0,0,0
+access_uni_transport_stop_manager,uni.transport.stop.manager,model_uni_transport_stop,university_core.group_university_manager,1,1,1,1
+access_uni_transport_pass_user,uni.transport.pass.user,model_uni_transport_pass,university_core.group_university_user,1,0,0,0
+access_uni_transport_pass_manager,uni.transport.pass.manager,model_uni_transport_pass,university_core.group_university_manager,1,1,1,1
+access_uni_transport_attendance_user,uni.transport.attendance.user,model_uni_transport_attendance,university_core.group_university_user,1,0,0,0
+access_uni_transport_attendance_manager,uni.transport.attendance.manager,model_uni_transport_attendance,university_core.group_university_manager,1,1,1,1
+access_uni_transport_attendance_line_user,uni.transport.attendance.line.user,model_uni_transport_attendance_line,university_core.group_university_user,1,0,0,0
+access_uni_transport_attendance_line_manager,uni.transport.attendance.line.manager,model_uni_transport_attendance_line,university_core.group_university_manager,1,1,1,1

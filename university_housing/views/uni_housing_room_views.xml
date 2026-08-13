@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- uni.housing.room — List View                                  -->
+    <!-- ============================================================ -->
+    <record id="view_uni_housing_room_list" model="ir.ui.view">
+        <field name="name">uni.housing.room.list</field>
+        <field name="model">uni.housing.room</field>
+        <field name="arch" type="xml">
+            <list string="Rooms"
+                  decoration-success="state == 'available'"
+                  decoration-warning="state == 'full'"
+                  decoration-danger="state == 'maintenance'"
+                  decoration-muted="state == 'closed'">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="building_id"/>
+                <field name="university_id" optional="hide"/>
+                <field name="floor"/>
+                <field name="room_type_id"/>
+                <field name="capacity"/>
+                <field name="occupied_beds"/>
+                <field name="available_beds"/>
+                <field name="monthly_rent" widget="monetary"
+                       options="{'currency_field': 'currency_id'}"
+                       sum="Total Monthly Rent"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'available'"
+                       decoration-warning="state == 'full'"
+                       decoration-danger="state == 'maintenance'"
+                       decoration-muted="state == 'closed'"/>
+                <field name="active" widget="boolean_toggle" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.housing.room — Kanban View (grouped by state)             -->
+    <!-- ============================================================ -->
+    <record id="view_uni_housing_room_kanban" model="ir.ui.view">
+        <field name="name">uni.housing.room.kanban</field>
+        <field name="model">uni.housing.room</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" class="o_kanban_small_column">
+                <field name="state"/>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="building_id"/>
+                <field name="floor"/>
+                <field name="room_type_id"/>
+                <field name="capacity"/>
+                <field name="occupied_beds"/>
+                <field name="available_beds"/>
+                <field name="photo"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div t-attf-class="oe_kanban_card oe_kanban_global_click">
+                            <div class="o_kanban_image">
+                                <img t-att-src="kanban_image(record, 'photo', record.id.raw_value)"
+                                     alt="Room" class="o_image_64_contain"/>
+                            </div>
+                            <div class="oe_kanban_details">
+                                <strong class="o_kanban_record_title">
+                                    <field name="name"/>
+                                </strong>
+                                <div>
+                                    <field name="code"/>
+                                </div>
+                                <div>
+                                    <field name="building_id"/>
+                                </div>
+                                <div>
+                                    <field name="room_type_id"/>
+                                </div>
+                                <div>
+                                    <span><field name="occupied_beds"/> / <field name="capacity"/> beds occupied</span>
+                                </div>
+                                <div>
+                                    <field name="state" widget="label"
+                                           decoration-success="state == 'available'"
+                                           decoration-warning="state == 'full'"
+                                           decoration-danger="state == 'maintenance'"
+                                           decoration-muted="state == 'closed'"/>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.housing.room — Form View                                  -->
+    <!-- ============================================================ -->
+    <record id="view_uni_housing_room_form" model="ir.ui.view">
+        <field name="name">uni.housing.room.form</field>
+        <field name="model">uni.housing.room</field>
+        <field name="arch" type="xml">
+            <form string="Room">
+                <header>
+                    <button name="action_maintenance" type="object"
+                            string="Put Under Maintenance"
+                            invisible="state in ('maintenance', 'closed')"/>
+                    <button name="action_available" type="object"
+                            string="Mark Available" class="oe_highlight"
+                            invisible="state == 'available'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="available,full,maintenance,closed"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_open_allocations" type="object"
+                                class="oe_stat_button" icon="fa-bed">
+                            <div class="o_stat_info">
+                                <span class="o_stat_value"><field name="occupied_beds"/></span>
+                                <span class="o_stat_text">Occupied</span>
+                            </div>
+                        </button>
+                        <button name="action_open_allocations" type="object"
+                                class="oe_stat_button" icon="fa-check-square-o">
+                            <div class="o_stat_info">
+                                <span class="o_stat_value"><field name="available_beds"/></span>
+                                <span class="o_stat_text">Available</span>
+                            </div>
+                        </button>
+                        <button name="action_archive" type="object"
+                                class="oe_stat_button" icon="fa-archive"
+                                invisible="active == False">
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">Unarchive</span>
+                            </div>
+                        </button>
+                        <button name="action_unarchive" type="object"
+                                class="oe_stat_button" icon="fa-archive"
+                                invisible="active == True">
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">Restore</span>
+                            </div>
+                        </button>
+                    </div>
+                    <field name="photo" widget="image"
+                           class="oe_avatar" options="{'size': [120, 160]}"/>
+                    <div class="oe_title">
+                        <label for="name" string="Room Number"/>
+                        <h1><field name="name"
+                                   placeholder="e.g. 101, 102A"/></h1>
+                        <h3><field name="code"
+                                   placeholder="e.g. 101, B-101"/></h3>
+                    </div>
+                    <group>
+                        <group string="Location">
+                            <field name="building_id"
+                                   options="{'no_create': True}"/>
+                            <field name="university_id"
+                                   options="{'no_create': True}"/>
+                            <field name="floor"/>
+                        </group>
+                        <group string="Room Type">
+                            <field name="room_type_id"
+                                   options="{'no_create': True}"/>
+                            <field name="capacity"/>
+                            <field name="monthly_rent"
+                                   widget="monetary"
+                                   options="{'currency_field': 'currency_id'}"/>
+                            <field name="currency_id"
+                                   options="{'no_create': True}"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Occupancy">
+                            <field name="occupied_beds"/>
+                            <field name="available_beds"/>
+                            <field name="state"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Allocations" name="allocations">
+                            <field name="allocation_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="student_id"/>
+                                    <field name="allocation_date"/>
+                                    <field name="check_in_date"/>
+                                    <field name="expected_check_out_date"/>
+                                    <field name="actual_check_out_date"/>
+                                    <field name="state" widget="badge"
+                                           decoration-success="state == 'active'"
+                                           decoration-info="state == 'draft'"
+                                           decoration-muted="state == 'completed' or state == 'cancelled'"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <group>
+                                <field name="notes" nolabel="1"
+                                       placeholder="Internal notes about the room..."/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.housing.room — Search View                                -->
+    <!-- ============================================================ -->
+    <record id="view_uni_housing_room_search" model="ir.ui.view">
+        <field name="name">uni.housing.room.search</field>
+        <field name="model">uni.housing.room</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="building_id"/>
+                <field name="university_id"/>
+                <field name="room_type_id"/>
+                <filter string="Available" name="filter_available"
+                        domain="[('state', '=', 'available')]"/>
+                <filter string="Full" name="filter_full"
+                        domain="[('state', '=', 'full')]"/>
+                <filter string="Under Maintenance" name="filter_maintenance"
+                        domain="[('state', '=', 'maintenance')]"/>
+                <filter string="Closed" name="filter_closed"
+                        domain="[('state', '=', 'closed')]"/>
+                <filter string="Has Available Beds" name="filter_has_beds"
+                        domain="[('available_beds', '>', 0)]"/>
+                <filter string="Archived" name="filter_archived"
+                        domain="[('active', '=', False)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Building" name="group_building"
+                            context="{'group_by': 'building_id'}"/>
+                    <filter string="University" name="group_university"
+                            context="{'group_by': 'university_id'}"/>
+                    <filter string="Room Type" name="group_type"
+                            context="{'group_by': 'room_type_id'}"/>
+                    <filter string="State" name="group_state"
+                            context="{'group_by': 'state'}"/>
+                    <filter string="Floor" name="group_floor"
+                            context="{'group_by': 'floor'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.housing.room — Action (kanban, list, form)                -->
+    <!-- ============================================================ -->
+    <record id="action_uni_housing_room" model="ir.actions.act_window">
+        <field name="name">Rooms</field>
+        <field name="res_model">uni.housing.room</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="search_view_id" ref="view_uni_housing_room_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Add a new room
+            </p>
+            <p>Rooms belong to a building and inherit capacity and rent from
+               their room type. The system tracks occupied and available beds
+               automatically based on active allocations.</p>
+        </field>
+    </record>
+</odoo>

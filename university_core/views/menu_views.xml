@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Main Menu: University -->
+    <menuitem id="menu_university_root"
+              name="University"
+              sequence="20"
+              web_icon="university_core,static/description/icon.png"
+              groups="group_university_user"/>
+
+    <!-- Universities Submenu -->
+    <menuitem id="menu_university_universities"
+              name="Universities"
+              parent="menu_university_root"
+              sequence="10"/>
+
+    <menuitem id="menu_university_university"
+              name="Universities"
+              parent="menu_university_universities"
+              action="action_uni_university"
+              sequence="10"/>
+
+    <menuitem id="menu_university_branch"
+              name="Branches"
+              parent="menu_university_universities"
+              action="action_uni_branch"
+              sequence="20"/>
+
+    <menuitem id="menu_university_college"
+              name="Colleges"
+              parent="menu_university_universities"
+              action="action_uni_college"
+              sequence="30"/>
+
+    <menuitem id="menu_university_department"
+              name="Departments"
+              parent="menu_university_universities"
+              action="action_uni_department"
+              sequence="40"/>
+
+    <menuitem id="menu_university_program"
+              name="Programs"
+              parent="menu_university_universities"
+              action="action_uni_program"
+              sequence="50"/>
+
+    <menuitem id="menu_university_program_level"
+              name="Program Levels"
+              parent="menu_university_universities"
+              action="action_uni_program_level"
+              sequence="60"
+              groups="group_university_manager"/>
+
+    <!-- Academic Submenu -->
+    <menuitem id="menu_university_academic"
+              name="Academic"
+              parent="menu_university_root"
+              sequence="20"/>
+
+    <menuitem id="menu_university_academic_year"
+              name="Academic Years"
+              parent="menu_university_academic"
+              action="action_uni_academic_year"
+              sequence="10"/>
+
+    <menuitem id="menu_university_academic_term"
+              name="Academic Terms"
+              parent="menu_university_academic"
+              action="action_uni_academic_term"
+              sequence="20"/>
+
+    <menuitem id="menu_university_term_type"
+              name="Term Types"
+              parent="menu_university_academic"
+              action="action_uni_academic_term_type"
+              sequence="30"
+              groups="group_university_manager"/>
+
+    <!-- Persons Submenu -->
+    <menuitem id="menu_university_persons"
+              name="Persons"
+              parent="menu_university_root"
+              sequence="30"/>
+
+    <menuitem id="menu_university_person"
+              name="All Persons"
+              parent="menu_university_persons"
+              action="action_uni_person"
+              sequence="10"/>
+
+    <!-- Configuration -->
+    <menuitem id="menu_university_config"
+              name="Configuration"
+              parent="menu_university_root"
+              sequence="90"
+              groups="group_university_manager"/>
+
+    <record id="action_university_config_settings" model="ir.actions.act_window">
+        <field name="name">Settings</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_mode">form</field>
+        <field name="target">inline</field>
+        <field name="context">{'module': 'university_core'}</field>
+    </record>
+
+    <menuitem id="menu_university_config_settings"
+              name="Settings"
+              parent="menu_university_config"
+              action="action_university_config_settings"
+              sequence="10"/>
+
+    <!-- Academic Standing Configuration -->
+    <menuitem id="menu_university_academic_standing"
+              name="Academic Standings"
+              parent="menu_university_config"
+              action="action_uni_academic_standing"
+              sequence="20"/>
+
+    <!-- Honor Levels Configuration -->
+    <menuitem id="menu_university_honors_level"
+              name="Honor Levels"
+              parent="menu_university_config"
+              action="action_uni_honors_level"
+              sequence="30"/>
+</odoo>

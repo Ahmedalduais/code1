@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- Admission menu — under university_core.menu_university_root  -->
+    <!-- ============================================================ -->
+    <menuitem id="menu_university_admission_root"
+              name="Admission"
+              parent="university_core.menu_university_root"
+              sequence="60"/>
+
+    <!-- Applications -->
+    <menuitem id="menu_uni_admission_application"
+              name="Applications"
+              parent="menu_university_admission_root"
+              action="action_uni_admission_application"
+              sequence="10"/>
+
+    <!-- Requirements -->
+    <menuitem id="menu_uni_admission_requirement"
+              name="Requirements"
+              parent="menu_university_admission_root"
+              action="action_uni_admission_requirement"
+              sequence="20"/>
+
+    <!-- Criteria (manager only) -->
+    <menuitem id="menu_uni_admission_criteria"
+              name="Criteria"
+              parent="menu_university_admission_root"
+              action="action_uni_admission_criteria"
+              sequence="30"
+              groups="university_core.group_university_manager"/>
+
+    <!-- Interviews -->
+    <menuitem id="menu_uni_admission_interview"
+              name="Interviews"
+              parent="menu_university_admission_root"
+              action="action_uni_admission_interview"
+              sequence="40"/>
+
+    <!-- Decisions -->
+    <menuitem id="menu_uni_admission_decision"
+              name="Decisions"
+              parent="menu_university_admission_root"
+              action="action_uni_admission_decision"
+              sequence="50"/>
+
+    <!-- Requirement Lines (secondary, manager only) -->
+    <menuitem id="menu_uni_admission_requirement_line"
+              name="Requirement Lines"
+              parent="menu_university_admission_root"
+              action="action_uni_admission_requirement_line"
+              sequence="90"
+              groups="university_core.group_university_manager"/>
+</odoo>

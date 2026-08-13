@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_uni_person_list" model="ir.ui.view">
+        <field name="name">uni.person.list</field>
+        <field name="model">uni.person</field>
+        <field name="arch" type="xml">
+            <list string="Persons">
+                <field name="name"/>
+                <field name="person_type"/>
+                <field name="university_id"/>
+                <field name="email"/>
+                <field name="phone"/>
+                <field name="national_id"/>
+                <field name="gender"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_uni_person_form" model="ir.ui.view">
+        <field name="name">uni.person.form</field>
+        <field name="model">uni.person</field>
+        <field name="arch" type="xml">
+            <form string="Person">
+                <sheet>
+                    <field name="photo" widget="image" class="oe_avatar"/>
+                    <div class="oe_title">
+                        <label for="name" string="Full Name"/>
+                        <h1><field name="name" placeholder="Person's full name"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="university_id"/>
+                            <field name="person_type"/>
+                            <field name="user_id"/>
+                        </group>
+                        <group>
+                            <field name="gender"/>
+                            <field name="birth_date"/>
+                            <field name="age"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Identification">
+                            <group>
+                                <group>
+                                    <field name="nationality_id"/>
+                                    <field name="national_id"/>
+                                    <field name="passport_no"/>
+                                </group>
+                                <group>
+                                    <field name="religion"/>
+                                    <field name="marital_status"/>
+                                    <field name="blood_group"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Contact">
+                            <group>
+                                <group>
+                                    <field name="email"/>
+                                    <field name="phone"/>
+                                    <field name="mobile"/>
+                                </group>
+                                <group>
+                                    <field name="country_id"/>
+                                    <field name="state_id"/>
+                                    <field name="city"/>
+                                    <field name="street"/>
+                                    <field name="street2"/>
+                                    <field name="zip"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Emergency Contact">
+                            <group>
+                                <group>
+                                    <field name="emergency_contact_name"/>
+                                    <field name="emergency_contact_phone"/>
+                                    <field name="emergency_contact_relation"/>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_uni_person_search" model="ir.ui.view">
+        <field name="name">uni.person.search</field>
+        <field name="model">uni.person</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="national_id"/>
+                <field name="email"/>
+                <field name="phone"/>
+                <field name="university_id"/>
+                <field name="person_type"/>
+                <filter string="Active" name="filter_active"
+                        domain="[('active', '=', True)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="University" name="group_university"
+                            context="{'group_by': 'university_id'}"/>
+                    <filter string="Person Type" name="group_type"
+                            context="{'group_by': 'person_type'}"/>
+                    <filter string="Gender" name="group_gender"
+                            context="{'group_by': 'gender'}"/>
+                    <filter string="Nationality" name="group_nationality"
+                            context="{'group_by': 'nationality_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_uni_person" model="ir.actions.act_window">
+        <field name="name">Persons</field>
+        <field name="res_model">uni.person</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_person_search"/>
+        <field name="context">{'search_default_filter_active': 1}</field>
+    </record>
+</odoo>

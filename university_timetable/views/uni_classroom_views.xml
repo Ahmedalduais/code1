@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- uni.classroom — List View                                    -->
+    <!-- ============================================================ -->
+    <record id="view_uni_classroom_list" model="ir.ui.view">
+        <field name="name">uni.classroom.list</field>
+        <field name="model">uni.classroom</field>
+        <field name="arch" type="xml">
+            <list string="Classrooms"
+                  decoration-success="state == 'available'"
+                  decoration-warning="state == 'maintenance'"
+                  decoration-danger="state == 'occupied'">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="university_id"/>
+                <field name="branch_id" optional="hide"/>
+                <field name="college_id" optional="show"/>
+                <field name="department_id" optional="hide"/>
+                <field name="classroom_type_id"/>
+                <field name="building" optional="hide"/>
+                <field name="floor" optional="hide"/>
+                <field name="room_number" optional="hide"/>
+                <field name="capacity"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'available'"
+                       decoration-warning="state == 'maintenance'"
+                       decoration-danger="state == 'occupied'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.classroom — Form View                                    -->
+    <!-- ============================================================ -->
+    <record id="view_uni_classroom_form" model="ir.ui.view">
+        <field name="name">uni.classroom.form</field>
+        <field name="model">uni.classroom</field>
+        <field name="arch" type="xml">
+            <form string="Classroom">
+                <header>
+                    <button name="action_maintenance" string="Set Maintenance"
+                            type="object"
+                            invisible="state == 'maintenance'"/>
+                    <button name="action_available" string="Set Available"
+                            type="object" class="oe_highlight"
+                            invisible="state == 'available'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="available,maintenance,occupied"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_open_bookings" type="object"
+                                class="oe_stat_button" icon="fa-calendar">
+                            <field name="active_booking_count" widget="statinfo"
+                                   string="Active Bookings"/>
+                        </button>
+                    </div>
+                    <field name="photo" widget="image" class="oe_avatar"/>
+                    <div class="oe_title">
+                        <label for="name" string="Classroom"/>
+                        <h1><field name="name" placeholder="e.g. Main Lecture Hall A"/></h1>
+                        <h3><field name="code" placeholder="e.g. ROOM-A-101"/></h3>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="university_id"/>
+                            <field name="branch_id"/>
+                            <field name="college_id"/>
+                            <field name="department_id"/>
+                            <field name="classroom_type_id"/>
+                        </group>
+                        <group>
+                            <field name="capacity"/>
+                            <field name="classroom_type_capacity" invisible="1"/>
+                            <field name="building"/>
+                            <field name="floor"/>
+                            <field name="room_number"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Facilities">
+                            <field name="facilities" nolabel="1" colspan="2"
+                                   placeholder="Describe additional facilities and equipment available in this classroom..."/>
+                        </page>
+                        <page string="Bookings">
+                            <field name="booking_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="booking_date"/>
+                                    <field name="start_time" widget="float_time"/>
+                                    <field name="end_time" widget="float_time"/>
+                                    <field name="booked_by"/>
+                                    <field name="purpose"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.classroom — Search View                                  -->
+    <!-- ============================================================ -->
+    <record id="view_uni_classroom_search" model="ir.ui.view">
+        <field name="name">uni.classroom.search</field>
+        <field name="model">uni.classroom</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="university_id"/>
+                <field name="branch_id"/>
+                <field name="college_id"/>
+                <field name="department_id"/>
+                <field name="classroom_type_id"/>
+                <field name="building"/>
+                <separator/>
+                <filter string="Available" name="filter_available"
+                        domain="[('state', '=', 'available')]"/>
+                <filter string="Under Maintenance" name="filter_maintenance"
+                        domain="[('state', '=', 'maintenance')]"/>
+                <filter string="Occupied" name="filter_occupied"
+                        domain="[('state', '=', 'occupied')]"/>
+                <group expand="0" string="Group By">
+                    <filter string="University" name="group_university"
+                            context="{'group_by': 'university_id'}"/>
+                    <filter string="Branch" name="group_branch"
+                            context="{'group_by': 'branch_id'}"/>
+                    <filter string="College" name="group_college"
+                            context="{'group_by': 'college_id'}"/>
+                    <filter string="Department" name="group_department"
+                            context="{'group_by': 'department_id'}"/>
+                    <filter string="Type" name="group_type"
+                            context="{'group_by': 'classroom_type_id'}"/>
+                    <filter string="Building" name="group_building"
+                            context="{'group_by': 'building'}"/>
+                    <filter string="Status" name="group_state"
+                            context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.classroom — Action                                       -->
+    <!-- ============================================================ -->
+    <record id="action_uni_classroom" model="ir.actions.act_window">
+        <field name="name">Classrooms</field>
+        <field name="res_model">uni.classroom</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_classroom_search"/>
+        <field name="context">{'search_default_filter_available': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new classroom
+            </p>
+            <p>Classrooms are physical teaching spaces that can be booked
+               for sessions and linked to timetable lines.</p>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- uni.transport.route — List View                               -->
+    <!-- ============================================================ -->
+    <record id="view_uni_transport_route_list" model="ir.ui.view">
+        <field name="name">uni.transport.route.list</field>
+        <field name="model">uni.transport.route</field>
+        <field name="arch" type="xml">
+            <list string="Routes"
+                  decoration-success="state == 'active'"
+                  decoration-warning="state == 'suspended'"
+                  decoration-muted="state == 'closed'">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="university_id"/>
+                <field name="branch_id"/>
+                <field name="start_point"/>
+                <field name="end_point"/>
+                <field name="distance_km"/>
+                <field name="estimated_duration" widget="float_time"/>
+                <field name="departure_time" widget="float_time"/>
+                <field name="arrival_time" widget="float_time"/>
+                <field name="operating_days"/>
+                <field name="vehicle_id"/>
+                <field name="driver_id"/>
+                <field name="stop_count"/>
+                <field name="pass_count"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'active'"
+                       decoration-warning="state == 'suspended'"
+                       decoration-muted="state == 'closed'"
+                       decoration-info="state == 'draft'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.transport.route — Form View                               -->
+    <!-- ============================================================ -->
+    <record id="view_uni_transport_route_form" model="ir.ui.view">
+        <field name="name">uni.transport.route.form</field>
+        <field name="model">uni.transport.route</field>
+        <field name="arch" type="xml">
+            <form string="Route">
+                <header>
+                    <button name="action_activate" type="object"
+                            string="Activate" class="oe_highlight"
+                            invisible="state not in ('draft', 'suspended')"/>
+                    <button name="action_suspend" type="object"
+                            string="Suspend"
+                            invisible="state != 'active'"/>
+                    <button name="action_close" type="object"
+                            string="Close"
+                            invisible="state == 'closed'"
+                            confirm="Are you sure you want to close this route?"/>
+                    <button name="action_draft" type="object"
+                            string="Reset to Draft"
+                            invisible="state not in ('suspended', 'closed')"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,active,suspended,closed"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_stops" type="object"
+                                class="oe_stat_button" icon="fa-map-marker">
+                            <div class="o_stat_info">
+                                <span class="o_stat_value"><field name="stop_count"/></span>
+                                <span class="o_stat_text">Stops</span>
+                            </div>
+                        </button>
+                        <button name="action_view_passes" type="object"
+                                class="oe_stat_button" icon="fa-id-card">
+                            <div class="o_stat_info">
+                                <span class="o_stat_value"><field name="pass_count"/></span>
+                                <span class="o_stat_text">Passes</span>
+                            </div>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" string="Route Name"/>
+                        <h1><field name="name" placeholder="e.g. North Campus Line"/></h1>
+                        <h3><field name="code" placeholder="e.g. RTE-001"/></h3>
+                    </div>
+                    <group>
+                        <group string="Affiliation">
+                            <field name="university_id"
+                                   options="{'no_create': True}"/>
+                            <field name="branch_id"
+                                   options="{'no_create': True}"
+                                   domain="[('university_id', '=', university_id)]"/>
+                        </group>
+                        <group string="Path">
+                            <field name="start_point"/>
+                            <field name="end_point"/>
+                            <field name="distance_km"/>
+                            <field name="estimated_duration"
+                                   widget="float_time"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Schedule">
+                            <field name="departure_time" widget="float_time"/>
+                            <field name="arrival_time" widget="float_time"/>
+                            <field name="operating_days"/>
+                        </group>
+                        <group string="Resources">
+                            <field name="vehicle_id"
+                                   options="{'no_create': True}"
+                                   domain="[('university_id', '=', university_id), ('state', 'in', ('available', 'in_use'))]"/>
+                            <field name="driver_id"
+                                   options="{'no_create': True}"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Stops" name="stops">
+                            <field name="stop_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="code"/>
+                                    <field name="name"/>
+                                    <field name="location_name"/>
+                                    <field name="arrival_time" widget="float_time"/>
+                                    <field name="departure_time" widget="float_time"/>
+                                    <field name="is_pickup_point"/>
+                                    <field name="is_drop_point"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Passes" name="passes">
+                            <field name="pass_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="student_id"/>
+                                    <field name="pass_type"/>
+                                    <field name="start_date"/>
+                                    <field name="end_date"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="notes" nolabel="1"
+                                   placeholder="Internal notes about this route..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.transport.route — Search View                             -->
+    <!-- ============================================================ -->
+    <record id="view_uni_transport_route_search" model="ir.ui.view">
+        <field name="name">uni.transport.route.search</field>
+        <field name="model">uni.transport.route</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="start_point"/>
+                <field name="end_point"/>
+                <field name="university_id"/>
+                <field name="branch_id"/>
+                <field name="vehicle_id"/>
+                <field name="driver_id"/>
+                <filter string="Draft" name="filter_draft"
+                        domain="[('state', '=', 'draft')]"/>
+                <filter string="Active" name="filter_active"
+                        domain="[('state', '=', 'active')]"/>
+                <filter string="Suspended" name="filter_suspended"
+                        domain="[('state', '=', 'suspended')]"/>
+                <filter string="Closed" name="filter_closed"
+                        domain="[('state', '=', 'closed')]"/>
+                <separator/>
+                <filter string="All Days" name="filter_all_days"
+                        domain="[('operating_days', '=', 'all')]"/>
+                <filter string="Weekdays" name="filter_weekdays"
+                        domain="[('operating_days', '=', 'weekdays')]"/>
+                <group expand="0" string="Group By">
+                    <filter string="University" name="group_university"
+                            context="{'group_by': 'university_id'}"/>
+                    <filter string="Branch" name="group_branch"
+                            context="{'group_by': 'branch_id'}"/>
+                    <filter string="Vehicle" name="group_vehicle"
+                            context="{'group_by': 'vehicle_id'}"/>
+                    <filter string="Driver" name="group_driver"
+                            context="{'group_by': 'driver_id'}"/>
+                    <filter string="Operating Days" name="group_days"
+                            context="{'group_by': 'operating_days'}"/>
+                    <filter string="State" name="group_state"
+                            context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.transport.route — Action                                  -->
+    <!-- ============================================================ -->
+    <record id="action_uni_transport_route" model="ir.actions.act_window">
+        <field name="name">Routes</field>
+        <field name="res_model">uni.transport.route</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_transport_route_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new transport route
+            </p>
+            <p>Routes describe the path between a start and an end point,
+               with stops, schedule, vehicle, and driver. Passes are
+               issued to students on a specific route.</p>
+        </field>
+    </record>
+</odoo>

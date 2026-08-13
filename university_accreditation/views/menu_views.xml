@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- Accreditation menu — under university_core.menu_university_root -->
+    <!-- ============================================================ -->
+    <menuitem id="menu_university_accreditation_root"
+              name="Accreditation"
+              parent="university_core.menu_university_root"
+              sequence="70"
+              groups="university_core.group_university_user"/>
+
+    <!-- Accreditation Bodies -->
+    <menuitem id="menu_uni_accreditation_body"
+              name="Accreditation Bodies"
+              parent="menu_university_accreditation_root"
+              action="action_uni_accreditation_body"
+              sequence="10"/>
+
+    <!-- Standards -->
+    <menuitem id="menu_uni_accreditation_standard"
+              name="Standards"
+              parent="menu_university_accreditation_root"
+              action="action_uni_accreditation_standard"
+              sequence="20"/>
+
+    <!-- Program Accreditations -->
+    <menuitem id="menu_uni_accreditation_program"
+              name="Program Accreditations"
+              parent="menu_university_accreditation_root"
+              action="action_uni_accreditation_program"
+              sequence="30"/>
+
+    <!-- Standard Assessments (manager only) -->
+    <menuitem id="menu_uni_accreditation_program_standard"
+              name="Standard Assessments"
+              parent="menu_university_accreditation_root"
+              action="action_uni_accreditation_program_standard"
+              sequence="40"
+              groups="university_core.group_university_manager"/>
+
+    <!-- Reports -->
+    <menuitem id="menu_uni_accreditation_report"
+              name="Reports"
+              parent="menu_university_accreditation_root"
+              action="action_uni_accreditation_report"
+              sequence="50"/>
+
+    <!-- Self Studies -->
+    <menuitem id="menu_uni_self_study"
+              name="Self Studies"
+              parent="menu_university_accreditation_root"
+              action="action_uni_self_study"
+              sequence="60"/>
+</odoo>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- Housing menu — under university_core.menu_university_root     -->
+    <!-- ============================================================ -->
+    <menuitem id="menu_university_housing_root"
+              name="Housing"
+              parent="university_core.menu_university_root"
+              sequence="80"/>
+
+    <!-- Buildings -->
+    <menuitem id="menu_uni_housing_building"
+              name="Buildings"
+              parent="menu_university_housing_root"
+              action="action_uni_housing_building"
+              sequence="10"/>
+
+    <!-- Rooms -->
+    <menuitem id="menu_uni_housing_room"
+              name="Rooms"
+              parent="menu_university_housing_root"
+              action="action_uni_housing_room"
+              sequence="20"/>
+
+    <!-- Room Types -->
+    <menuitem id="menu_uni_housing_room_type"
+              name="Room Types"
+              parent="menu_university_housing_root"
+              action="action_uni_housing_room_type"
+              sequence="30"
+              groups="university_core.group_university_manager"/>
+
+    <!-- Allocations -->
+    <menuitem id="menu_uni_housing_allocation"
+              name="Allocations"
+              parent="menu_university_housing_root"
+              action="action_uni_housing_allocation"
+              sequence="40"/>
+
+    <!-- Contracts -->
+    <menuitem id="menu_uni_housing_contract"
+              name="Contracts"
+              parent="menu_university_housing_root"
+              action="action_uni_housing_contract"
+              sequence="50"/>
+
+    <!-- Maintenance Requests -->
+    <menuitem id="menu_uni_housing_maintenance"
+              name="Maintenance Requests"
+              parent="menu_university_housing_root"
+              action="action_uni_housing_maintenance"
+              sequence="60"/>
+</odoo>

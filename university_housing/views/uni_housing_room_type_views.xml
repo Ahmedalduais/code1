@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- uni.housing.room.type — List View                             -->
+    <!-- ============================================================ -->
+    <record id="view_uni_housing_room_type_list" model="ir.ui.view">
+        <field name="name">uni.housing.room.type.list</field>
+        <field name="model">uni.housing.room.type</field>
+        <field name="arch" type="xml">
+            <list string="Room Types"
+                  decoration-success="active == True"
+                  decoration-muted="active == False">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="capacity"/>
+                <field name="monthly_rent" widget="monetary"
+                       options="{'currency_field': 'currency_id'}"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="has_ac" optional="hide"
+                       widget="boolean_toggle"/>
+                <field name="has_kitchen" optional="hide"
+                       widget="boolean_toggle"/>
+                <field name="has_bathroom" optional="hide"
+                       widget="boolean_toggle"/>
+                <field name="has_internet" optional="hide"
+                       widget="boolean_toggle"/>
+                <field name="has_furniture" optional="hide"
+                       widget="boolean_toggle"/>
+                <field name="room_count" sum="Total Rooms"/>
+                <field name="active" widget="boolean_toggle" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.housing.room.type — Form View                             -->
+    <!-- ============================================================ -->
+    <record id="view_uni_housing_room_type_form" model="ir.ui.view">
+        <field name="name">uni.housing.room.type.form</field>
+        <field name="model">uni.housing.room.type</field>
+        <field name="arch" type="xml">
+            <form string="Room Type">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_archive" type="object"
+                                class="oe_stat_button" icon="fa-archive"
+                                invisible="active == False">
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">Unarchive</span>
+                            </div>
+                        </button>
+                        <button name="action_unarchive" type="object"
+                                class="oe_stat_button" icon="fa-archive"
+                                invisible="active == True">
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">Restore</span>
+                            </div>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" string="Room Type Name"/>
+                        <h1><field name="name"
+                                   placeholder="e.g. Single, Double, Suite"/></h1>
+                        <h3><field name="code"
+                                   placeholder="e.g. SGL, DBL, STE"/></h3>
+                    </div>
+                    <group>
+                        <group string="Capacity &amp; Pricing">
+                            <field name="capacity"/>
+                            <field name="monthly_rent"
+                                   widget="monetary"
+                                   options="{'currency_field': 'currency_id'}"/>
+                            <field name="currency_id"
+                                   options="{'no_create': True}"/>
+                        </group>
+                        <group string="Statistics">
+                            <field name="room_count"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                    <group string="Amenities">
+                        <group>
+                            <field name="has_ac"/>
+                            <field name="has_kitchen"/>
+                            <field name="has_bathroom"/>
+                        </group>
+                        <group>
+                            <field name="has_internet"/>
+                            <field name="has_furniture"/>
+                        </group>
+                    </group>
+                    <group string="Description">
+                        <field name="description" nolabel="1"
+                               placeholder="Detailed description of the room type and its amenities..."/>
+                    </group>
+                    <notebook>
+                        <page string="Rooms" name="rooms">
+                            <field name="room_ids">
+                                <list>
+                                    <field name="code"/>
+                                    <field name="name"/>
+                                    <field name="building_id"/>
+                                    <field name="floor"/>
+                                    <field name="capacity"/>
+                                    <field name="occupied_beds"/>
+                                    <field name="available_beds"/>
+                                    <field name="state" widget="badge"
+                                           decoration-success="state == 'available'"
+                                           decoration-danger="state == 'maintenance'"
+                                           decoration-muted="state == 'closed'"
+                                           decoration-warning="state == 'full'"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.housing.room.type — Search View                           -->
+    <!-- ============================================================ -->
+    <record id="view_uni_housing_room_type_search" model="ir.ui.view">
+        <field name="name">uni.housing.room.type.search</field>
+        <field name="model">uni.housing.room.type</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="code"/>
+                <filter string="Has AC" name="filter_ac"
+                        domain="[('has_ac', '=', True)]"/>
+                <filter string="Has Kitchen" name="filter_kitchen"
+                        domain="[('has_kitchen', '=', True)]"/>
+                <filter string="Has Bathroom" name="filter_bathroom"
+                        domain="[('has_bathroom', '=', True)]"/>
+                <filter string="Has Internet" name="filter_internet"
+                        domain="[('has_internet', '=', True)]"/>
+                <filter string="Has Furniture" name="filter_furniture"
+                        domain="[('has_furniture', '=', True)]"/>
+                <filter string="Archived" name="filter_archived"
+                        domain="[('active', '=', False)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Currency" name="group_currency"
+                            context="{'group_by': 'currency_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.housing.room.type — Action                                -->
+    <!-- ============================================================ -->
+    <record id="action_uni_housing_room_type" model="ir.actions.act_window">
+        <field name="name">Room Types</field>
+        <field name="res_model">uni.housing.room.type</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_housing_room_type_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Add a new room type
+            </p>
+            <p>Room types define the standard capacity, rent, and amenities
+               shared by all rooms of the same kind (e.g. Single, Double,
+               Suite).</p>
+        </field>
+    </record>
+</odoo>

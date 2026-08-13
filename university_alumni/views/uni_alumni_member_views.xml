@@ -1,0 +1,373 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- uni.alumni.member — List View                                -->
+    <!-- ============================================================ -->
+    <record id="view_uni_alumni_member_list" model="ir.ui.view">
+        <field name="name">uni.alumni.member.list</field>
+        <field name="model">uni.alumni.member</field>
+        <field name="arch" type="xml">
+            <list string="Alumni Members"
+                  decoration-success="membership_status in ('active', 'lifetime')"
+                  decoration-info="membership_status == 'honorary'"
+                  decoration-muted="membership_status == 'inactive'">
+                <field name="name"/>
+                <field name="code" optional="hide"/>
+                <field name="student_id" options="{'no_create': True}"/>
+                <field name="university_id" optional="hide"/>
+                <field name="college_id" optional="hide"/>
+                <field name="department_id" optional="hide"/>
+                <field name="program_id" optional="hide"/>
+                <field name="graduation_year"/>
+                <field name="final_gpa" optional="hide"/>
+                <field name="degree_received" optional="hide"/>
+                <field name="current_job_title" optional="hide"/>
+                <field name="current_employer" optional="hide"/>
+                <field name="total_donations" sum="Total Donations" optional="hide"/>
+                <field name="currency_id" invisible="1"/>
+                <field name="is_mentor" optional="hide"/>
+                <field name="is_volunteer" optional="hide"/>
+                <field name="membership_status" widget="badge"
+                       decoration-success="membership_status in ('active', 'lifetime')"
+                       decoration-info="membership_status == 'honorary'"
+                       decoration-muted="membership_status == 'inactive'"/>
+                <field name="active" invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.alumni.member — Kanban View                              -->
+    <!-- ============================================================ -->
+    <record id="view_uni_alumni_member_kanban" model="ir.ui.view">
+        <field name="name">uni.alumni.member.kanban</field>
+        <field name="model">uni.alumni.member</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="membership_status" class="o_kanban_small_column">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="student_id"/>
+                <field name="graduation_year"/>
+                <field name="current_job_title"/>
+                <field name="current_employer"/>
+                <field name="membership_status"/>
+                <field name="is_mentor"/>
+                <field name="is_volunteer"/>
+                <field name="color"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div t-attf-class="oe_kanban_card oe_kanban_global_click">
+                            <div class="o_kanban_record_top">
+                                <div class="o_kanban_record_head">
+                                    <div class="o_primary">
+                                        <field name="student_id"/>
+                                    </div>
+                                    <div class="o_secondary">
+                                        <field name="name"/>
+                                    </div>
+                                </div>
+                                <div class="o_kanban_record_bottom">
+                                    <div class="oe_kanban_bottom_left">
+                                        <span class="badge badge-pill"
+                                              t-attf-class="{{ 'bg-success' if membership_status in ('active', 'lifetime') else ('bg-info' if membership_status == 'honorary' else 'bg-secondary') }}">
+                                            <field name="membership_status"/>
+                                        </span>
+                                    </div>
+                                    <div class="oe_kanban_bottom_right">
+                                        <field name="color" widget="priority"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="o_kanban_record_body">
+                                <div><i class="fa fa-briefcase" role="img" aria-label="Job"/> <field name="current_job_title"/> <t t-if="record.current_employer.raw_value"> at <field name="current_employer"/></t></div>
+                                <div><i class="fa fa-graduation-cap" role="img" aria-label="Year"/> <field name="graduation_year"/></div>
+                                <div t-if="record.is_mentor.raw_value" class="text-primary"><i class="fa fa-user-tie" role="img" aria-label="Mentor"/> Mentor</div>
+                                <div t-if="record.is_volunteer.raw_value" class="text-success"><i class="fa fa-hands-helping" role="img" aria-label="Volunteer"/> Volunteer</div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.alumni.member — Form View                                -->
+    <!-- ============================================================ -->
+    <record id="view_uni_alumni_member_form" model="ir.ui.view">
+        <field name="name">uni.alumni.member.form</field>
+        <field name="model">uni.alumni.member</field>
+        <field name="arch" type="xml">
+            <form string="Alumni Member">
+                <header>
+                    <button name="action_activate" string="Activate"
+                            type="object" class="oe_highlight"
+                            invisible="membership_status == 'active'"/>
+                    <button name="action_make_honorary" string="Make Honorary"
+                            type="object"
+                            invisible="membership_status == 'honorary'"/>
+                    <button name="action_make_lifetime" string="Make Lifetime"
+                            type="object"
+                            invisible="membership_status == 'lifetime'"/>
+                    <button name="action_deactivate" string="Deactivate"
+                            type="object"
+                            invisible="membership_status == 'inactive'"
+                            confirm="Deactivate this alumni membership?"/>
+                    <field name="membership_status" widget="statusbar"
+                           statusbar_visible="active,inactive,honorary,lifetime"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_donations" type="object"
+                                class="oe_stat_button" icon="fa-money">
+                            <field name="donation_count" widget="statinfo"
+                                   string="Donations"/>
+                        </button>
+                        <button name="action_view_events" type="object"
+                                class="oe_stat_button" icon="fa-calendar">
+                            <field name="event_count" widget="statinfo"
+                                   string="Events"/>
+                        </button>
+                        <button name="action_view_networks" type="object"
+                                class="oe_stat_button" icon="fa-sitemap">
+                            <field name="network_count" widget="statinfo"
+                                   string="Networks"/>
+                        </button>
+                        <button name="action_view_careers" type="object"
+                                class="oe_stat_button" icon="fa-briefcase">
+                            <field name="career_count" widget="statinfo"
+                                   string="Careers"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" string="Alumni Member"/>
+                        <h1><field name="name" readonly="1"/></h1>
+                        <h3><field name="student_id"
+                                   options="{'no_create': True}"
+                                   placeholder="Select the graduated student..."/></h3>
+                    </div>
+                    <group>
+                        <group string="Academic Info">
+                            <field name="code"/>
+                            <field name="person_id" options="{'no_create': True}"/>
+                            <field name="university_id" options="{'no_create': True}"/>
+                            <field name="college_id" options="{'no_create': True}"/>
+                            <field name="department_id" options="{'no_create': True}"/>
+                            <field name="program_id" options="{'no_create': True}"/>
+                            <field name="graduation_date"/>
+                            <field name="graduation_year"/>
+                            <field name="final_gpa"/>
+                            <field name="degree_received"/>
+                        </group>
+                        <group string="Membership">
+                            <field name="membership_date"/>
+                            <field name="membership_status" widget="badge"
+                                   decoration-success="membership_status in ('active', 'lifetime')"
+                                   decoration-info="membership_status == 'honorary'"
+                                   decoration-muted="membership_status == 'inactive'"/>
+                            <field name="is_mentor"/>
+                            <field name="mentor_expertise"
+                                   invisible="not is_mentor"/>
+                            <field name="is_volunteer"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Current Employment" name="employment">
+                            <group>
+                                <group>
+                                    <field name="current_employment_status"/>
+                                    <field name="current_job_title"/>
+                                    <field name="current_employer"/>
+                                    <field name="industry"/>
+                                </group>
+                                <group>
+                                    <field name="work_email"/>
+                                    <field name="work_phone"/>
+                                </group>
+                            </group>
+                            <separator string="Social Links"/>
+                            <group>
+                                <group>
+                                    <field name="linkedin_url" widget="url"/>
+                                    <field name="twitter_url" widget="url"/>
+                                </group>
+                                <group>
+                                    <field name="facebook_url" widget="url"/>
+                                    <field name="personal_website" widget="url"/>
+                                </group>
+                            </group>
+                            <separator string="Address"/>
+                            <group>
+                                <group>
+                                    <field name="address"/>
+                                    <field name="city"/>
+                                    <field name="country_id"
+                                           options="{'no_create': True}"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Donations" name="donations">
+                            <field name="donation_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="donation_date"/>
+                                    <field name="amount" sum="Total"/>
+                                    <field name="currency_id"
+                                           invisible="1"/>
+                                    <field name="donation_type"/>
+                                    <field name="purpose"/>
+                                    <field name="state" widget="badge"
+                                           decoration-success="state == 'received'"
+                                           decoration-warning="state == 'pending'"
+                                           decoration-muted="state == 'cancelled'"/>
+                                </list>
+                            </field>
+                            <group class="oe_subtotal_footer oe_right">
+                                <field name="total_donations"/>
+                                <field name="currency_id" invisible="1"/>
+                            </group>
+                        </page>
+                        <page string="Events" name="events">
+                            <field name="event_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="title"/>
+                                    <field name="event_type"/>
+                                    <field name="start_date"/>
+                                    <field name="end_date"/>
+                                    <field name="state" widget="badge"
+                                           decoration-success="state == 'completed'"
+                                           decoration-info="state in ('announced', 'registration_open')"
+                                           decoration-warning="state == 'ongoing'"
+                                           decoration-muted="state == 'cancelled'"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Networks" name="networks">
+                            <field name="network_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="code"/>
+                                    <field name="network_type"/>
+                                    <field name="member_count"/>
+                                    <field name="state" widget="badge"
+                                           decoration-success="state == 'active'"
+                                           decoration-info="state == 'draft'"
+                                           decoration-muted="state in ('inactive', 'closed')"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Career History" name="careers">
+                            <field name="career_ids" context="{'default_member_id': active_id}">
+                                <list decoration-success="is_current"
+                                      decoration-muted="not is_current">
+                                    <field name="name"/>
+                                    <field name="job_title"/>
+                                    <field name="employer"/>
+                                    <field name="employment_type"/>
+                                    <field name="start_date"/>
+                                    <field name="end_date"/>
+                                    <field name="is_current" widget="boolean_toggle"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="notes" nolabel="1"
+                                   placeholder="Internal notes about this alumnus..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.alumni.member — Search View                              -->
+    <!-- ============================================================ -->
+    <record id="view_uni_alumni_member_search" model="ir.ui.view">
+        <field name="name">uni.alumni.member.search</field>
+        <field name="model">uni.alumni.member</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="student_id"/>
+                <field name="person_id"/>
+                <field name="university_id"/>
+                <field name="college_id"/>
+                <field name="department_id"/>
+                <field name="program_id"/>
+                <field name="current_job_title"/>
+                <field name="current_employer"/>
+                <field name="city"/>
+                <field name="country_id"/>
+                <separator/>
+                <filter string="Active" name="filter_active"
+                        domain="[('membership_status', '=', 'active')]"/>
+                <filter string="Inactive" name="filter_inactive"
+                        domain="[('membership_status', '=', 'inactive')]"/>
+                <filter string="Honorary" name="filter_honorary"
+                        domain="[('membership_status', '=', 'honorary')]"/>
+                <filter string="Lifetime" name="filter_lifetime"
+                        domain="[('membership_status', '=', 'lifetime')]"/>
+                <separator/>
+                <filter string="Mentors" name="filter_mentors"
+                        domain="[('is_mentor', '=', True)]"/>
+                <filter string="Volunteers" name="filter_volunteers"
+                        domain="[('is_volunteer', '=', True)]"/>
+                <filter string="Employed" name="filter_employed"
+                        domain="[('current_employment_status', '=', 'employed')]"/>
+                <filter string="Self-Employed" name="filter_self_employed"
+                        domain="[('current_employment_status', '=', 'self_employed')]"/>
+                <separator/>
+                <filter string="Archived" name="filter_archived"
+                        domain="[('active', '=', False)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Membership Status" name="group_status"
+                            context="{'group_by': 'membership_status'}"/>
+                    <filter string="Employment Status" name="group_employment"
+                            context="{'group_by': 'current_employment_status'}"/>
+                    <filter string="University" name="group_university"
+                            context="{'group_by': 'university_id'}"/>
+                    <filter string="College" name="group_college"
+                            context="{'group_by': 'college_id'}"/>
+                    <filter string="Department" name="group_department"
+                            context="{'group_by': 'department_id'}"/>
+                    <filter string="Program" name="group_program"
+                            context="{'group_by': 'program_id'}"/>
+                    <filter string="Graduation Year" name="group_year"
+                            context="{'group_by': 'graduation_year'}"/>
+                    <filter string="Country" name="group_country"
+                            context="{'group_by': 'country_id'}"/>
+                    <filter string="Membership Date" name="group_membership_date"
+                            context="{'group_by': 'membership_date:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.alumni.member — Action                                   -->
+    <!-- ============================================================ -->
+    <record id="action_uni_alumni_member" model="ir.actions.act_window">
+        <field name="name">Alumni Members</field>
+        <field name="res_model">uni.alumni.member</field>
+        <field name="view_mode">list,kanban,form</field>
+        <field name="search_view_id" ref="view_uni_alumni_member_search"/>
+        <field name="context">{'default_membership_status': 'active'}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new alumni member
+            </p>
+            <p>Alumni members are graduates of the university. Each
+               member is linked to the original student record and
+               tracks employment, donations, events, networks, and the
+               full career history.</p>
+        </field>
+    </record>
+</odoo>

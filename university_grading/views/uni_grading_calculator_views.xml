@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- GPA Calculator List View -->
+    <record id="view_uni_grading_calculator_list" model="ir.ui.view">
+        <field name="name">uni.grading.calculator.list</field>
+        <field name="model">uni.grading.calculator</field>
+        <field name="arch" type="xml">
+            <list string="GPA Calculations" decoration-success="state=='calculated'"
+                  decoration-danger="state=='cancelled'">
+                <field name="name"/>
+                <field name="university_id"/>
+                <field name="grading_system_id"/>
+                <field name="student_ref"/>
+                <field name="calc_date"/>
+                <field name="result_gpa"/>
+                <field name="result_grade_letter"/>
+                <field name="result_percentage"/>
+                <field name="result_status" widget="badge"/>
+                <field name="state" widget="badge"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- GPA Calculator Form View -->
+    <record id="view_uni_grading_calculator_form" model="ir.ui.view">
+        <field name="name">uni.grading.calculator.form</field>
+        <field name="model">uni.grading.calculator</field>
+        <field name="arch" type="xml">
+            <form string="GPA Calculation">
+                <header>
+                    <button name="action_calculate" type="object" string="Calculate"
+                            class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_reset" type="object" string="Reset"
+                            class="btn-secondary" invisible="state == 'draft'"/>
+                    <button name="action_cancel" type="object" string="Cancel"
+                            class="btn-danger" invisible="state == 'cancelled'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,calculated,cancelled"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" string="Calculation Reference"/>
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="university_id"/>
+                            <field name="grading_system_id"/>
+                            <field name="student_ref"/>
+                            <field name="calc_date" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="result_gpa" readonly="1"/>
+                            <field name="result_percentage" readonly="1"/>
+                            <field name="result_grade_letter" readonly="1"/>
+                            <field name="result_status" readonly="1" widget="badge"/>
+                        </group>
+                    </group>
+                    <group string="Input Data (JSON)">
+                        <field name="input_data" placeholder='[{"value": 85, "weight": 30}, {"value": 90, "weight": 70}]'/>
+                    </group>
+                    <group string="Notes">
+                        <field name="notes"/>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- GPA Calculator Search View -->
+    <record id="view_uni_grading_calculator_search" model="ir.ui.view">
+        <field name="name">uni.grading.calculator.search</field>
+        <field name="model">uni.grading.calculator</field>
+        <field name="arch" type="xml">
+            <search string="Search GPA Calculations">
+                <field name="name"/>
+                <field name="student_ref"/>
+                <field name="university_id"/>
+                <field name="grading_system_id"/>
+                <filter string="Draft" name="filter_draft"
+                        domain="[('state', '=', 'draft')]"/>
+                <filter string="Calculated" name="filter_calculated"
+                        domain="[('state', '=', 'calculated')]"/>
+                <filter string="Cancelled" name="filter_cancelled"
+                        domain="[('state', '=', 'cancelled')]"/>
+                <group expand="0" string="Group By">
+                    <filter string="University" name="group_university"
+                            context="{'group_by': 'university_id'}"/>
+                    <filter string="Grading System" name="group_system"
+                            context="{'group_by': 'grading_system_id'}"/>
+                    <filter string="Status" name="group_status"
+                            context="{'group_by': 'result_status'}"/>
+                    <filter string="State" name="group_state"
+                            context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- GPA Calculator Action -->
+    <record id="action_uni_grading_calculator" model="ir.actions.act_window">
+        <field name="name">GPA Calculator</field>
+        <field name="res_model">uni.grading.calculator</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_grading_calculator_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new GPA calculation
+            </p>
+            <p>
+                Use the GPA calculator to compute weighted averages and GPA
+                for students based on the configured grading systems.
+            </p>
+        </field>
+    </record>
+</odoo>

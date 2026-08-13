@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        QWeb template for the Student List report.
+
+        Renders an A4-landscape PDF listing students filtered by the
+        wizard's parameters. Each row shows the student code, name,
+        program, college, level and state.
+
+        The wizard (uni.report.wizard) is the bound model — its filter
+        fields (university_id, college_id, department_id, program_id,
+        academic_year_id, academic_term_id, date_from, date_to) are
+        applied to ``uni.student`` to produce the listing.
+    -->
+    <template id="report_student_list_document">
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <div class="page">
+                    <!-- Header -->
+                    <h2 class="text-center">Student List Report</h2>
+                    <div class="text-center text-muted mb-3">
+                        <t t-if="object.university_id">
+                            <span t-field="object.university_id"/>
+                        </t>
+                    </div>
+
+                    <!-- Generation date & filters summary -->
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <strong>Generated:</strong>
+                            <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%Y-%m-%d %H:%M')"/>
+                        </div>
+                        <div class="col-6 text-right">
+                            <strong>Output:</strong>
+                            <span t-esc="object.output_format"/>
+                        </div>
+                    </div>
+
+                    <!-- Build the student domain from the wizard filters -->
+                    <t t-set="domain" t-value="[]"/>
+                    <t t-if="object.university_id">
+                        <t t-set="domain" t-value="domain + [('university_id', '=', object.university_id.id)]"/>
+                    </t>
+                    <t t-if="object.college_id">
+                        <t t-set="domain" t-value="domain + [('college_id', '=', object.college_id.id)]"/>
+                    </t>
+                    <t t-if="object.department_id">
+                        <t t-set="domain" t-value="domain + [('department_id', '=', object.department_id.id)]"/>
+                    </t>
+                    <t t-if="object.program_id">
+                        <t t-set="domain" t-value="domain + [('program_id', '=', object.program_id.id)]"/>
+                    </t>
+                    <t t-if="object.academic_year_id or object.academic_term_id">
+                        <t t-set="domain" t-value="domain + [('enrollment_ids.academic_term_id.academic_year_id', 'in', [object.academic_year_id.id] if object.academic_year_id else [])]"/>
+                    </t>
+                    <t t-if="object.date_from">
+                        <t t-set="domain" t-value="domain + [('admission_date', '&gt;=', object.date_from)]"/>
+                    </t>
+                    <t t-if="object.date_to">
+                        <t t-set="domain" t-value="domain + [('admission_date', '&lt;=', object.date_to)]"/>
+                    </t>
+
+                    <!-- Fetch the students (graceful when university_student not installed) -->
+                    <t t-set="students" t-value="object.env['ir.attachment'].browse()"/>
+                    <t t-if="'uni.student' in object.env">
+                        <t t-set="students" t-value="object.env['uni.student'].search(domain, order='student_code')"/>
+                    </t>
+
+                    <!-- Filters summary -->
+                    <div class="row mb-3">
+                        <div class="col-3"><strong>University:</strong></div>
+                        <div class="col-3">
+                            <span t-field="object.university_id"/>
+                        </div>
+                        <div class="col-3"><strong>College:</strong></div>
+                        <div class="col-3">
+                            <span t-field="object.college_id"/>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-3"><strong>Department:</strong></div>
+                        <div class="col-3">
+                            <span t-field="object.department_id"/>
+                        </div>
+                        <div class="col-3"><strong>Program:</strong></div>
+                        <div class="col-3">
+                            <span t-field="object.program_id"/>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-3"><strong>Academic Year:</strong></div>
+                        <div class="col-3">
+                            <span t-field="object.academic_year_id"/>
+                        </div>
+                        <div class="col-3"><strong>Academic Term:</strong></div>
+                        <div class="col-3">
+                            <span t-field="object.academic_term_id"/>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-3"><strong>Date From:</strong></div>
+                        <div class="col-3">
+                            <span t-field="object.date_from"/>
+                        </div>
+                        <div class="col-3"><strong>Date To:</strong></div>
+                        <div class="col-3">
+                            <span t-field="object.date_to"/>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <strong>Total students:</strong>
+                        <span t-esc="len(students)"/>
+                    </div>
+
+                    <t t-if="not students and 'uni.student' not in object.env">
+                        <div class="alert alert-danger">
+                            <strong>Module not installed:</strong>
+                            The <code>university_student</code> module is required
+                            to produce this report. Please install it and try again.
+                        </div>
+                    </t>
+                    <t t-elif="not students">
+                        <div class="alert alert-warning">
+                            No students match the selected filters.
+                        </div>
+                    </t>
+                    <t t-else="">
+                        <table class="table table-sm table-bordered">
+                            <thead>
+                                <tr class="active">
+                                    <th>#</th>
+                                    <th>Student Code</th>
+                                    <th>Name</th>
+                                    <th>Program</th>
+                                    <th>College</th>
+                                    <th class="text-center">Level</th>
+                                    <th class="text-center">State</th>
+                                    <th class="text-center">Standing</th>
+                                    <th class="text-center">GPA</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="students" t-as="stu">
+                                    <td><t t-esc="stu_index + 1"/></td>
+                                    <td><span t-field="stu.student_code"/></td>
+                                    <td><span t-field="stu.name"/></td>
+                                    <td><span t-field="stu.program_id"/></td>
+                                    <td><span t-field="stu.college_id"/></td>
+                                    <td class="text-center"><span t-field="stu.current_level"/></td>
+                                    <td class="text-center"><span t-field="stu.state"/></td>
+                                    <td class="text-center"><span t-field="stu.academic_standing"/></td>
+                                    <td class="text-center"><span t-field="stu.cumulative_gpa"/></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </t>
+
+                    <!-- Footer -->
+                    <div class="row mt-4">
+                        <div class="col-12 text-center text-muted">
+                            <small>Page <span class="page"/> of <span class="topage"/></small>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>

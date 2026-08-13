@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- uni.transport.pass — List View                                -->
+    <!-- ============================================================ -->
+    <record id="view_uni_transport_pass_list" model="ir.ui.view">
+        <field name="name">uni.transport.pass.list</field>
+        <field name="model">uni.transport.pass</field>
+        <field name="arch" type="xml">
+            <list string="Passes"
+                  decoration-success="state == 'active'"
+                  decoration-warning="state == 'suspended'"
+                  decoration-danger="state == 'cancelled'"
+                  decoration-muted="state == 'expired'">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="student_id"/>
+                <field name="university_id"/>
+                <field name="route_id"/>
+                <field name="pass_type"/>
+                <field name="pickup_stop_id"/>
+                <field name="drop_stop_id"/>
+                <field name="start_date"/>
+                <field name="end_date"/>
+                <field name="amount" sum="Total"
+                       widget="monetary"
+                       options="{'currency_field': 'currency_id'}"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="paid"/>
+                <field name="usage_count"/>
+                <field name="last_used_date"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'active'"
+                       decoration-warning="state == 'suspended'"
+                       decoration-danger="state == 'cancelled'"
+                       decoration-muted="state == 'expired'"
+                       decoration-info="state == 'draft'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.transport.pass — Form View                                -->
+    <!-- ============================================================ -->
+    <record id="view_uni_transport_pass_form" model="ir.ui.view">
+        <field name="name">uni.transport.pass.form</field>
+        <field name="model">uni.transport.pass</field>
+        <field name="arch" type="xml">
+            <form string="Transport Pass">
+                <header>
+                    <button name="action_activate" type="object"
+                            string="Activate" class="oe_highlight"
+                            invisible="state not in ('draft', 'suspended')"/>
+                    <button name="action_suspend" type="object"
+                            string="Suspend"
+                            invisible="state != 'active'"/>
+                    <button name="action_expire" type="object"
+                            string="Mark Expired"
+                            invisible="state in ('expired', 'cancelled')"/>
+                    <button name="action_cancel" type="object"
+                            string="Cancel"
+                            invisible="state == 'cancelled'"
+                            confirm="Are you sure you want to cancel this pass?"/>
+                    <button name="action_record_usage" type="object"
+                            string="Record Usage"
+                            invisible="state != 'active'"
+                            class="oe_highlight"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,active,expired,suspended,cancelled"/>
+                </header>
+                <sheet>
+                    <field name="photo"
+                           widget="image"
+                           class="oe_avatar"
+                           options="{'preview_image': 'photo'}"/>
+                    <div class="oe_title">
+                        <label for="name" string="Pass Reference"/>
+                        <h1><field name="name" readonly="1"/></h1>
+                        <h3><field name="code" placeholder="Optional code"/></h3>
+                    </div>
+                    <group>
+                        <group string="Student">
+                            <field name="student_id"
+                                   options="{'no_create': True}"/>
+                            <field name="student_name" readonly="1"/>
+                            <field name="university_id" readonly="1"/>
+                        </group>
+                        <group string="Route &amp; Stops">
+                            <field name="route_id"
+                                   options="{'no_create': True}"/>
+                            <field name="pickup_stop_id"
+                                   options="{'no_create': True}"/>
+                            <field name="drop_stop_id"
+                                   options="{'no_create': True}"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Subscription">
+                            <field name="pass_type"/>
+                            <field name="issue_date"/>
+                            <field name="start_date"/>
+                            <field name="end_date"/>
+                        </group>
+                        <group string="Pricing">
+                            <field name="amount"
+                                   widget="monetary"
+                                   options="{'currency_field': 'currency_id'}"/>
+                            <field name="currency_id"
+                                   options="{'no_create': True}"/>
+                            <field name="paid"/>
+                            <field name="barcode"
+                                   placeholder="Auto or manual barcode"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Usage">
+                            <field name="usage_count" readonly="1"/>
+                            <field name="last_used_date" readonly="1"/>
+                        </group>
+                    </group>
+                    <group string="Notes">
+                        <field name="notes" nolabel="1"
+                               placeholder="Internal notes about this pass..."/>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.transport.pass — Search View                              -->
+    <!-- ============================================================ -->
+    <record id="view_uni_transport_pass_search" model="ir.ui.view">
+        <field name="name">uni.transport.pass.search</field>
+        <field name="model">uni.transport.pass</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="barcode"/>
+                <field name="student_id"/>
+                <field name="route_id"/>
+                <field name="university_id"/>
+                <filter string="Draft" name="filter_draft"
+                        domain="[('state', '=', 'draft')]"/>
+                <filter string="Active" name="filter_active"
+                        domain="[('state', '=', 'active')]"/>
+                <filter string="Expired" name="filter_expired"
+                        domain="[('state', '=', 'expired')]"/>
+                <filter string="Suspended" name="filter_suspended"
+                        domain="[('state', '=', 'suspended')]"/>
+                <filter string="Cancelled" name="filter_cancelled"
+                        domain="[('state', '=', 'cancelled')]"/>
+                <separator/>
+                <filter string="Unpaid" name="filter_unpaid"
+                        domain="[('paid', '=', False), ('amount', '&gt;', 0)]"/>
+                <filter string="Paid" name="filter_paid"
+                        domain="[('paid', '=', True)]"/>
+                <separator/>
+                <filter string="Valid Today" name="filter_valid_today"
+                        domain="[('state', '=', 'active'),
+                                 ('start_date', '&lt;=', context_today().strftime('%Y-%m-%d')),
+                                 ('end_date', '&gt;=', context_today().strftime('%Y-%m-%d'))]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Student" name="group_student"
+                            context="{'group_by': 'student_id'}"/>
+                    <filter string="Route" name="group_route"
+                            context="{'group_by': 'route_id'}"/>
+                    <filter string="University" name="group_university"
+                            context="{'group_by': 'university_id'}"/>
+                    <filter string="Pass Type" name="group_type"
+                            context="{'group_by': 'pass_type'}"/>
+                    <filter string="State" name="group_state"
+                            context="{'group_by': 'state'}"/>
+                    <filter string="Start Date" name="group_start_date"
+                            context="{'group_by': 'start_date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.transport.pass — Action                                   -->
+    <!-- ============================================================ -->
+    <record id="action_uni_transport_pass" model="ir.actions.act_window">
+        <field name="name">Transport Passes</field>
+        <field name="res_model">uni.transport.pass</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_transport_pass_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Issue a new transport pass
+            </p>
+            <p>Transport passes are subscriptions issued to students for
+               a specific route and time period. They track pricing,
+               payment, usage count and lifecycle state.</p>
+        </field>
+    </record>
+</odoo>

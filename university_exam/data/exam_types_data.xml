@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- Midterm Exam -->
+        <record id="exam_type_midterm" model="uni.exam.type">
+            <field name="name">Midterm Exam</field>
+            <field name="code">MIDTERM</field>
+            <field name="description">Mid-term examination covering the first half of the course material.</field>
+            <field name="sequence">10</field>
+            <field name="exam_nature">written</field>
+            <field name="default_duration">2.0</field>
+            <field name="default_max_score">100.0</field>
+            <field name="weight_percentage">20.0</field>
+            <field name="passing_percentage">50.0</field>
+            <field name="is_final" eval="False"/>
+            <field name="is_midterm" eval="True"/>
+        </record>
+
+        <!-- Final Exam -->
+        <record id="exam_type_final" model="uni.exam.type">
+            <field name="name">Final Exam</field>
+            <field name="code">FINAL</field>
+            <field name="description">Final comprehensive examination covering the entire course material.</field>
+            <field name="sequence">20</field>
+            <field name="exam_nature">written</field>
+            <field name="default_duration">3.0</field>
+            <field name="default_max_score">100.0</field>
+            <field name="weight_percentage">40.0</field>
+            <field name="passing_percentage">50.0</field>
+            <field name="is_final" eval="True"/>
+            <field name="is_midterm" eval="False"/>
+        </record>
+
+        <!-- Quiz -->
+        <record id="exam_type_quiz" model="uni.exam.type">
+            <field name="name">Quiz</field>
+            <field name="code">QUIZ</field>
+            <field name="description">Short formative quiz covering a specific topic or chapter.</field>
+            <field name="sequence">30</field>
+            <field name="exam_nature">written</field>
+            <field name="default_duration">0.5</field>
+            <field name="default_max_score">20.0</field>
+            <field name="weight_percentage">5.0</field>
+            <field name="passing_percentage">50.0</field>
+            <field name="is_final" eval="False"/>
+            <field name="is_midterm" eval="False"/>
+        </record>
+
+        <!-- Assignment -->
+        <record id="exam_type_assignment" model="uni.exam.type">
+            <field name="name">Assignment</field>
+            <field name="code">ASSIGN</field>
+            <field name="description">Take-home or in-class assignment evaluated as part of the course grade.</field>
+            <field name="sequence">40</field>
+            <field name="exam_nature">written</field>
+            <field name="default_duration">0.0</field>
+            <field name="default_max_score">100.0</field>
+            <field name="weight_percentage">10.0</field>
+            <field name="passing_percentage">50.0</field>
+            <field name="is_final" eval="False"/>
+            <field name="is_midterm" eval="False"/>
+        </record>
+
+        <!-- Oral Exam -->
+        <record id="exam_type_oral" model="uni.exam.type">
+            <field name="name">Oral Exam</field>
+            <field name="code">ORAL</field>
+            <field name="description">Oral examination where the student answers questions verbally.</field>
+            <field name="sequence">50</field>
+            <field name="exam_nature">oral</field>
+            <field name="default_duration">0.5</field>
+            <field name="default_max_score">100.0</field>
+            <field name="weight_percentage">15.0</field>
+            <field name="passing_percentage">50.0</field>
+            <field name="is_final" eval="False"/>
+            <field name="is_midterm" eval="False"/>
+        </record>
+
+        <!-- Practical Exam -->
+        <record id="exam_type_practical" model="uni.exam.type">
+            <field name="name">Practical Exam</field>
+            <field name="code">PRACTICAL</field>
+            <field name="description">Hands-on practical examination, typically in a laboratory or workshop.</field>
+            <field name="sequence">60</field>
+            <field name="exam_nature">practical</field>
+            <field name="default_duration">2.0</field>
+            <field name="default_max_score">100.0</field>
+            <field name="weight_percentage">25.0</field>
+            <field name="passing_percentage">50.0</field>
+            <field name="is_final" eval="False"/>
+            <field name="is_midterm" eval="False"/>
+        </record>
+
+        <!-- Make-up Exam -->
+        <record id="exam_type_makeup" model="uni.exam.type">
+            <field name="name">Make-up Exam</field>
+            <field name="code">MAKEUP</field>
+            <field name="description">Make-up examination for students who missed the original exam with a valid excuse.</field>
+            <field name="sequence">70</field>
+            <field name="exam_nature">written</field>
+            <field name="default_duration">2.0</field>
+            <field name="default_max_score">100.0</field>
+            <field name="weight_percentage">40.0</field>
+            <field name="passing_percentage">50.0</field>
+            <field name="is_final" eval="False"/>
+            <field name="is_midterm" eval="False"/>
+        </record>
+
+    </data>
+</odoo>

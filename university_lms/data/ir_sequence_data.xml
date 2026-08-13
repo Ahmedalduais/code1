@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- LMS Course Reference Sequence -->
+        <record id="seq_uni_lms_course" model="ir.sequence">
+            <field name="name">LMS Course Sequence</field>
+            <field name="code">uni.lms.course</field>
+            <field name="prefix">LMS/%(year)s/</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <!-- LMS Assignment Reference Sequence -->
+        <record id="seq_uni_lms_assignment" model="ir.sequence">
+            <field name="name">LMS Assignment Sequence</field>
+            <field name="code">uni.lms.assignment</field>
+            <field name="prefix">LMA/%(year)s/</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <!-- LMS Quiz Reference Sequence -->
+        <record id="seq_uni_lms_quiz" model="ir.sequence">
+            <field name="name">LMS Quiz Sequence</field>
+            <field name="code">uni.lms.quiz</field>
+            <field name="prefix">LMQ/%(year)s/</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <!-- LMS Progress Reference Sequence -->
+        <record id="seq_uni_lms_progress" model="ir.sequence">
+            <field name="name">LMS Progress Sequence</field>
+            <field name="code">uni.lms.progress</field>
+            <field name="prefix">LMP/%(year)s/</field>
+            <field name="padding">6</field>
+            <field name="company_id" eval="False"/>
+        </record>
+    </data>
+</odoo>

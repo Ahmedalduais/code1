@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============ uni.project.milestone — List View ============ -->
+    <record id="view_uni_project_milestone_list" model="ir.ui.view">
+        <field name="name">uni.project.milestone.list</field>
+        <field name="model">uni.project.milestone</field>
+        <field name="arch" type="xml">
+            <list string="Project Milestones"
+                  decoration-success="is_completed == True"
+                  decoration-muted="is_completed == False">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="project_id"/>
+                <field name="timeline_id" optional="show"/>
+                <field name="milestone_type"/>
+                <field name="planned_date"/>
+                <field name="actual_date" optional="show"/>
+                <field name="completed_date" optional="show"/>
+                <field name="deliverable_count" optional="show"/>
+                <field name="is_completed" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============ uni.project.milestone — Form View ============ -->
+    <record id="view_uni_project_milestone_form" model="ir.ui.view">
+        <field name="name">uni.project.milestone.form</field>
+        <field name="model">uni.project.milestone</field>
+        <field name="arch" type="xml">
+            <form string="Project Milestone">
+                <header>
+                    <button name="action_complete" type="object"
+                            string="Mark Completed" class="btn-success"
+                            invisible="is_completed == True"/>
+                    <button name="action_reset" type="object"
+                            string="Reset" class="btn-secondary"
+                            invisible="is_completed == False"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" string="Milestone Name"/>
+                        <h1><field name="name" placeholder="e.g. System Design Review"/></h1>
+                    </div>
+                    <group>
+                        <group string="Affiliation">
+                            <field name="project_id" options="{'no_create': True}"/>
+                            <field name="timeline_id" options="{'no_create': True}"/>
+                            <field name="milestone_type"/>
+                            <field name="sequence"/>
+                        </group>
+                        <group string="Schedule">
+                            <field name="planned_date"/>
+                            <field name="actual_date"/>
+                            <field name="completed_date"/>
+                            <field name="is_completed" widget="boolean_toggle"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Description" name="description">
+                            <field name="description"/>
+                        </page>
+                        <page string="Deliverables" name="deliverables">
+                            <field name="deliverable_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="deliverable_type"/>
+                                    <field name="due_date"/>
+                                    <field name="submission_date"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="notes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============ uni.project.milestone — Search View ============ -->
+    <record id="view_uni_project_milestone_search" model="ir.ui.view">
+        <field name="name">uni.project.milestone.search</field>
+        <field name="model">uni.project.milestone</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="project_id"/>
+                <field name="timeline_id"/>
+                <field name="milestone_type"/>
+                <separator/>
+                <filter string="Completed" name="filter_completed"
+                        domain="[('is_completed', '=', True)]"/>
+                <filter string="Incomplete" name="filter_incomplete"
+                        domain="[('is_completed', '=', False)]"/>
+                <filter string="Archived" name="filter_inactive"
+                        domain="[('active', '=', False)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Project" name="group_project"
+                            context="{'group_by': 'project_id'}"/>
+                    <filter string="Type" name="group_type"
+                            context="{'group_by': 'milestone_type'}"/>
+                    <filter string="Timeline" name="group_timeline"
+                            context="{'group_by': 'timeline_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============ uni.project.milestone — Action ============ -->
+    <record id="action_uni_project_milestone" model="ir.actions.act_window">
+        <field name="name">Project Milestones</field>
+        <field name="res_model">uni.project.milestone</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_project_milestone_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first project milestone
+            </p>
+            <p>
+                Milestones track key checkpoints of a project (proposal,
+                design, prototype, implementation, testing, defense, etc.).
+            </p>
+        </field>
+    </record>
+</odoo>

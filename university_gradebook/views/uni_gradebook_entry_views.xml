@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- uni.gradebook.entry — List View                              -->
+    <!-- ============================================================ -->
+    <record id="view_uni_gradebook_entry_list" model="ir.ui.view">
+        <field name="name">uni.gradebook.entry.list</field>
+        <field name="model">uni.gradebook.entry</field>
+        <field name="arch" type="xml">
+            <list string="Grade Entries"
+                  decoration-muted="is_excused"
+                  decoration-danger="is_missing"
+                  decoration-success="percentage &gt;= 90">
+                <field name="gradebook_id"/>
+                <field name="gradebook_line_id"/>
+                <field name="student_id"/>
+                <field name="evaluation_type_id" optional="show"/>
+                <field name="assessment_name"/>
+                <field name="assessment_date" optional="hide"/>
+                <field name="score"/>
+                <field name="max_score"/>
+                <field name="weight"/>
+                <field name="percentage" widget="progressbar"/>
+                <field name="grade_letter_id" optional="show"/>
+                <field name="is_excused" optional="hide" widget="boolean_toggle"/>
+                <field name="is_missing" optional="hide" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.gradebook.entry — Form View                              -->
+    <!-- ============================================================ -->
+    <record id="view_uni_gradebook_entry_form" model="ir.ui.view">
+        <field name="name">uni.gradebook.entry.form</field>
+        <field name="model">uni.gradebook.entry</field>
+        <field name="arch" type="xml">
+            <form string="Grade Entry">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="assessment_name" string="Assessment"/>
+                        <h1><field name="assessment_name"
+                                   placeholder="e.g. Midterm Exam 1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="gradebook_line_id"
+                                   options="{'no_create': True}"
+                                   required="1"/>
+                            <field name="gradebook_id" readonly="1"/>
+                            <field name="student_id" readonly="1"/>
+                            <field name="evaluation_type_id"
+                                   options="{'no_create': True}"/>
+                        </group>
+                        <group>
+                            <field name="assessment_date"/>
+                            <field name="score"/>
+                            <field name="max_score"/>
+                            <field name="weight"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="percentage" widget="progressbar" readonly="1"/>
+                            <field name="grade_letter_id" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="is_excused" widget="boolean_toggle"/>
+                            <field name="is_missing" widget="boolean_toggle" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Notes">
+                            <field name="notes" nolabel="1" colspan="2"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.gradebook.entry — Search View                            -->
+    <!-- ============================================================ -->
+    <record id="view_uni_gradebook_entry_search" model="ir.ui.view">
+        <field name="name">uni.gradebook.entry.search</field>
+        <field name="model">uni.gradebook.entry</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="gradebook_id"/>
+                <field name="gradebook_line_id"/>
+                <field name="student_id"/>
+                <field name="evaluation_type_id"/>
+                <field name="assessment_name"/>
+                <field name="grade_letter_id"/>
+                <separator/>
+                <filter string="Excused" name="filter_excused"
+                        domain="[('is_excused', '=', True)]"/>
+                <filter string="Missing" name="filter_missing"
+                        domain="[('is_missing', '=', True)]"/>
+                <filter string="High Score (≥ 90%)" name="filter_high"
+                        domain="[('percentage', '&gt;=', 90)]"/>
+                <filter string="Low Score (&lt; 60%)" name="filter_low"
+                        domain="[('percentage', '&lt;', 60)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Gradebook" name="group_gradebook"
+                            context="{'group_by': 'gradebook_id'}"/>
+                    <filter string="Student" name="group_student"
+                            context="{'group_by': 'student_id'}"/>
+                    <filter string="Evaluation Type" name="group_eval_type"
+                            context="{'group_by': 'evaluation_type_id'}"/>
+                    <filter string="Grade Letter" name="group_letter"
+                            context="{'group_by': 'grade_letter_id'}"/>
+                    <filter string="Date" name="group_date"
+                            context="{'group_by': 'assessment_date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.gradebook.entry — Action                                 -->
+    <!-- ============================================================ -->
+    <record id="action_uni_gradebook_entry" model="ir.actions.act_window">
+        <field name="name">Grade Entries</field>
+        <field name="res_model">uni.gradebook.entry</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_gradebook_entry_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Record a new grade entry
+            </p>
+            <p>Each entry captures a single assessment score (e.g. midterm,
+               quiz, assignment) for a student. The score is converted to a
+               percentage and mapped to a grade letter automatically.</p>
+        </field>
+    </record>
+</odoo>

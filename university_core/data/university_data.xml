@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- Default Program Levels -->
+    <record id="program_level_bachelor" model="uni.program.level">
+        <field name="name">Bachelor</field>
+        <field name="code">BSC</field>
+        <field name="sequence">10</field>
+    </record>
+
+    <record id="program_level_master" model="uni.program.level">
+        <field name="name">Master</field>
+        <field name="code">MSC</field>
+        <field name="sequence">20</field>
+    </record>
+
+    <record id="program_level_phd" model="uni.program.level">
+        <field name="name">PhD</field>
+        <field name="code">PHD</field>
+        <field name="sequence">30</field>
+    </record>
+
+    <record id="program_level_diploma" model="uni.program.level">
+        <field name="name">Diploma</field>
+        <field name="code">DIP</field>
+        <field name="sequence">5</field>
+    </record>
+
+    <!-- Default Term Types -->
+    <record id="term_type_semester" model="uni.academic.term.type">
+        <field name="name">Semester System</field>
+        <field name="code">SEM</field>
+        <field name="sequence">10</field>
+        <field name="terms_per_year">2</field>
+        <field name="weeks_per_term">16</field>
+    </record>
+
+    <record id="term_type_quarter" model="uni.academic.term.type">
+        <field name="name">Quarter System</field>
+        <field name="code">QTR</field>
+        <field name="sequence">20</field>
+        <field name="terms_per_year">4</field>
+        <field name="weeks_per_term">10</field>
+    </record>
+
+    <record id="term_type_trimester" model="uni.academic.term.type">
+        <field name="name">Trimester System</field>
+        <field name="code">TRI</field>
+        <field name="sequence">30</field>
+        <field name="terms_per_year">3</field>
+        <field name="weeks_per_term">12</field>
+    </record>
+
+    <record id="term_type_annual" model="uni.academic.term.type">
+        <field name="name">Annual System</field>
+        <field name="code">ANN</field>
+        <field name="sequence">40</field>
+        <field name="terms_per_year">1</field>
+        <field name="weeks_per_term">32</field>
+    </record>
+</odoo>

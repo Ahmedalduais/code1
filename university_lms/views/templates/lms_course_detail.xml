@@ -1,0 +1,479 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- LMS Course Detail page                                        -->
+    <!-- ============================================================ -->
+    <template id="lms_course_detail_page" name="LMS Course Detail">
+        <t t-call="university_lms.lms_layout">
+            <!-- Course header -->
+            <div class="card shadow-sm mb-4">
+                <t t-if="course.cover_image">
+                    <img class="card-img-top"
+                         t-att-src="'/web/image/uni.lms.course/%s/cover_image' % course.id"
+                         t-att-alt="course.display_name"
+                         style="max-height: 280px; object-fit: cover;"/>
+                </t>
+                <div class="card-body">
+                    <h2 class="card-title">
+                        <t t-esc="course.course_id.display_name or course.display_name"/>
+                    </h2>
+                    <h5 class="card-subtitle text-muted mb-3">
+                        <t t-esc="course.code"/>
+                        <t t-if="course.academic_term_id">
+                            — <t t-esc="course.academic_term_id.display_name"/>
+                        </t>
+                    </h5>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <p>
+                                <i class="fa fa-user me-2 text-primary"/>
+                                <strong>Instructor:</strong>
+                                <t t-esc="course.faculty_name or 'TBA'"/>
+                            </p>
+                            <p>
+                                <i class="fa fa-building me-2 text-primary"/>
+                                <strong>College:</strong>
+                                <t t-esc="course.college_id.display_name or '-'"/>
+                            </p>
+                            <p>
+                                <i class="fa fa-sitemap me-2 text-primary"/>
+                                <strong>Department:</strong>
+                                <t t-esc="course.department_id.display_name or '-'"/>
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <p>
+                                <i class="fa fa-calendar me-2 text-primary"/>
+                                <strong>Start:</strong>
+                                <t t-esc="course.start_date or '-'"/>
+                            </p>
+                            <p>
+                                <i class="fa fa-calendar-check me-2 text-primary"/>
+                                <strong>End:</strong>
+                                <t t-esc="course.end_date or '-'"/>
+                            </p>
+                            <p>
+                                <i class="fa fa-users me-2 text-primary"/>
+                                <strong>Enrollment:</strong>
+                                <t t-esc="course.enrolled_count"/>
+                                <t t-if="course.max_students">/<t t-esc="course.max_students"/></t>
+                            </p>
+                        </div>
+                    </div>
+                    <!-- Description / Introduction -->
+                    <t t-if="course.description">
+                        <p class="lead" t-esc="course.description"/>
+                    </t>
+                    <t t-if="course.introduction">
+                        <div t-out="course.introduction"/>
+                    </t>
+                    <!-- Enrollment / progress actions -->
+                    <div class="mt-4">
+                        <t t-if="is_enrolled">
+                            <div class="alert alert-success">
+                                <i class="fa fa-check-circle me-2"/>
+                                You are enrolled in this course.
+                                <span t-if="progress">
+                                    Completion: <t t-esc="progress.completion_percentage"/>%
+                                </span>
+                            </div>
+                            <a t-attf-href="/university/lms/course/#{course.id}/content/#{first_content.id}"
+                               class="btn btn-primary"
+                               t-if="first_content">
+                                <i class="fa fa-play me-1"/>Start Learning
+                            </a>
+                        </t>
+                        <t t-elif="course.enrollment_open and request.env.user.id">
+                            <form t-attf-action="/university/lms/course/#{course.id}/enroll"
+                                  method="get">
+                                <button type="submit" class="btn btn-success">
+                                    <i class="fa fa-user-plus me-1"/>Enroll Now
+                                </button>
+                            </form>
+                        </t>
+                        <t t-elif="not request.env.user.id">
+                            <a t-attf-href="/web/login?redirect=/university/lms/course/#{course.id}"
+                               class="btn btn-outline-primary">
+                                <i class="fa fa-sign-in me-1"/>Login to Enroll
+                            </a>
+                        </t>
+                        <t t-else="">
+                            <div class="alert alert-warning">
+                                <i class="fa fa-lock me-2"/>
+                                Enrollment is currently closed for this course.
+                            </div>
+                        </t>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Objectives & Prerequisites -->
+            <t t-if="course.objectives or course.prerequisites">
+                <div class="row mb-4">
+                    <div class="col-md-6" t-if="course.objectives">
+                        <div class="card shadow-sm h-100">
+                            <div class="card-header bg-primary text-white">
+                                <i class="fa fa-bullseye me-2"/>
+                                Learning Objectives
+                            </div>
+                            <div class="card-body">
+                                <p t-esc="course.objectives" style="white-space: pre-wrap;"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6" t-if="course.prerequisites">
+                        <div class="card shadow-sm h-100">
+                            <div class="card-header bg-info text-white">
+                                <i class="fa fa-list-ol me-2"/>
+                                Prerequisites
+                            </div>
+                            <div class="card-body">
+                                <p t-esc="course.prerequisites" style="white-space: pre-wrap;"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </t>
+
+            <!-- Course Content Outline -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light">
+                    <h4 class="mb-0">
+                        <i class="fa fa-folder-open me-2"/>
+                        Course Content
+                        <span class="badge text-bg-secondary ms-2"
+                              t-esc="course.content_count"/>
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <t t-if="course.content_ids">
+                        <ul class="list-group">
+                            <t t-foreach="course.content_ids.filtered(lambda c: not c.parent_id and c.state == 'published')"
+                               t-as="content">
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <i t-attf-class="fa me-2 #{'fa-video' if content.content_type == 'video' else 'fa-file' if content.content_type == 'document' else 'fa-link' if content.content_type == 'link' else 'fa-font' if content.content_type == 'text' else 'fa-image' if content.content_type == 'image' else 'fa-headphones' if content.content_type == 'audio' else 'fa-file-alt'}"/>
+                                        <strong t-esc="content.title"/>
+                                        <small class="text-muted ms-2"
+                                               t-esc="content.content_type"/>
+                                        <t t-if="content.duration">
+                                            <small class="text-muted ms-2">
+                                                <i class="fa fa-clock-o"/>
+                                                <t t-esc="content.duration"/>h
+                                            </small>
+                                        </t>
+                                    </div>
+                                    <t t-if="is_enrolled or request.env.user.has_group('university_core.group_university_user')">
+                                        <a t-attf-href="/university/lms/course/#{course.id}/content/#{content.id}"
+                                           class="btn btn-outline-primary btn-sm">
+                                            <i class="fa fa-play"/>Open
+                                        </a>
+                                    </t>
+                                    <t t-else="">
+                                        <span class="badge text-bg-secondary">
+                                            <i class="fa fa-lock"/>
+                                        </span>
+                                    </t>
+                                </li>
+                            </t>
+                        </ul>
+                    </t>
+                    <t t-else="">
+                        <p class="text-muted mb-0">
+                            <i class="fa fa-info-circle me-1"/>
+                            No content published yet for this course.
+                        </p>
+                    </t>
+                </div>
+            </div>
+
+            <!-- Assignments & Quizzes summary -->
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">
+                                <i class="fa fa-tasks me-2"/>
+                                Assignments
+                                <span class="badge text-bg-secondary ms-2"
+                                      t-esc="course.assignment_count"/>
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <t t-if="course.assignment_ids.filtered(lambda a: a.state == 'published')">
+                                <ul class="list-unstyled mb-0">
+                                    <t t-foreach="course.assignment_ids.filtered(lambda a: a.state == 'published')"
+                                       t-as="assignment">
+                                        <li class="mb-2">
+                                            <strong t-esc="assignment.title"/>
+                                            <br/>
+                                            <small class="text-muted">
+                                                <i class="fa fa-clock-o me-1"/>
+                                                Due: <t t-esc="assignment.due_date"/>
+                                            </small>
+                                        </li>
+                                    </t>
+                                </ul>
+                            </t>
+                            <t t-else="">
+                                <p class="text-muted mb-0">No published assignments.</p>
+                            </t>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">
+                                <i class="fa fa-question-circle me-2"/>
+                                Quizzes
+                                <span class="badge text-bg-secondary ms-2"
+                                      t-esc="course.quiz_count"/>
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <t t-if="course.quiz_ids.filtered(lambda q: q.state == 'published')">
+                                <ul class="list-unstyled mb-0">
+                                    <t t-foreach="course.quiz_ids.filtered(lambda q: q.state == 'published')"
+                                       t-as="quiz">
+                                        <li class="mb-2">
+                                            <strong t-esc="quiz.title"/>
+                                            <br/>
+                                            <small class="text-muted">
+                                                <i class="fa fa-question me-1"/>
+                                                <t t-esc="quiz.question_count"/> questions
+                                            </small>
+                                        </li>
+                                    </t>
+                                </ul>
+                            </t>
+                            <t t-else="">
+                                <p class="text-muted mb-0">No published quizzes.</p>
+                            </t>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- ============================================================ -->
+    <!-- LMS Content View page                                         -->
+    <!-- ============================================================ -->
+    <template id="lms_content_view_page" name="LMS Content View">
+        <t t-call="university_lms.lms_layout">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0">
+                            <i class="fa me-2"
+                               t-attf-class="#{'fa-video' if content.content_type == 'video' else 'fa-file' if content.content_type == 'document' else 'fa-link' if content.content_type == 'link' else 'fa-font' if content.content_type == 'text' else 'fa-image' if content.content_type == 'image' else 'fa-headphones' if content.content_type == 'audio' else 'fa-file-alt'}"/>
+                            <t t-esc="content.title"/>
+                        </h4>
+                        <a t-attf-href="/university/lms/course/#{course.id}"
+                           class="btn btn-sm btn-outline-light">
+                            <i class="fa fa-arrow-left me-1"/>Back to Course
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <t t-if="content.description">
+                        <p class="lead" t-esc="content.description"/>
+                    </t>
+                    <hr/>
+                    <!-- Render content based on type -->
+                    <t t-if="content.content_type == 'text'">
+                        <div t-out="content.text_content"/>
+                    </t>
+                    <t t-elif="content.content_type == 'link'">
+                        <div class="alert alert-info">
+                            <i class="fa fa-external-link me-2"/>
+                            This is an external resource.
+                            <a t-att-href="content.url" target="_blank"
+                               class="alert-link" t-esc="content.url"/>
+                        </div>
+                    </t>
+                    <t t-elif="content.content_type in ('video', 'audio')">
+                        <t t-if="content.is_downloadable">
+                            <a t-attf-href="/web/content/uni.lms.content/#{content.id}/file?download=true"
+                               class="btn btn-outline-primary mb-3">
+                                <i class="fa fa-download me-1"/>Download
+                                <small class="text-muted">(<t t-esc="content.filename"/>)</small>
+                            </a>
+                        </t>
+                        <div class="alert alert-secondary">
+                            <i class="fa fa-play-circle me-2"/>
+                            Media file: <t t-esc="content.filename"/>
+                        </div>
+                    </t>
+                    <t t-else="">
+                        <t t-if="content.file">
+                            <div class="d-flex align-items-center">
+                                <i class="fa fa-file fa-3x me-3 text-muted"/>
+                                <div class="flex-grow-1">
+                                    <h5 t-esc="content.filename"/>
+                                    <small class="text-muted">
+                                        <t t-esc="content.file_size"/> bytes
+                                    </small>
+                                </div>
+                                <t t-if="content.is_downloadable">
+                                    <a t-attf-href="/web/content/uni.lms.content/#{content.id}/file?download=true"
+                                       class="btn btn-outline-primary">
+                                        <i class="fa fa-download me-1"/>Download
+                                    </a>
+                                </t>
+                                <t t-else="">
+                                    <span class="badge text-bg-warning">
+                                        <i class="fa fa-lock me-1"/>Not downloadable
+                                    </span>
+                                </t>
+                            </div>
+                        </t>
+                        <t t-else="">
+                            <div class="alert alert-warning">
+                                <i class="fa fa-exclamation-triangle me-2"/>
+                                No file attached to this content item.
+                            </div>
+                        </t>
+                    </t>
+                    <!-- Duration / Required / Views -->
+                    <hr/>
+                    <div class="row text-muted small">
+                        <div class="col-md-4">
+                            <i class="fa fa-clock-o me-1"/>
+                            Duration: <t t-esc="content.duration"/> hours
+                        </div>
+                        <div class="col-md-4">
+                            <i class="fa fa-eye me-1"/>
+                            Views: <t t-esc="content.view_count"/>
+                        </div>
+                        <div class="col-md-4">
+                            <i class="fa fa-star me-1"/>
+                            Required: <t t-esc="'Yes' if content.is_required else 'No'"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- ============================================================ -->
+    <!-- LMS My Progress dashboard                                     -->
+    <!-- ============================================================ -->
+    <template id="lms_my_progress_page" name="LMS My Progress">
+        <t t-call="university_lms.lms_layout">
+            <!-- Summary cards -->
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <div class="card text-white bg-primary shadow-sm">
+                        <div class="card-body">
+                            <h6 class="card-title">
+                                <i class="fa fa-book me-2"/>
+                                Enrolled Courses
+                            </h6>
+                            <h2 class="mb-0" t-esc="total_enrolled"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card text-white bg-success shadow-sm">
+                        <div class="card-body">
+                            <h6 class="card-title">
+                                <i class="fa fa-trophy me-2"/>
+                                Completed
+                            </h6>
+                            <h2 class="mb-0" t-esc="total_completed"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card text-white bg-info shadow-sm">
+                        <div class="card-body">
+                            <h6 class="card-title">
+                                <i class="fa fa-chart-line me-2"/>
+                                Avg. Completion
+                            </h6>
+                            <h2 class="mb-0">
+                                <t t-esc="round(avg_completion, 1)"/>%
+                            </h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Progress list -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-light">
+                    <h4 class="mb-0">
+                        <i class="fa fa-list me-2"/>
+                        My Courses
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <t t-if="progresses">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>Course</th>
+                                        <th>Enrolled</th>
+                                        <th>Last Access</th>
+                                        <th>Progress</th>
+                                        <th>Avg Score</th>
+                                        <th>Time (h)</th>
+                                        <th>Status</th>
+                                        <th class="text-end">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="progresses" t-as="p">
+                                        <tr>
+                                            <td>
+                                                <strong t-esc="p.lms_course_id.display_name"/>
+                                                <br/>
+                                                <small class="text-muted" t-esc="p.lms_course_id.code"/>
+                                            </td>
+                                            <td t-esc="p.enrollment_date"/>
+                                            <td t-esc="p.last_access or '-'"/>
+                                            <td>
+                                                <div class="progress" style="height: 20px;">
+                                                    <div class="progress-bar"
+                                                         role="progressbar"
+                                                         t-att-style="'width: %s%%' % p.completion_percentage"
+                                                         t-att-aria-valuenow="p.completion_percentage"
+                                                         aria-valuemin="0" aria-valuemax="100">
+                                                        <t t-esc="round(p.completion_percentage, 1)"/>%
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td t-esc="round(p.average_score, 1)"/>
+                                            <td t-esc="round(p.time_spent_hours, 1)"/>
+                                            <td>
+                                                <span class="badge"
+                                                      t-attf-class="#{'text-bg-success' if p.state == 'completed' else 'text-bg-info' if p.state == 'in_progress' else 'text-bg-warning' if p.state == 'enrolled' else 'text-bg-secondary'}"
+                                                      t-esc="dict(p._fields['state'].selection).get(p.state, p.state)"/>
+                                            </td>
+                                            <td class="text-end">
+                                                <a t-attf-href="/university/lms/course/#{p.lms_course_id.id}"
+                                                   class="btn btn-sm btn-outline-primary">
+                                                    <i class="fa fa-arrow-right"/>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+                    </t>
+                    <t t-else="">
+                        <div class="alert alert-info mb-0">
+                            <i class="fa fa-info-circle me-2"/>
+                            You are not enrolled in any LMS course yet.
+                            <a t-attf-href="/university/lms/courses"
+                               class="alert-link">Browse the course catalog</a>.
+                        </div>
+                    </t>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>

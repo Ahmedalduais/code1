@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- Exams main menu (under university_core.menu_university_root)  -->
+    <!-- ============================================================ -->
+    <menuitem id="menu_university_exam_root"
+              name="Exams"
+              parent="university_core.menu_university_root"
+              sequence="60"
+              groups="university_core.group_university_user"/>
+
+    <!-- ============================================================ -->
+    <!-- Exams                                                         -->
+    <!-- ============================================================ -->
+    <menuitem id="menu_uni_exam"
+              name="Exams"
+              parent="menu_university_exam_root"
+              sequence="10"
+              action="action_uni_exam"/>
+
+    <!-- ============================================================ -->
+    <!-- Exam Types (manager only)                                     -->
+    <!-- ============================================================ -->
+    <menuitem id="menu_uni_exam_type"
+              name="Exam Types"
+              parent="menu_university_exam_root"
+              sequence="20"
+              groups="university_core.group_university_manager"
+              action="action_uni_exam_type"/>
+
+    <!-- ============================================================ -->
+    <!-- Exam Schedules                                                -->
+    <!-- ============================================================ -->
+    <menuitem id="menu_uni_exam_schedule"
+              name="Exam Schedules"
+              parent="menu_university_exam_root"
+              sequence="30"
+              action="action_uni_exam_schedule"/>
+
+    <!-- ============================================================ -->
+    <!-- Exam Rooms                                                    -->
+    <!-- ============================================================ -->
+    <menuitem id="menu_uni_exam_room"
+              name="Exam Rooms"
+              parent="menu_university_exam_root"
+              sequence="40"
+              action="action_uni_exam_room"/>
+
+    <!-- ============================================================ -->
+    <!-- Invigilators                                                  -->
+    <!-- ============================================================ -->
+    <menuitem id="menu_uni_exam_invigilator"
+              name="Invigilators"
+              parent="menu_university_exam_root"
+              sequence="50"
+              action="action_uni_exam_invigilator"/>
+
+    <!-- ============================================================ -->
+    <!-- Violations                                                    -->
+    <!-- ============================================================ -->
+    <menuitem id="menu_uni_exam_violation"
+              name="Violations"
+              parent="menu_university_exam_root"
+              sequence="60"
+              action="action_uni_exam_violation"/>
+
+    <!-- ============================================================ -->
+    <!-- Accommodations                                                -->
+    <!-- ============================================================ -->
+    <menuitem id="menu_uni_exam_accommodation"
+              name="Accommodations"
+              parent="menu_university_exam_root"
+              sequence="70"
+              action="action_uni_exam_accommodation"/>
+</odoo>

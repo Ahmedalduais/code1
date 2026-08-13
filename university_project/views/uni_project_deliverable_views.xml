@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============ uni.project.deliverable — List View ============ -->
+    <record id="view_uni_project_deliverable_list" model="ir.ui.view">
+        <field name="name">uni.project.deliverable.list</field>
+        <field name="model">uni.project.deliverable</field>
+        <field name="arch" type="xml">
+            <list string="Project Deliverables"
+                  decoration-success="state == 'approved'"
+                  decoration-warning="state == 'under_review'"
+                  decoration-danger="state == 'rejected'"
+                  decoration-info="state == 'submitted'"
+                  decoration-muted="state == 'draft'">
+                <field name="name"/>
+                <field name="project_id"/>
+                <field name="milestone_id" optional="show"/>
+                <field name="deliverable_type"/>
+                <field name="team_id" optional="hide"/>
+                <field name="member_id" optional="hide"/>
+                <field name="due_date"/>
+                <field name="submission_date" optional="show"/>
+                <field name="version" optional="hide"/>
+                <field name="is_approved" optional="hide"/>
+                <field name="state" widget="badge"/>
+                <field name="active" widget="boolean_toggle" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============ uni.project.deliverable — Form View ============ -->
+    <record id="view_uni_project_deliverable_form" model="ir.ui.view">
+        <field name="name">uni.project.deliverable.form</field>
+        <field name="model">uni.project.deliverable</field>
+        <field name="arch" type="xml">
+            <form string="Project Deliverable">
+                <header>
+                    <button name="action_submit" type="object" string="Submit"
+                            class="btn-primary"
+                            invisible="state != 'draft'"/>
+                    <button name="action_start_review" type="object"
+                            string="Start Review" class="btn-secondary"
+                            invisible="state != 'submitted'"/>
+                    <button name="action_approve" type="object" string="Approve"
+                            class="btn-success"
+                            invisible="state not in ('submitted', 'under_review', 'revise')"/>
+                    <button name="action_revise" type="object"
+                            string="Request Revision" class="btn-warning"
+                            invisible="state not in ('submitted', 'under_review')"/>
+                    <button name="action_reject" type="object" string="Reject"
+                            class="btn-danger"
+                            invisible="state not in ('submitted', 'under_review', 'revise')"/>
+                    <button name="action_draft" type="object"
+                            string="Set to Draft" class="btn-secondary"
+                            invisible="state not in ('rejected', 'revise', 'approved')"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,submitted,under_review,approved"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" string="Deliverable Name"/>
+                        <h1><field name="name" placeholder="e.g. Final Project Report"/></h1>
+                    </div>
+                    <group>
+                        <group string="Affiliation">
+                            <field name="project_id" options="{'no_create': True}"/>
+                            <field name="milestone_id" options="{'no_create': True}"/>
+                            <field name="team_id" options="{'no_create': True}"/>
+                            <field name="member_id" options="{'no_create': True}"/>
+                        </group>
+                        <group string="Details">
+                            <field name="deliverable_type"/>
+                            <field name="version"/>
+                            <field name="due_date"/>
+                            <field name="submission_date"/>
+                            <field name="is_submitted" widget="boolean_toggle"/>
+                            <field name="is_approved" widget="boolean_toggle"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Description" name="description">
+                            <field name="description"/>
+                        </page>
+                        <page string="File" name="file">
+                            <group>
+                                <field name="file" filename="filename"/>
+                                <field name="filename" invisible="not file"/>
+                                <field name="url"/>
+                            </group>
+                        </page>
+                        <page string="Approval" name="approval">
+                            <group>
+                                <group>
+                                    <field name="approved_by"/>
+                                    <field name="approved_date"/>
+                                </group>
+                                <group>
+                                    <field name="feedback"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="notes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============ uni.project.deliverable — Search View ============ -->
+    <record id="view_uni_project_deliverable_search" model="ir.ui.view">
+        <field name="name">uni.project.deliverable.search</field>
+        <field name="model">uni.project.deliverable</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="project_id"/>
+                <field name="milestone_id"/>
+                <field name="team_id"/>
+                <field name="member_id"/>
+                <field name="deliverable_type"/>
+                <separator/>
+                <filter string="Draft" name="filter_draft"
+                        domain="[('state', '=', 'draft')]"/>
+                <filter string="Submitted" name="filter_submitted"
+                        domain="[('state', '=', 'submitted')]"/>
+                <filter string="Under Review" name="filter_review"
+                        domain="[('state', '=', 'under_review')]"/>
+                <filter string="Approved" name="filter_approved"
+                        domain="[('state', '=', 'approved')]"/>
+                <filter string="Rejected" name="filter_rejected"
+                        domain="[('state', '=', 'rejected')]"/>
+                <filter string="Needs Revision" name="filter_revise"
+                        domain="[('state', '=', 'revise')]"/>
+                <filter string="Approved Only" name="filter_is_approved"
+                        domain="[('is_approved', '=', True)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Project" name="group_project"
+                            context="{'group_by': 'project_id'}"/>
+                    <filter string="Type" name="group_type"
+                            context="{'group_by': 'deliverable_type'}"/>
+                    <filter string="Status" name="group_state"
+                            context="{'group_by': 'state'}"/>
+                    <filter string="Milestone" name="group_milestone"
+                            context="{'group_by': 'milestone_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============ uni.project.deliverable — Action ============ -->
+    <record id="action_uni_project_deliverable" model="ir.actions.act_window">
+        <field name="name">Project Deliverables</field>
+        <field name="res_model">uni.project.deliverable</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_project_deliverable_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first project deliverable
+            </p>
+            <p>
+                Deliverables track tangible outputs (reports, source code,
+                presentations, demos) with a full submission and review workflow.
+            </p>
+        </field>
+    </record>
+</odoo>

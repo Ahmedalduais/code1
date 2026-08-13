@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- ============================================================ -->
+    <!-- Post-load links between standard templates & QWeb actions    -->
+    <!--                                                               -->
+    <!-- Loaded AFTER the reports/*.xml files so the action IDs exist. -->
+    <!-- ============================================================ -->
+    <record id="template_student_list" model="uni.report.template">
+        <field name="report_action_id"
+               ref="action_report_uni_student_list"/>
+    </record>
+
+    <record id="template_transcript_summary" model="uni.report.template">
+        <field name="report_action_id"
+               ref="action_report_uni_transcript_summary"/>
+    </record>
+
+    <record id="template_financial_summary" model="uni.report.template">
+        <field name="report_action_id"
+               ref="action_report_uni_financial_summary"/>
+    </record>
+
+    <record id="template_enrollment_statistics" model="uni.report.template">
+        <field name="report_action_id"
+               ref="action_report_uni_enrollment_stats"/>
+    </record>
+
+    <record id="template_academic_standing" model="uni.report.template">
+        <field name="report_action_id"
+               ref="action_report_uni_academic_standing"/>
+    </record>
+</odoo>

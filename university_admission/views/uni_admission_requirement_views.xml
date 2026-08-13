@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- uni.admission.requirement — List View                        -->
+    <!-- ============================================================ -->
+    <record id="view_uni_admission_requirement_list" model="ir.ui.view">
+        <field name="name">uni.admission.requirement.list</field>
+        <field name="model">uni.admission.requirement</field>
+        <field name="arch" type="xml">
+            <list string="Admission Requirements"
+                  decoration-muted="not active"
+                  decoration-danger="is_mandatory and not active">
+                <field name="sequence" widget="handle"/>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="requirement_type" widget="badge"/>
+                <field name="is_mandatory" widget="boolean_toggle"/>
+                <field name="line_count"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.admission.requirement — Form View                        -->
+    <!-- ============================================================ -->
+    <record id="view_uni_admission_requirement_form" model="ir.ui.view">
+        <field name="name">uni.admission.requirement.form</field>
+        <field name="model">uni.admission.requirement</field>
+        <field name="arch" type="xml">
+            <form string="Admission Requirement">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_open_lines" type="object"
+                                class="oe_stat_button" icon="fa-list">
+                            <field name="line_count" widget="statinfo"
+                                   string="Used In"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" string="Requirement"/>
+                        <h1><field name="name" placeholder="e.g. High School Transcript"/></h1>
+                        <h3><field name="code" placeholder="e.g. HS-TRANSCRIPT"/></h3>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="requirement_type"/>
+                            <field name="is_mandatory"/>
+                            <field name="sequence"/>
+                            <field name="active"/>
+                        </group>
+                        <group>
+                            <field name="color"/>
+                        </group>
+                    </group>
+                    <group string="Description">
+                        <field name="description" nolabel="1"
+                               placeholder="Detailed description of what is required..."/>
+                    </group>
+                    <notebook>
+                        <page string="Application Lines">
+                            <field name="line_ids">
+                                <list>
+                                    <field name="application_id"/>
+                                    <field name="is_fulfilled" widget="boolean_toggle"/>
+                                    <field name="fulfilled_date"/>
+                                    <field name="file" filename="filename"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.admission.requirement — Search View                      -->
+    <!-- ============================================================ -->
+    <record id="view_uni_admission_requirement_search" model="ir.ui.view">
+        <field name="name">uni.admission.requirement.search</field>
+        <field name="model">uni.admission.requirement</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="code"/>
+                <filter string="Mandatory" name="filter_mandatory"
+                        domain="[('is_mandatory', '=', True)]"/>
+                <filter string="Optional" name="filter_optional"
+                        domain="[('is_mandatory', '=', False)]"/>
+                <filter string="Archived" name="filter_archived"
+                        domain="[('active', '=', False)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Type" name="group_type"
+                            context="{'group_by': 'requirement_type'}"/>
+                    <filter string="Mandatory" name="group_mandatory"
+                            context="{'group_by': 'is_mandatory'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.admission.requirement — Action                           -->
+    <!-- ============================================================ -->
+    <record id="action_uni_admission_requirement" model="ir.actions.act_window">
+        <field name="name">Requirements</field>
+        <field name="res_model">uni.admission.requirement</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_admission_requirement_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Define a new admission requirement
+            </p>
+            <p>Requirements are reusable building blocks (documents, tests,
+               interviews, payments) that get linked to each application as
+               requirement lines and tracked for fulfillment.</p>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.admission.requirement.line — List View                   -->
+    <!-- ============================================================ -->
+    <record id="view_uni_admission_requirement_line_list" model="ir.ui.view">
+        <field name="name">uni.admission.requirement.line.list</field>
+        <field name="model">uni.admission.requirement.line</field>
+        <field name="arch" type="xml">
+            <list string="Requirement Lines"
+                  decoration-success="is_fulfilled"
+                  decoration-danger="is_mandatory and not is_fulfilled">
+                <field name="application_id"/>
+                <field name="requirement_id"/>
+                <field name="requirement_type"/>
+                <field name="is_mandatory"/>
+                <field name="is_fulfilled" widget="boolean_toggle"/>
+                <field name="fulfilled_date"/>
+                <field name="file" filename="filename"/>
+                <field name="filename" column_invisible="True"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.admission.requirement.line — Form View                   -->
+    <!-- ============================================================ -->
+    <record id="view_uni_admission_requirement_line_form" model="ir.ui.view">
+        <field name="name">uni.admission.requirement.line.form</field>
+        <field name="model">uni.admission.requirement.line</field>
+        <field name="arch" type="xml">
+            <form string="Requirement Line">
+                <header>
+                    <button name="action_mark_fulfilled" string="Mark Fulfilled"
+                            type="object" class="oe_highlight"
+                            invisible="is_fulfilled"/>
+                    <button name="action_mark_unfulfilled" string="Mark Unfulfilled"
+                            type="object"
+                            invisible="not is_fulfilled"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="application_id"
+                                   options="{'no_create': True}"/>
+                            <field name="requirement_id"
+                                   options="{'no_create': True}"/>
+                            <field name="requirement_type"/>
+                            <field name="is_mandatory"/>
+                        </group>
+                        <group>
+                            <field name="is_fulfilled"/>
+                            <field name="fulfilled_date"/>
+                            <field name="file" filename="filename"/>
+                            <field name="filename" invisible="1"/>
+                        </group>
+                    </group>
+                    <group string="Notes">
+                        <field name="notes" nolabel="1"/>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.admission.requirement.line — Search View                 -->
+    <!-- ============================================================ -->
+    <record id="view_uni_admission_requirement_line_search" model="ir.ui.view">
+        <field name="name">uni.admission.requirement.line.search</field>
+        <field name="model">uni.admission.requirement.line</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="application_id"/>
+                <field name="requirement_id"/>
+                <filter string="Fulfilled" name="filter_fulfilled"
+                        domain="[('is_fulfilled', '=', True)]"/>
+                <filter string="Pending" name="filter_pending"
+                        domain="[('is_fulfilled', '=', False)]"/>
+                <filter string="Mandatory Pending" name="filter_mandatory_pending"
+                        domain="[('is_mandatory', '=', True), ('is_fulfilled', '=', False)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Application" name="group_app"
+                            context="{'group_by': 'application_id'}"/>
+                    <filter string="Requirement" name="group_req"
+                            context="{'group_by': 'requirement_id'}"/>
+                    <filter string="Type" name="group_type"
+                            context="{'group_by': 'requirement_type'}"/>
+                    <filter string="Fulfilled" name="group_fulfilled"
+                            context="{'group_by': 'is_fulfilled'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.admission.requirement.line — Action                      -->
+    <!-- ============================================================ -->
+    <record id="action_uni_admission_requirement_line" model="ir.actions.act_window">
+        <field name="name">Requirement Lines</field>
+        <field name="res_model">uni.admission.requirement.line</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_admission_requirement_line_search"/>
+    </record>
+</odoo>

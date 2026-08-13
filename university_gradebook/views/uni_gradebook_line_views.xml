@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- uni.gradebook.line — List View                               -->
+    <!-- ============================================================ -->
+    <record id="view_uni_gradebook_line_list" model="ir.ui.view">
+        <field name="name">uni.gradebook.line.list</field>
+        <field name="model">uni.gradebook.line</field>
+        <field name="arch" type="xml">
+            <list string="Gradebook Lines"
+                  decoration-success="state == 'active'"
+                  decoration-warning="state == 'withdrawn'"
+                  decoration-info="state == 'exempted'">
+                <field name="gradebook_id"/>
+                <field name="student_id"/>
+                <field name="student_code"/>
+                <field name="student_name"/>
+                <field name="program_id" optional="hide"/>
+                <field name="enrollment_line_id" optional="hide"/>
+                <field name="is_withdrawn" optional="hide" widget="boolean_toggle"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'active'"
+                       decoration-warning="state == 'withdrawn'"
+                       decoration-info="state == 'exempted'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.gradebook.line — Form View                               -->
+    <!-- ============================================================ -->
+    <record id="view_uni_gradebook_line_form" model="ir.ui.view">
+        <field name="name">uni.gradebook.line.form</field>
+        <field name="model">uni.gradebook.line</field>
+        <field name="arch" type="xml">
+            <form string="Gradebook Line">
+                <header>
+                    <button name="action_withdraw" string="Withdraw"
+                            type="object"
+                            invisible="state != 'active'"/>
+                    <button name="action_exempt" string="Exempt"
+                            type="object"
+                            invisible="state != 'active'"/>
+                    <button name="action_reactivate" string="Reactivate"
+                            type="object"
+                            invisible="state == 'active'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="active,withdrawn,exempted"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_entries" type="object"
+                                class="oe_stat_button" icon="fa-pencil">
+                            <field name="entry_count" widget="statinfo"
+                                   string="Entries"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="student_id" string="Student"/>
+                        <h1><field name="student_id"
+                                   options="{'no_create': True}"
+                                   readonly="state != 'active'"/></h1>
+                        <h3>
+                            <field name="student_code" readonly="1"/>
+                            <span> — </span>
+                            <field name="student_name" readonly="1"/>
+                        </h3>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="gradebook_id"
+                                   options="{'no_create': True}"
+                                   readonly="state != 'active'"/>
+                            <field name="enrollment_line_id"
+                                   options="{'no_create': True}"/>
+                            <field name="is_withdrawn" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="program_id" readonly="1"/>
+                            <field name="final_id"
+                                   options="{'no_create': True}"
+                                   readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Grade Entries">
+                            <field name="entry_ids"
+                                   context="{'default_gradebook_line_id': id,
+                                             'default_gradebook_id': gradebook_id}">
+                                <list editable="bottom">
+                                    <field name="evaluation_type_id"
+                                           options="{'no_create': True}"/>
+                                    <field name="assessment_name"/>
+                                    <field name="assessment_date"/>
+                                    <field name="score"/>
+                                    <field name="max_score"/>
+                                    <field name="weight"/>
+                                    <field name="percentage" readonly="1"/>
+                                    <field name="grade_letter_id" readonly="1"/>
+                                    <field name="is_excused" widget="boolean_toggle"/>
+                                    <field name="is_missing" widget="boolean_toggle"
+                                           readonly="1"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Notes">
+                            <field name="notes" nolabel="1" colspan="2"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.gradebook.line — Search View                             -->
+    <!-- ============================================================ -->
+    <record id="view_uni_gradebook_line_search" model="ir.ui.view">
+        <field name="name">uni.gradebook.line.search</field>
+        <field name="model">uni.gradebook.line</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="student_id"/>
+                <field name="student_code"/>
+                <field name="student_name"/>
+                <field name="gradebook_id"/>
+                <field name="program_id"/>
+                <field name="enrollment_line_id"/>
+                <separator/>
+                <filter string="Active" name="filter_active"
+                        domain="[('state', '=', 'active')]"/>
+                <filter string="Withdrawn" name="filter_withdrawn"
+                        domain="[('state', '=', 'withdrawn')]"/>
+                <filter string="Exempted" name="filter_exempted"
+                        domain="[('state', '=', 'exempted')]"/>
+                <separator/>
+                <filter string="Withdrawn Flag" name="filter_is_withdrawn"
+                        domain="[('is_withdrawn', '=', True)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Gradebook" name="group_gradebook"
+                            context="{'group_by': 'gradebook_id'}"/>
+                    <filter string="Student" name="group_student"
+                            context="{'group_by': 'student_id'}"/>
+                    <filter string="Program" name="group_program"
+                            context="{'group_by': 'program_id'}"/>
+                    <filter string="State" name="group_state"
+                            context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.gradebook.line — Action                                  -->
+    <!-- ============================================================ -->
+    <record id="action_uni_gradebook_line" model="ir.actions.act_window">
+        <field name="name">Gradebook Lines</field>
+        <field name="res_model">uni.gradebook.line</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_gradebook_line_search"/>
+        <field name="context">{'search_default_filter_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Register a student in a gradebook
+            </p>
+            <p>Each line links a student to a gradebook and holds their
+               grade entries and computed final grade.</p>
+        </field>
+    </record>
+</odoo>

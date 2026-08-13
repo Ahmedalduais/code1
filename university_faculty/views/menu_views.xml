@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- Faculty menu — under university_core.menu_university_root     -->
+    <!-- ============================================================ -->
+    <menuitem id="menu_university_faculty_root"
+              name="Faculty"
+              parent="university_core.menu_university_root"
+              sequence="40"/>
+
+    <!-- Faculty Members -->
+    <menuitem id="menu_uni_faculty"
+              name="Faculty Members"
+              parent="menu_university_faculty_root"
+              action="action_uni_faculty"
+              sequence="10"/>
+
+    <!-- Ranks (manager only) -->
+    <menuitem id="menu_uni_faculty_rank"
+              name="Ranks"
+              parent="menu_university_faculty_root"
+              action="action_uni_faculty_rank"
+              sequence="20"
+              groups="university_core.group_university_manager"/>
+
+    <!-- Assignments -->
+    <menuitem id="menu_uni_faculty_assignment"
+              name="Assignments"
+              parent="menu_university_faculty_root"
+              action="action_uni_faculty_assignment"
+              sequence="30"/>
+
+    <!-- Teaching Load -->
+    <menuitem id="menu_uni_faculty_load"
+              name="Teaching Load"
+              parent="menu_university_faculty_root"
+              action="action_uni_faculty_load"
+              sequence="40"/>
+
+    <!-- Publications -->
+    <menuitem id="menu_uni_faculty_publication"
+              name="Publications"
+              parent="menu_university_faculty_root"
+              action="action_uni_faculty_publication"
+              sequence="50"/>
+
+    <!-- Committees -->
+    <menuitem id="menu_uni_committee"
+              name="Committees"
+              parent="menu_university_faculty_root"
+              action="action_uni_committee"
+              sequence="60"/>
+
+    <!-- Committee Members -->
+    <menuitem id="menu_uni_committee_member"
+              name="Committee Members"
+              parent="menu_university_faculty_root"
+              action="action_uni_committee_member"
+              sequence="70"/>
+
+    <!-- Contracts -->
+    <menuitem id="menu_uni_faculty_contract"
+              name="Contracts"
+              parent="menu_university_faculty_root"
+              action="action_uni_faculty_contract"
+              sequence="80"/>
+</odoo>

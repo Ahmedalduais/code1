@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- Research menu — under university_core.menu_university_root    -->
+    <!-- ============================================================ -->
+    <menuitem id="menu_university_research_root"
+              name="Research"
+              parent="university_core.menu_university_root"
+              sequence="70"/>
+
+    <!-- Research Projects -->
+    <menuitem id="menu_uni_research_project"
+              name="Projects"
+              parent="menu_university_research_root"
+              action="action_uni_research_project"
+              sequence="10"/>
+
+    <!-- Publications -->
+    <menuitem id="menu_uni_research_publication"
+              name="Publications"
+              parent="menu_university_research_root"
+              action="action_uni_research_publication"
+              sequence="20"/>
+
+    <!-- Journals -->
+    <menuitem id="menu_uni_research_journal"
+              name="Journals"
+              parent="menu_university_research_root"
+              action="action_uni_research_journal"
+              sequence="30"/>
+
+    <!-- Conferences -->
+    <menuitem id="menu_uni_research_conference"
+              name="Conferences"
+              parent="menu_university_research_root"
+              action="action_uni_research_conference"
+              sequence="40"/>
+
+    <!-- Grants -->
+    <menuitem id="menu_uni_research_grant"
+              name="Grants"
+              parent="menu_university_research_root"
+              action="action_uni_research_grant"
+              sequence="50"/>
+
+    <!-- Ethics -->
+    <menuitem id="menu_uni_research_ethics"
+              name="Ethics"
+              parent="menu_university_research_root"
+              action="action_uni_research_ethics"
+              sequence="60"/>
+
+    <!-- Collaborations -->
+    <menuitem id="menu_uni_research_collaboration"
+              name="Collaborations"
+              parent="menu_university_research_root"
+              action="action_uni_research_collaboration"
+              sequence="70"/>
+</odoo>

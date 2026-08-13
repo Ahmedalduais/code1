@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- Reports menu — under university_core.menu_university_root    -->
+    <!-- ============================================================ -->
+    <menuitem id="menu_university_reports_root"
+              name="Reports"
+              parent="university_core.menu_university_root"
+              sequence="80"
+              groups="university_core.group_university_user"/>
+
+    <!-- Report Templates -->
+    <menuitem id="menu_uni_report_template"
+              name="Report Templates"
+              parent="menu_university_reports_root"
+              action="action_uni_report_template"
+              sequence="10"
+              groups="university_core.group_university_manager"/>
+
+    <!-- Report Builders -->
+    <menuitem id="menu_uni_report_builder"
+              name="Report Builders"
+              parent="menu_university_reports_root"
+              action="action_uni_report_builder"
+              sequence="20"/>
+
+    <!-- Schedules -->
+    <menuitem id="menu_uni_report_schedule"
+              name="Schedules"
+              parent="menu_university_reports_root"
+              action="action_uni_report_schedule"
+              sequence="30"/>
+
+    <!-- Dashboard Widgets -->
+    <menuitem id="menu_uni_dashboard_widget"
+              name="Dashboard Widgets"
+              parent="menu_university_reports_root"
+              action="action_uni_dashboard_widget"
+              sequence="40"/>
+
+    <!-- Generate Report (wizard) -->
+    <menuitem id="menu_uni_report_wizard"
+              name="Generate Report"
+              parent="menu_university_reports_root"
+              action="action_uni_report_wizard"
+              sequence="50"/>
+
+    <!-- ============================================================ -->
+    <!-- Quick links to standard reports                              -->
+    <!-- ============================================================ -->
+    <menuitem id="menu_uni_reports_standard"
+              name="Standard Reports"
+              parent="menu_university_reports_root"
+              sequence="60"
+              groups="university_core.group_university_user"/>
+
+    <menuitem id="menu_uni_report_student_list"
+              name="Student List"
+              parent="menu_uni_reports_standard"
+              action="action_report_uni_student_list_wizard"
+              sequence="10"/>
+
+    <menuitem id="menu_uni_report_transcript_summary"
+              name="Transcript Summary"
+              parent="menu_uni_reports_standard"
+              action="action_report_uni_transcript_summary_wizard"
+              sequence="20"/>
+
+    <menuitem id="menu_uni_report_financial_summary"
+              name="Financial Summary"
+              parent="menu_uni_reports_standard"
+              action="action_report_uni_financial_summary_wizard"
+              sequence="30"/>
+
+    <menuitem id="menu_uni_report_enrollment_stats"
+              name="Enrollment Statistics"
+              parent="menu_uni_reports_standard"
+              action="action_report_uni_enrollment_stats_wizard"
+              sequence="40"/>
+
+    <menuitem id="menu_uni_report_academic_standing"
+              name="Academic Standing"
+              parent="menu_uni_reports_standard"
+              action="action_report_uni_academic_standing_wizard"
+              sequence="50"/>
+</odoo>

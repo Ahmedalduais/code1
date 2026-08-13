@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- Student invoice sequence -->
+    <record id="seq_uni_invoice_student" model="ir.sequence">
+        <field name="name">Student Invoice Sequence</field>
+        <field name="code">uni.invoice.student</field>
+        <field name="prefix">INV/%(year)s/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <!-- Scholarship sequence -->
+    <record id="seq_uni_scholarship" model="ir.sequence">
+        <field name="name">Scholarship Sequence</field>
+        <field name="code">uni.scholarship</field>
+        <field name="prefix">SCH/%(year)s/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <!-- Payment plan sequence -->
+    <record id="seq_uni_payment_plan" model="ir.sequence">
+        <field name="name">Payment Plan Sequence</field>
+        <field name="code">uni.payment.plan</field>
+        <field name="prefix">PP/%(year)s/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+</odoo>

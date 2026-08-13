@@ -1,0 +1,11 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_uni_alumni_member_user,uni.alumni.member.user,model_uni_alumni_member,university_core.group_university_user,1,0,0,0
+access_uni_alumni_member_manager,uni.alumni.member.manager,model_uni_alumni_member,university_core.group_university_manager,1,1,1,1
+access_uni_alumni_event_user,uni.alumni.event.user,model_uni_alumni_event,university_core.group_university_user,1,0,0,0
+access_uni_alumni_event_manager,uni.alumni.event.manager,model_uni_alumni_event,university_core.group_university_manager,1,1,1,1
+access_uni_alumni_donation_user,uni.alumni.donation.user,model_uni_alumni_donation,university_core.group_university_user,1,0,0,0
+access_uni_alumni_donation_manager,uni.alumni.donation.manager,model_uni_alumni_donation,university_core.group_university_manager,1,1,1,1
+access_uni_alumni_network_user,uni.alumni.network.user,model_uni_alumni_network,university_core.group_university_user,1,0,0,0
+access_uni_alumni_network_manager,uni.alumni.network.manager,model_uni_alumni_network,university_core.group_university_manager,1,1,1,1
+access_uni_alumni_career_user,uni.alumni.career.user,model_uni_alumni_career,university_core.group_university_user,1,0,0,0
+access_uni_alumni_career_manager,uni.alumni.career.manager,model_uni_alumni_career,university_core.group_university_manager,1,1,1,1

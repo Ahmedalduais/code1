@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- Notifications page                                            -->
+    <!-- ============================================================ -->
+    <template id="portal_notifications_page"
+              name="University Portal — Notifications">
+        <t t-call="university_portal.portal_layout">
+            <t t-set="is_student" t-value="is_student if is_student else False"/>
+            <t t-set="is_faculty" t-value="is_faculty if is_faculty else False"/>
+            <t t-set="unread_count" t-value="unread_count or 0"/>
+            <t t-set="filter" t-value="filter or 'all'"/>
+
+            <!-- Header & filters -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <h2 class="mb-1">
+                        <i class="fa fa-bell text-primary me-2"/>
+                        Notifications
+                    </h2>
+                    <p class="text-muted mb-0">
+                        You have <strong t-esc="unread_count"/> unread notification(s).
+                    </p>
+                </div>
+                <div class="btn-group" role="group">
+                    <a t-attf-href="/university/portal/notifications?filter=all"
+                       t-att-class="'btn btn-sm ' + ('btn-primary' if filter == 'all' else 'btn-outline-primary')">
+                        All
+                    </a>
+                    <a t-attf-href="/university/portal/notifications?filter=unread"
+                       t-att-class="'btn btn-sm ' + ('btn-primary' if filter == 'unread' else 'btn-outline-primary')">
+                        Unread
+                    </a>
+                    <a t-attf-href="/university/portal/notifications?filter=read"
+                       t-att-class="'btn btn-sm ' + ('btn-primary' if filter == 'read' else 'btn-outline-primary')">
+                        Read
+                    </a>
+                </div>
+            </div>
+
+            <!-- Notifications list -->
+            <t t-if="notifications">
+                <div class="card shadow-sm">
+                    <div class="list-group list-group-flush">
+                        <t t-foreach="notifications" t-as="notif">
+                            <div class="list-group-item"
+                                 t-att-class="'list-group-item-' + ('warning' if notif.priority in ('high', 'urgent') and not notif.is_read else 'secondary' if notif.is_read else 'light')">
+                                <div class="row align-items-start">
+                                    <div class="col-auto">
+                                        <i t-attf-class="fa {{ 'fa-star text-warning' if notif.priority == 'urgent' else 'fa-exclamation-circle text-warning' if notif.priority == 'high' else 'fa-check-circle text-success' if notif.notification_type == 'success' else 'fa-times-circle text-danger' if notif.notification_type == 'error' else 'fa-info-circle text-info' }} fa-2x mt-1"/>
+                                    </div>
+                                    <div class="col">
+                                        <div class="d-flex w-100 justify-content-between">
+                                            <h5 class="mb-1">
+                                                <t t-if="notif.is_read">
+                                                    <span class="text-muted" t-esc="notif.title"/>
+                                                </t>
+                                                <t t-else="">
+                                                    <strong t-esc="notif.title"/>
+                                                </t>
+                                            </h5>
+                                            <small class="text-muted"
+                                                   t-esc="notif.send_date"
+                                                   t-options='{"widget": "datetime"}'/>
+                                        </div>
+                                        <p class="mb-2 text-muted" t-esc="notif.message"/>
+                                        <div class="d-flex align-items-center gap-2 flex-wrap">
+                                            <span class="badge text-bg-secondary"
+                                                  t-esc="notif.notification_type.title()"/>
+                                            <span t-attf-class="badge text-bg-{{'danger' if notif.priority == 'urgent' else 'warning' if notif.priority == 'high' else 'info' if notif.priority == 'normal' else 'light text-dark'}}"
+                                                  t-esc="notif.priority.title()"/>
+                                            <small class="text-muted">
+                                                <i class="fa fa-hashtag me-1"/><t t-esc="notif.code"/>
+                                            </small>
+                                            <t t-if="notif.expiry_date">
+                                                <small class="text-warning">
+                                                    <i class="fa fa-clock-o me-1"/>Expires
+                                                    <t t-esc="notif.expiry_date"
+                                                       t-options='{"widget": "datetime"}'/>
+                                                </small>
+                                            </t>
+                                            <t t-if="notif.related_record">
+                                                <small class="text-muted">
+                                                    <i class="fa fa-link me-1"/>
+                                                    <t t-esc="notif.related_record"/>
+                                                </small>
+                                            </t>
+                                        </div>
+                                    </div>
+                                    <div class="col-auto text-end">
+                                        <t t-if="notif.action_url and not notif.is_read">
+                                            <a t-attf-href="/university/portal/notifications/{{notif.id}}/read"
+                                               class="btn btn-sm btn-primary mb-1">
+                                                <i class="fa fa-external-link me-1"/>Open
+                                            </a>
+                                        </t>
+                                        <t t-if="not notif.is_read">
+                                            <a t-attf-href="/university/portal/notifications/{{notif.id}}/read"
+                                               class="btn btn-sm btn-outline-secondary">
+                                                <i class="fa fa-check me-1"/>Mark read
+                                            </a>
+                                        </t>
+                                        <t t-else="">
+                                            <span class="badge text-bg-light text-muted">
+                                                <i class="fa fa-check me-1"/>Read
+                                                <t t-esc="notif.read_date"
+                                                   t-options='{"widget": "datetime"}'/>
+                                            </span>
+                                        </t>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+            </t>
+            <t t-else="">
+                <div class="card shadow-sm">
+                    <div class="card-body text-center text-muted py-5">
+                        <i class="fa fa-bell-slash fa-4x mb-3"/>
+                        <h4 class="text-muted">No notifications</h4>
+                        <p class="mb-0">
+                            <t t-if="filter == 'unread'">
+                                You have no unread notifications. Great!
+                            </t>
+                            <t t-elif="filter == 'read'">
+                                You have not read any notifications yet.
+                            </t>
+                            <t t-else="">
+                                Notifications will appear here once they are sent
+                                to you.
+                            </t>
+                        </p>
+                    </div>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>

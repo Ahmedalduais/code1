@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============ uni.lms.progress — List View ============ -->
+    <record id="view_uni_lms_progress_list" model="ir.ui.view">
+        <field name="name">uni.lms.progress.list</field>
+        <field name="model">uni.lms.progress</field>
+        <field name="arch" type="xml">
+            <list string="Student Progress"
+                  decoration-success="state=='completed'"
+                  decoration-info="state=='in_progress'"
+                  decoration-warning="state=='enrolled'"
+                  decoration-muted="state=='dropped'">
+                <field name="name"/>
+                <field name="lms_course_id"/>
+                <field name="student_name"/>
+                <field name="student_code" optional="hide"/>
+                <field name="enrollment_date"/>
+                <field name="last_access" optional="show"/>
+                <field name="completion_percentage" widget="progressbar"/>
+                <field name="content_completed"/>
+                <field name="content_total" optional="hide"/>
+                <field name="assignments_completed" optional="hide"/>
+                <field name="quizzes_completed" optional="hide"/>
+                <field name="average_score" optional="show"/>
+                <field name="time_spent_hours" widget="float_time" optional="hide"/>
+                <field name="state" widget="badge"/>
+                <field name="active" widget="boolean_toggle" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============ uni.lms.progress — Form View ============ -->
+    <record id="view_uni_lms_progress_form" model="ir.ui.view">
+        <field name="name">uni.lms.progress.form</field>
+        <field name="model">uni.lms.progress</field>
+        <field name="arch" type="xml">
+            <form string="Student Progress">
+                <header>
+                    <button name="action_enroll" type="object" string="Enroll"
+                            class="btn-primary" invisible="state != 'dropped'"/>
+                    <button name="action_reactivate" type="object" string="Reactivate"
+                            class="btn-primary" invisible="state != 'dropped'"/>
+                    <button name="action_complete" type="object" string="Mark Completed"
+                            class="btn-success" invisible="state == 'completed'"/>
+                    <button name="action_drop" type="object" string="Drop"
+                            class="btn-danger" invisible="state == 'dropped'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="enrolled,in_progress,completed,dropped"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" type="object" icon="fa-folder-open">
+                            <field name="content_completed" widget="statinfo" string="Content"/>
+                        </button>
+                        <button class="oe_stat_button" type="object" icon="fa-tasks">
+                            <field name="assignments_completed" widget="statinfo"
+                                   string="Assignments"/>
+                        </button>
+                        <button class="oe_stat_button" type="object" icon="fa-question-circle">
+                            <field name="quizzes_completed" widget="statinfo" string="Quizzes"/>
+                        </button>
+                        <button class="oe_stat_button" type="object" icon="fa-clock-o">
+                            <field name="time_spent_hours" widget="statinfo"
+                                   string="Hours"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" string="Reference"/>
+                        <h1><field name="name" placeholder="e.g. LMP/2024/000001"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="lms_course_id" options="{'no_create': True}"/>
+                            <field name="student_name" placeholder="e.g. John Doe"/>
+                            <field name="student_code" placeholder="e.g. ST-2024-001"/>
+                            <field name="enrollment_date"/>
+                            <field name="last_access"/>
+                            <field name="last_activity"/>
+                            <field name="active" widget="boolean_toggle"/>
+                        </group>
+                        <group>
+                            <field name="completion_percentage" widget="progressbar"/>
+                            <field name="content_completed"/>
+                            <field name="content_total"/>
+                            <field name="assignments_completed"/>
+                            <field name="quizzes_completed"/>
+                            <field name="average_score"/>
+                            <field name="time_spent_hours" widget="float_time"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Notes" name="notes">
+                            <field name="notes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============ uni.lms.progress — Graph View (student progress) ============ -->
+    <record id="view_uni_lms_progress_graph" model="ir.ui.view">
+        <field name="name">uni.lms.progress.graph</field>
+        <field name="model">uni.lms.progress</field>
+        <field name="arch" type="xml">
+            <graph string="Student Progress" type="bar">
+                <field name="lms_course_id" type="row"/>
+                <field name="completion_percentage" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- ============ uni.lms.progress — Pivot View ============ -->
+    <record id="view_uni_lms_progress_pivot" model="ir.ui.view">
+        <field name="name">uni.lms.progress.pivot</field>
+        <field name="model">uni.lms.progress</field>
+        <field name="arch" type="xml">
+            <pivot string="Progress Analysis" display_quantity="true">
+                <field name="lms_course_id" type="row"/>
+                <field name="student_name" type="row"/>
+                <field name="completion_percentage" type="measure"/>
+                <field name="average_score" type="measure"/>
+                <field name="time_spent_hours" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- ============ uni.lms.progress — Search View ============ -->
+    <record id="view_uni_lms_progress_search" model="ir.ui.view">
+        <field name="name">uni.lms.progress.search</field>
+        <field name="model">uni.lms.progress</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="lms_course_id"/>
+                <field name="student_name"/>
+                <field name="student_code"/>
+                <filter string="Enrolled" name="filter_enrolled"
+                        domain="[('state', '=', 'enrolled')]"/>
+                <filter string="In Progress" name="filter_in_progress"
+                        domain="[('state', '=', 'in_progress')]"/>
+                <filter string="Completed" name="filter_completed"
+                        domain="[('state', '=', 'completed')]"/>
+                <filter string="Dropped" name="filter_dropped"
+                        domain="[('state', '=', 'dropped')]"/>
+                <separator/>
+                <filter string="Above 50%" name="filter_above_50"
+                        domain="[('completion_percentage', '>=', 50)]"/>
+                <filter string="Completed All" name="filter_100"
+                        domain="[('completion_percentage', '=', 100)]"/>
+                <separator/>
+                <filter string="Active Only" name="filter_active"
+                        domain="[('active', '=', True)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="LMS Course" name="group_course"
+                            context="{'group_by': 'lms_course_id'}"/>
+                    <filter string="Student Name" name="group_student"
+                            context="{'group_by': 'student_name'}"/>
+                    <filter string="Status" name="group_state"
+                            context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============ uni.lms.progress — Action ============ -->
+    <record id="action_uni_lms_progress" model="ir.actions.act_window">
+        <field name="name">Student Progress</field>
+        <field name="res_model">uni.lms.progress</field>
+        <field name="view_mode">list,form,graph,pivot</field>
+        <field name="search_view_id" ref="view_uni_lms_progress_search"/>
+        <field name="context">{'search_default_filter_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No progress records yet
+            </p>
+            <p>
+                Progress records track each student's completion percentage,
+                content covered, assignments and quizzes completed, average
+                score, and time spent in each LMS course.
+            </p>
+        </field>
+    </record>
+</odoo>

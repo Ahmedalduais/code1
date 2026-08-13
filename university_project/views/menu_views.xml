@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Main Menu: Projects -->
+    <menuitem id="menu_university_project_root"
+              name="Projects"
+              parent="university_core.menu_university_root"
+              sequence="50"/>
+
+    <!-- Proposals & Approvals -->
+    <menuitem id="menu_uni_project_proposals"
+              name="Proposals"
+              parent="menu_university_project_root"
+              sequence="10"/>
+
+    <menuitem id="menu_uni_project_proposal"
+              name="Project Proposals"
+              parent="menu_uni_project_proposals"
+              action="action_uni_project_proposal"
+              sequence="10"/>
+
+    <menuitem id="menu_uni_project_approval"
+              name="Approvals"
+              parent="menu_uni_project_proposals"
+              action="action_uni_project_approval"
+              sequence="20"/>
+
+    <!-- Projects -->
+    <menuitem id="menu_uni_project"
+              name="Projects"
+              parent="menu_university_project_root"
+              action="action_uni_project"
+              sequence="20"/>
+
+    <!-- Teams -->
+    <menuitem id="menu_uni_project_teams"
+              name="Teams"
+              parent="menu_university_project_root"
+              sequence="30"/>
+
+    <menuitem id="menu_uni_project_team"
+              name="Project Teams"
+              parent="menu_uni_project_teams"
+              action="action_uni_project_team"
+              sequence="10"/>
+
+    <menuitem id="menu_uni_project_team_member"
+              name="Team Members"
+              parent="menu_uni_project_teams"
+              action="action_uni_project_team_member"
+              sequence="20"/>
+
+    <!-- Supervisors -->
+    <menuitem id="menu_uni_project_supervisor"
+              name="Supervisors"
+              parent="menu_university_project_root"
+              action="action_uni_project_supervisor"
+              sequence="40"/>
+
+    <!-- Execution -->
+    <menuitem id="menu_uni_project_execution"
+              name="Execution"
+              parent="menu_university_project_root"
+              sequence="50"/>
+
+    <menuitem id="menu_uni_project_timeline"
+              name="Timelines"
+              parent="menu_uni_project_execution"
+              action="action_uni_project_timeline"
+              sequence="10"/>
+
+    <menuitem id="menu_uni_project_milestone"
+              name="Milestones"
+              parent="menu_uni_project_execution"
+              action="action_uni_project_milestone"
+              sequence="20"/>
+
+    <menuitem id="menu_uni_project_deliverable"
+              name="Deliverables"
+              parent="menu_uni_project_execution"
+              action="action_uni_project_deliverable"
+              sequence="30"/>
+
+    <menuitem id="menu_uni_project_meeting"
+              name="Meetings"
+              parent="menu_uni_project_execution"
+              action="action_uni_project_meeting"
+              sequence="40"/>
+
+    <menuitem id="menu_uni_project_progress"
+              name="Progress Reports"
+              parent="menu_uni_project_execution"
+              action="action_uni_project_progress"
+              sequence="50"/>
+
+    <!-- Defense & Evaluation -->
+    <menuitem id="menu_uni_project_defense_eval"
+              name="Defense &amp; Evaluation"
+              parent="menu_university_project_root"
+              sequence="60"/>
+
+    <menuitem id="menu_uni_project_defense"
+              name="Defenses"
+              parent="menu_uni_project_defense_eval"
+              action="action_uni_project_defense"
+              sequence="10"/>
+
+    <menuitem id="menu_uni_project_committee"
+              name="Committees"
+              parent="menu_uni_project_defense_eval"
+              action="action_uni_project_committee"
+              sequence="20"/>
+
+    <menuitem id="menu_uni_project_evaluation"
+              name="Evaluations"
+              parent="menu_uni_project_defense_eval"
+              action="action_uni_project_evaluation"
+              sequence="30"/>
+
+    <!-- Publications -->
+    <menuitem id="menu_uni_project_publication"
+              name="Publications"
+              parent="menu_university_project_root"
+              action="action_uni_project_publication"
+              sequence="70"/>
+
+    <!-- Configuration -->
+    <menuitem id="menu_uni_project_config"
+              name="Configuration"
+              parent="menu_university_project_root"
+              sequence="90"
+              groups="university_core.group_university_manager"/>
+
+    <menuitem id="menu_uni_project_theme"
+              name="Project Themes"
+              parent="menu_uni_project_config"
+              action="action_uni_project_theme"
+              sequence="10"/>
+</odoo>

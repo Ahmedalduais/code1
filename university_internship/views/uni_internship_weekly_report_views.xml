@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- List View -->
+    <record id="view_uni_internship_weekly_report_list" model="ir.ui.view">
+        <field name="name">uni.internship.weekly.report.list</field>
+        <field name="model">uni.internship.weekly.report</field>
+        <field name="arch" type="xml">
+            <list string="Weekly Reports"
+                  decoration-success="state == 'reviewed'"
+                  decoration-warning="state == 'revised'"
+                  decoration-muted="state == 'draft'">
+                <field name="name"/>
+                <field name="week_number"/>
+                <field name="student_id"/>
+                <field name="internship_id"/>
+                <field name="start_date"/>
+                <field name="end_date"/>
+                <field name="total_hours"/>
+                <field name="days_present"/>
+                <field name="days_absent" optional="hide"/>
+                <field name="state" widget="badge"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_uni_internship_weekly_report_form" model="ir.ui.view">
+        <field name="name">uni.internship.weekly.report.form</field>
+        <field name="model">uni.internship.weekly.report</field>
+        <field name="arch" type="xml">
+            <form string="Weekly Report">
+                <header>
+                    <button name="action_submit" type="object" string="Submit"
+                            class="oe_highlight"
+                            invisible="state != 'draft'"/>
+                    <button name="action_review" type="object" string="Mark Reviewed"
+                            class="oe_highlight"
+                            invisible="state != 'submitted'"/>
+                    <button name="action_revise" type="object" string="Request Revision"
+                            invisible="state not in ('submitted', 'reviewed')"/>
+                    <button name="action_draft" type="object" string="Back to Draft"
+                            invisible="state not in ('submitted', 'reviewed', 'revised')"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,submitted,reviewed"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group string="Internship Info">
+                            <field name="internship_id"/>
+                            <field name="student_id"/>
+                            <field name="student_name" invisible="1"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                        <group string="Week Info">
+                            <field name="week_number"/>
+                            <field name="start_date"/>
+                            <field name="end_date"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Summary">
+                            <field name="total_hours"/>
+                            <field name="days_present"/>
+                            <field name="days_absent"/>
+                        </group>
+                        <group string="Supervisor">
+                            <field name="supervisor_id"/>
+                            <field name="is_submitted"/>
+                            <field name="is_reviewed"/>
+                            <field name="reviewed_by"/>
+                            <field name="reviewed_date"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Activities &amp; Achievements" name="activities">
+                            <group>
+                                <field name="activities" placeholder="What did the student do this week?"/>
+                                <field name="achievements"/>
+                                <field name="challenges"/>
+                                <field name="next_week_plan"/>
+                            </group>
+                        </page>
+                        <page string="Supervisor Feedback" name="feedback">
+                            <field name="supervisor_feedback" placeholder="Supervisor feedback on the weekly progress..."/>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="notes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_uni_internship_weekly_report_search" model="ir.ui.view">
+        <field name="name">uni.internship.weekly.report.search</field>
+        <field name="model">uni.internship.weekly.report</field>
+        <field name="arch" type="xml">
+            <search string="Search Weekly Reports">
+                <field name="name"/>
+                <field name="internship_id"/>
+                <field name="student_id"/>
+                <field name="supervisor_id"/>
+                <separator/>
+                <filter name="filter_submitted" string="Submitted"
+                        domain="[('is_submitted', '=', True)]"/>
+                <filter name="filter_reviewed" string="Reviewed"
+                        domain="[('is_reviewed', '=', True)]"/>
+                <filter name="filter_pending" string="Pending Review"
+                        domain="[('is_submitted', '=', True), ('is_reviewed', '=', False)]"/>
+                <separator/>
+                <group expand="0" string="Group By">
+                    <filter name="group_student" string="Student"
+                            context="{'group_by': 'student_id'}"/>
+                    <filter name="group_internship" string="Internship"
+                            context="{'group_by': 'internship_id'}"/>
+                    <filter name="group_week" string="Week Number"
+                            context="{'group_by': 'week_number'}"/>
+                    <filter name="group_state" string="Status"
+                            context="{'group_by': 'state'}"/>
+                    <filter name="group_supervisor" string="Supervisor"
+                            context="{'group_by': 'supervisor_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_uni_internship_weekly_report" model="ir.actions.act_window">
+        <field name="name">Weekly Reports</field>
+        <field name="res_model">uni.internship.weekly.report</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_internship_weekly_report_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new weekly report
+            </p>
+            <p>
+                Weekly reports summarize activities, hours, achievements and challenges
+                for each week of the internship, with supervisor feedback workflow.
+            </p>
+        </field>
+    </record>
+</odoo>

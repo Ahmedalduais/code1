@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- uni.alumni.event — List View                                 -->
+    <!-- ============================================================ -->
+    <record id="view_uni_alumni_event_list" model="ir.ui.view">
+        <field name="name">uni.alumni.event.list</field>
+        <field name="model">uni.alumni.event</field>
+        <field name="arch" type="xml">
+            <list string="Alumni Events"
+                  decoration-info="state in ('announced', 'registration_open')"
+                  decoration-warning="state == 'ongoing'"
+                  decoration-success="state == 'completed'"
+                  decoration-muted="state == 'cancelled'">
+                <field name="name"/>
+                <field name="code" optional="hide"/>
+                <field name="title"/>
+                <field name="event_type"/>
+                <field name="start_date"/>
+                <field name="end_date"/>
+                <field name="location" optional="hide"/>
+                <field name="is_online" optional="hide"/>
+                <field name="organizer_id" optional="hide"/>
+                <field name="registered_count"/>
+                <field name="attended_count" optional="hide"/>
+                <field name="max_attendees" optional="hide"/>
+                <field name="fee" optional="hide" sum="Total Fees"/>
+                <field name="currency_id" invisible="1"/>
+                <field name="state" widget="badge"
+                       decoration-info="state in ('announced', 'registration_open')"
+                       decoration-warning="state == 'ongoing'"
+                       decoration-success="state == 'completed'"
+                       decoration-muted="state == 'cancelled'"/>
+                <field name="active" invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.alumni.event — Kanban View (grouped by state)            -->
+    <!-- ============================================================ -->
+    <record id="view_uni_alumni_event_kanban" model="ir.ui.view">
+        <field name="name">uni.alumni.event.kanban</field>
+        <field name="model">uni.alumni.event</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" class="o_kanban_small_column"
+                    on_create="quick_create">
+                <field name="name"/>
+                <field name="title"/>
+                <field name="event_type"/>
+                <field name="start_date"/>
+                <field name="end_date"/>
+                <field name="location"/>
+                <field name="is_online"/>
+                <field name="registered_count"/>
+                <field name="max_attendees"/>
+                <field name="state"/>
+                <field name="color"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div t-attf-class="oe_kanban_card oe_kanban_global_click">
+                            <div class="o_kanban_record_top">
+                                <div class="o_kanban_record_head">
+                                    <div class="o_primary">
+                                        <field name="title"/>
+                                    </div>
+                                    <div class="o_secondary">
+                                        <field name="name"/>
+                                    </div>
+                                </div>
+                                <div class="o_kanban_record_bottom">
+                                    <div class="oe_kanban_bottom_left">
+                                        <span class="badge badge-pill"
+                                              t-attf-class="{{ 'bg-success' if state == 'completed' else ('bg-warning' if state == 'ongoing' else ('bg-info' if state in ('announced', 'registration_open') else 'bg-secondary')) }}">
+                                            <field name="state"/>
+                                        </span>
+                                    </div>
+                                    <div class="oe_kanban_bottom_right">
+                                        <field name="color" widget="priority"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="o_kanban_record_body">
+                                <div><i class="fa fa-calendar" role="img" aria-label="Date"/> <field name="start_date"/></div>
+                                <div t-if="record.location.raw_value"><i class="fa fa-map-marker" role="img" aria-label="Location"/> <field name="location"/></div>
+                                <div t-if="record.is_online.raw_value"><i class="fa fa-video-camera" role="img" aria-label="Online"/> Online</div>
+                                <div><i class="fa fa-users" role="img" aria-label="Registered"/> <field name="registered_count"/><t t-if="record.max_attendees.raw_value"> / <field name="max_attendees"/></t> registered</div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.alumni.event — Form View                                 -->
+    <!-- ============================================================ -->
+    <record id="view_uni_alumni_event_form" model="ir.ui.view">
+        <field name="name">uni.alumni.event.form</field>
+        <field name="model">uni.alumni.event</field>
+        <field name="arch" type="xml">
+            <form string="Alumni Event">
+                <header>
+                    <button name="action_announce" string="Announce"
+                            type="object" class="oe_highlight"
+                            invisible="state != 'draft'"/>
+                    <button name="action_open_registration" string="Open Registration"
+                            type="object" class="oe_highlight"
+                            invisible="state != 'announced'"/>
+                    <button name="action_start" string="Start"
+                            type="object" class="oe_highlight"
+                            invisible="state not in ('announced', 'registration_open')"/>
+                    <button name="action_complete" string="Complete"
+                            type="object" class="oe_highlight"
+                            invisible="state != 'ongoing'"/>
+                    <button name="action_cancel" string="Cancel"
+                            type="object"
+                            invisible="state in ('completed', 'cancelled')"
+                            confirm="Cancel this event?"/>
+                    <button name="action_reset_to_draft" string="Reset to Draft"
+                            type="object"
+                            invisible="state != 'cancelled'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,announced,registration_open,ongoing,completed"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button type="object" class="oe_stat_button" icon="fa-users">
+                            <field name="registered_count" widget="statinfo"
+                                   string="Registered"/>
+                        </button>
+                        <button type="object" class="oe_stat_button" icon="fa-check-circle">
+                            <field name="attended_count" widget="statinfo"
+                                   string="Attended"/>
+                        </button>
+                    </div>
+                    <field name="image" widget="image" class="oe_avatar"/>
+                    <div class="oe_title">
+                        <label for="name" string="Event"/>
+                        <h1><field name="name" readonly="1"/></h1>
+                        <h3><field name="title" placeholder="Public event title..."/></h3>
+                    </div>
+                    <group>
+                        <group string="Organization">
+                            <field name="code"/>
+                            <field name="event_type"/>
+                            <field name="organizer_id"
+                                   options="{'no_create': True}"/>
+                            <field name="fee"/>
+                            <field name="currency_id"
+                                   options="{'no_create': True}"/>
+                        </group>
+                        <group string="Schedule &amp; Location">
+                            <field name="start_date"/>
+                            <field name="end_date"/>
+                            <field name="registration_deadline"/>
+                            <field name="is_online"/>
+                            <field name="location"
+                                   invisible="is_online"/>
+                            <field name="meeting_url"
+                                   invisible="not is_online"
+                                   widget="url"/>
+                        </group>
+                    </group>
+                    <group string="Capacity">
+                        <group>
+                            <field name="max_attendees"/>
+                            <field name="registered_count"/>
+                            <field name="attended_count"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Description" name="description">
+                            <field name="description" nolabel="1"
+                                   placeholder="Event description, agenda, highlights..."/>
+                        </page>
+                        <page string="Registered Members" name="members">
+                            <field name="member_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="student_id"/>
+                                    <field name="graduation_year"/>
+                                    <field name="current_job_title"/>
+                                    <field name="membership_status" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="notes" nolabel="1"
+                                   placeholder="Internal notes..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.alumni.event — Calendar View                             -->
+    <!-- ============================================================ -->
+    <record id="view_uni_alumni_event_calendar" model="ir.ui.view">
+        <field name="name">uni.alumni.event.calendar</field>
+        <field name="model">uni.alumni.event</field>
+        <field name="arch" type="xml">
+            <calendar string="Alumni Events"
+                      date_start="start_date"
+                      date_stop="end_date"
+                      color="event_type">
+                <field name="title"/>
+                <field name="event_type"/>
+                <field name="location"/>
+            </calendar>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.alumni.event — Search View                               -->
+    <!-- ============================================================ -->
+    <record id="view_uni_alumni_event_search" model="ir.ui.view">
+        <field name="name">uni.alumni.event.search</field>
+        <field name="model">uni.alumni.event</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="title"/>
+                <field name="event_type"/>
+                <field name="organizer_id"/>
+                <field name="location"/>
+                <field name="member_ids"/>
+                <separator/>
+                <filter string="Draft" name="filter_draft"
+                        domain="[('state', '=', 'draft')]"/>
+                <filter string="Announced" name="filter_announced"
+                        domain="[('state', '=', 'announced')]"/>
+                <filter string="Registration Open" name="filter_reg_open"
+                        domain="[('state', '=', 'registration_open')]"/>
+                <filter string="Ongoing" name="filter_ongoing"
+                        domain="[('state', '=', 'ongoing')]"/>
+                <filter string="Completed" name="filter_completed"
+                        domain="[('state', '=', 'completed')]"/>
+                <filter string="Cancelled" name="filter_cancelled"
+                        domain="[('state', '=', 'cancelled')]"/>
+                <separator/>
+                <filter string="Online" name="filter_online"
+                        domain="[('is_online', '=', True)]"/>
+                <filter string="Onsite" name="filter_onsite"
+                        domain="[('is_online', '=', False)]"/>
+                <separator/>
+                <filter string="Upcoming" name="filter_upcoming"
+                        domain="[('start_date', '>=', context_today())]"/>
+                <filter string="This Month" name="filter_month"
+                        domain="[('start_date', '>=', (context_today() - relativedelta(days=30)).strftime('%Y-%m-%d')),
+                                ('start_date', '&lt;=', context_today().strftime('%Y-%m-%d'))]"/>
+                <separator/>
+                <filter string="Archived" name="filter_archived"
+                        domain="[('active', '=', False)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="State" name="group_state"
+                            context="{'group_by': 'state'}"/>
+                    <filter string="Event Type" name="group_type"
+                            context="{'group_by': 'event_type'}"/>
+                    <filter string="Organizer" name="group_organizer"
+                            context="{'group_by': 'organizer_id'}"/>
+                    <filter string="Start Date" name="group_start"
+                            context="{'group_by': 'start_date:day'}"/>
+                    <filter string="Online" name="group_online"
+                            context="{'group_by': 'is_online'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.alumni.event — Action                                    -->
+    <!-- ============================================================ -->
+    <record id="action_uni_alumni_event" model="ir.actions.act_window">
+        <field name="name">Alumni Events</field>
+        <field name="res_model">uni.alumni.event</field>
+        <field name="view_mode">list,kanban,form,calendar</field>
+        <field name="search_view_id" ref="view_uni_alumni_event_search"/>
+        <field name="context">{'default_state': 'draft', 'default_organizer_id': uid}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new alumni event
+            </p>
+            <p>Alumni events include reunions, networking sessions,
+               career fairs, fundraising galas, conferences, and
+               workshops. Each event follows a complete lifecycle from
+               draft to completed.</p>
+        </field>
+    </record>
+</odoo>

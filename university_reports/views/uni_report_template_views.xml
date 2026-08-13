@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- uni.report.template — List View                              -->
+    <!-- ============================================================ -->
+    <record id="view_uni_report_template_list" model="ir.ui.view">
+        <field name="name">uni.report.template.list</field>
+        <field name="model">uni.report.template</field>
+        <field name="arch" type="xml">
+            <list string="Report Templates"
+                  decoration-info="report_type == 'student'"
+                  decoration-success="report_type == 'academic'"
+                  decoration-warning="report_type == 'financial'"
+                  decoration-secondary="report_type == 'statistical'"
+                  decoration-primary="report_type == 'operational'"
+                  decoration-muted="not is_active">
+                <field name="sequence" widget="handle"/>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="report_type" widget="badge"/>
+                <field name="model_name" optional="show"/>
+                <field name="wizard_model" optional="hide"/>
+                <field name="report_action_id" optional="hide"/>
+                <field name="is_standard" widget="boolean_toggle"/>
+                <field name="is_active" widget="boolean_toggle"/>
+                <field name="builder_count"/>
+                <field name="active" optional="hide" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.report.template — Form View                              -->
+    <!-- ============================================================ -->
+    <record id="view_uni_report_template_form" model="ir.ui.view">
+        <field name="name">uni.report.template.form</field>
+        <field name="model">uni.report.template</field>
+        <field name="arch" type="xml">
+            <form string="Report Template">
+                <header>
+                    <button name="action_generate_report" string="Generate Report"
+                            type="object" class="oe_highlight"
+                            invisible="not is_active"/>
+                    <button name="action_view_builders" string="View Builders"
+                            type="object"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_builders" type="object"
+                                class="oe_stat_button" icon="fa-cogs">
+                            <field name="builder_count" widget="statinfo"
+                                   string="Builders"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" string="Report Template"/>
+                        <h1><field name="name" placeholder="e.g. Student List"/></h1>
+                        <h3><field name="code" placeholder="STD-LIST"/></h3>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="report_type" widget="radio"/>
+                            <field name="model_name"
+                                   placeholder="e.g. uni.student"/>
+                            <field name="wizard_model"
+                                   placeholder="e.g. uni.report.wizard"/>
+                        </group>
+                        <group>
+                            <field name="report_action_id"
+                                   options="{'no_create': True}"/>
+                            <field name="sequence"/>
+                            <field name="is_standard" widget="boolean_toggle"
+                                   readonly="1"/>
+                            <field name="is_active" widget="boolean_toggle"/>
+                        </group>
+                    </group>
+                    <group string="Description">
+                        <field name="description" nolabel="1" colspan="2"/>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.report.template — Search View                            -->
+    <!-- ============================================================ -->
+    <record id="view_uni_report_template_search" model="ir.ui.view">
+        <field name="name">uni.report.template.search</field>
+        <field name="model">uni.report.template</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="model_name"/>
+                <field name="wizard_model"/>
+                <separator/>
+                <filter string="Active" name="filter_active"
+                        domain="[('is_active', '=', True)]"/>
+                <filter string="Standard Templates" name="filter_standard"
+                        domain="[('is_standard', '=', True)]"/>
+                <filter string="Archived" name="filter_inactive"
+                        domain="[('active', '=', False)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Report Type" name="group_type"
+                            context="{'group_by': 'report_type'}"/>
+                    <filter string="Standard" name="group_standard"
+                            context="{'group_by': 'is_standard'}"/>
+                    <filter string="Active" name="group_active"
+                            context="{'group_by': 'is_active'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.report.template — Action                                 -->
+    <!-- ============================================================ -->
+    <record id="action_uni_report_template" model="ir.actions.act_window">
+        <field name="name">Report Templates</field>
+        <field name="res_model">uni.report.template</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_report_template_search"/>
+        <field name="context">{'search_default_filter_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new report template
+            </p>
+            <p>Templates define the available university reports and can
+               bind to a wizard for collecting parameters or directly to a
+               QWeb report action for output.</p>
+        </field>
+    </record>
+</odoo>

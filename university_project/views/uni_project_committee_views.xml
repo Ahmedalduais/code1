@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============ uni.project.committee — List View ============ -->
+    <record id="view_uni_project_committee_list" model="ir.ui.view">
+        <field name="name">uni.project.committee.list</field>
+        <field name="model">uni.project.committee</field>
+        <field name="arch" type="xml">
+            <list string="Committees"
+                  decoration-success="is_active == True"
+                  decoration-muted="is_active == False">
+                <field name="name"/>
+                <field name="project_id"/>
+                <field name="committee_type"/>
+                <field name="chairperson_id" optional="show"/>
+                <field name="member_count"/>
+                <field name="formation_date" optional="show"/>
+                <field name="dissolution_date" optional="hide"/>
+                <field name="is_active" widget="boolean_toggle"/>
+                <field name="active" widget="boolean_toggle" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============ uni.project.committee — Form View ============ -->
+    <record id="view_uni_project_committee_form" model="ir.ui.view">
+        <field name="name">uni.project.committee.form</field>
+        <field name="model">uni.project.committee</field>
+        <field name="arch" type="xml">
+            <form string="Project Committee">
+                <header>
+                    <button name="action_dissolve" type="object"
+                            string="Dissolve" class="btn-danger"
+                            invisible="is_active == False"/>
+                    <button name="action_reactivate" type="object"
+                            string="Reactivate" class="btn-primary"
+                            invisible="is_active == True"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" string="Committee Name"/>
+                        <h1><field name="name"
+                                   placeholder="e.g. Final Defense Committee"/></h1>
+                    </div>
+                    <group>
+                        <group string="Affiliation">
+                            <field name="project_id" options="{'no_create': True}"/>
+                            <field name="committee_type"/>
+                            <field name="chairperson_id"
+                                   options="{'no_create': True}"/>
+                        </group>
+                        <group string="Lifecycle">
+                            <field name="formation_date"/>
+                            <field name="dissolution_date"
+                                   readonly="is_active == True"/>
+                            <field name="is_active" widget="boolean_toggle"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Members" name="members">
+                            <field name="member_ids"
+                                   widget="many2many_tags"
+                                   options="{'no_create': True}"/>
+                            <field name="member_count" readonly="1"/>
+                        </page>
+                        <page string="Description" name="description">
+                            <field name="description"/>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="notes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============ uni.project.committee — Search View ============ -->
+    <record id="view_uni_project_committee_search" model="ir.ui.view">
+        <field name="name">uni.project.committee.search</field>
+        <field name="model">uni.project.committee</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="project_id"/>
+                <field name="chairperson_id"/>
+                <separator/>
+                <filter string="Active" name="filter_active"
+                        domain="[('is_active', '=', True)]"/>
+                <filter string="Dissolved" name="filter_dissolved"
+                        domain="[('is_active', '=', False)]"/>
+                <filter string="Archived" name="filter_inactive"
+                        domain="[('active', '=', False)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Project" name="group_project"
+                            context="{'group_by': 'project_id'}"/>
+                    <filter string="Type" name="group_type"
+                            context="{'group_by': 'committee_type'}"/>
+                    <filter string="Chairperson" name="group_chair"
+                            context="{'group_by': 'chairperson_id'}"/>
+                    <filter string="Formation Date" name="group_formation"
+                            context="{'group_by': 'formation_date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============ uni.project.committee — Action ============ -->
+    <record id="action_uni_project_committee" model="ir.actions.act_window">
+        <field name="name">Committees</field>
+        <field name="res_model">uni.project.committee</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_project_committee_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Form your first project committee
+            </p>
+            <p>
+                Committees group faculty members for supervisory, examination,
+                defense, or review roles. Each committee has a chairperson
+                (who must be a member) and can be dissolved/reactivated.
+            </p>
+        </field>
+    </record>
+</odoo>

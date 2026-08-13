@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- uni.gradebook — List View                                    -->
+    <!-- ============================================================ -->
+    <record id="view_uni_gradebook_list" model="ir.ui.view">
+        <field name="name">uni.gradebook.list</field>
+        <field name="model">uni.gradebook</field>
+        <field name="arch" type="xml">
+            <list string="Gradebooks"
+                  decoration-info="state == 'draft'"
+                  decoration-success="state == 'active'"
+                  decoration-warning="state == 'locked'"
+                  decoration-muted="state == 'closed'">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="course_id"/>
+                <field name="academic_term_id"/>
+                <field name="section" optional="show"/>
+                <field name="faculty_name" optional="hide"/>
+                <field name="program_id" optional="hide"/>
+                <field name="grading_system_id" optional="hide"/>
+                <field name="student_count"/>
+                <field name="average_score" optional="show"/>
+                <field name="pass_rate" optional="show" widget="progressbar"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'draft'"
+                       decoration-success="state == 'active'"
+                       decoration-warning="state == 'locked'"
+                       decoration-muted="state == 'closed'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.gradebook — Form View                                    -->
+    <!-- ============================================================ -->
+    <record id="view_uni_gradebook_form" model="ir.ui.view">
+        <field name="name">uni.gradebook.form</field>
+        <field name="model">uni.gradebook</field>
+        <field name="arch" type="xml">
+            <form string="Gradebook">
+                <header>
+                    <button name="action_activate" string="Activate"
+                            type="object" class="oe_highlight"
+                            invisible="state != 'draft'"/>
+                    <button name="action_compute_finals" string="Compute Finals"
+                            type="object" class="oe_highlight"
+                            invisible="state not in ('active', 'locked')"/>
+                    <button name="action_lock" string="Lock"
+                            type="object"
+                            invisible="state != 'active'"/>
+                    <button name="action_close" string="Close"
+                            type="object"
+                            invisible="state != 'locked'"/>
+                    <button name="action_draft" string="Set to Draft"
+                            type="object"
+                            invisible="state not in ('active', 'locked')"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,active,locked,closed"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_lines" type="object"
+                                class="oe_stat_button" icon="fa-users">
+                            <field name="student_count" widget="statinfo"
+                                   string="Students"/>
+                        </button>
+                        <button name="action_view_entries" type="object"
+                                class="oe_stat_button" icon="fa-pencil">
+                            <field name="entry_count" widget="statinfo"
+                                   string="Entries"/>
+                        </button>
+                        <button name="action_view_finals" type="object"
+                                class="oe_stat_button" icon="fa-trophy">
+                            <field name="final_count" widget="statinfo"
+                                   string="Finals"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" string="Gradebook"/>
+                        <h1><field name="name" placeholder="e.g. CS101 Fall 2025"/></h1>
+                        <h3><field name="code" placeholder="GB-CS101-FALL2025"/></h3>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="course_id"
+                                   options="{'no_create': True}"
+                                   readonly="state != 'draft'"/>
+                            <field name="academic_term_id"
+                                   options="{'no_create': True}"
+                                   readonly="state != 'draft'"/>
+                            <field name="academic_year_id" readonly="1"/>
+                            <field name="section" readonly="state != 'draft'"/>
+                        </group>
+                        <group>
+                            <field name="faculty_name"
+                                   readonly="state == 'closed'"/>
+                            <field name="program_id"
+                                   options="{'no_create': True}"
+                                   readonly="state == 'closed'"/>
+                            <field name="grading_system_id"
+                                   options="{'no_create': True}"
+                                   readonly="state == 'closed'"/>
+                            <field name="university_id" invisible="1"/>
+                            <field name="publish_date" readonly="1"/>
+                            <field name="lock_date" readonly="1"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="average_score" widget="progressbar"/>
+                        </group>
+                        <group>
+                            <field name="pass_rate" widget="progressbar"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Student Lines">
+                            <field name="line_ids"
+                                   context="{'default_gradebook_id': id}">
+                                <list editable="bottom">
+                                    <field name="student_id"
+                                           options="{'no_create': True}"/>
+                                    <field name="student_code" readonly="1"/>
+                                    <field name="student_name" readonly="1"/>
+                                    <field name="program_id" optional="hide" readonly="1"/>
+                                    <field name="state" widget="badge"
+                                           decoration-success="state == 'active'"
+                                           decoration-warning="state == 'withdrawn'"
+                                           decoration-info="state == 'exempted'"/>
+                                    <field name="final_id" optional="hide" readonly="1"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Final Grades">
+                            <field name="final_ids">
+                                <list>
+                                    <field name="student_id"/>
+                                    <field name="course_id" optional="hide"/>
+                                    <field name="final_score"/>
+                                    <field name="final_percentage"/>
+                                    <field name="grade_letter_id"/>
+                                    <field name="gpa_value"/>
+                                    <field name="is_passing" widget="boolean_toggle"/>
+                                    <field name="rank"/>
+                                    <field name="state" widget="badge"
+                                           decoration-info="state == 'computed'"
+                                           decoration-warning="state == 'locked'"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Notes">
+                            <field name="notes" nolabel="1" colspan="2"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.gradebook — Search View                                  -->
+    <!-- ============================================================ -->
+    <record id="view_uni_gradebook_search" model="ir.ui.view">
+        <field name="name">uni.gradebook.search</field>
+        <field name="model">uni.gradebook</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="course_id"/>
+                <field name="academic_term_id"/>
+                <field name="academic_year_id"/>
+                <field name="faculty_name"/>
+                <field name="program_id"/>
+                <field name="grading_system_id"/>
+                <field name="section"/>
+                <separator/>
+                <filter string="Draft" name="filter_draft"
+                        domain="[('state', '=', 'draft')]"/>
+                <filter string="Active" name="filter_active"
+                        domain="[('state', '=', 'active')]"/>
+                <filter string="Locked" name="filter_locked"
+                        domain="[('state', '=', 'locked')]"/>
+                <filter string="Closed" name="filter_closed"
+                        domain="[('state', '=', 'closed')]"/>
+                <separator/>
+                <filter string="Archived" name="filter_inactive"
+                        domain="[('active', '=', False)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Course" name="group_course"
+                            context="{'group_by': 'course_id'}"/>
+                    <filter string="Term" name="group_term"
+                            context="{'group_by': 'academic_term_id'}"/>
+                    <filter string="Year" name="group_year"
+                            context="{'group_by': 'academic_year_id'}"/>
+                    <filter string="Instructor" name="group_instructor"
+                            context="{'group_by': 'faculty_name'}"/>
+                    <filter string="Program" name="group_program"
+                            context="{'group_by': 'program_id'}"/>
+                    <filter string="Grading System" name="group_system"
+                            context="{'group_by': 'grading_system_id'}"/>
+                    <filter string="Status" name="group_state"
+                            context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.gradebook — Action                                       -->
+    <!-- ============================================================ -->
+    <record id="action_uni_gradebook" model="ir.actions.act_window">
+        <field name="name">Gradebooks</field>
+        <field name="res_model">uni.gradebook</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_gradebook_search"/>
+        <field name="context">{'search_default_filter_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new gradebook
+            </p>
+            <p>A gradebook groups all student grades for one course in one
+               academic term and section. Add student lines, enter grade
+               entries, then compute final grades and lock the gradebook.</p>
+        </field>
+    </record>
+</odoo>

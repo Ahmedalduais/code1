@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- Base portal layout — wraps the website layout with a sidebar  -->
+    <!-- ============================================================ -->
+    <template id="portal_layout" name="University Portal Layout">
+        <t t-call="website.layout">
+            <t t-set="body_classname" t-value="'o_uni_portal'"/>
+            <div class="container-fluid o_uni_portal_wrap py-4">
+                <div class="row">
+                    <!-- Sidebar navigation -->
+                    <nav class="col-lg-3 col-md-4 o_uni_portal_sidebar mb-3">
+                        <div class="card shadow-sm">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="mb-0">
+                                    <i class="fa fa-university me-2"/>University Portal
+                                </h5>
+                            </div>
+                            <div class="card-body p-3">
+                                <ul class="nav nav-pills flex-column">
+                                    <li class="nav-item">
+                                        <a t-attf-href="/university/portal/student"
+                                           t-att-class="'nav-link' + (' active' if is_student else '')">
+                                            <i class="fa fa-graduation-cap me-2"/>Student Portal
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a t-attf-href="/university/portal/faculty"
+                                           t-att-class="'nav-link' + (' active' if is_faculty else '')">
+                                            <i class="fa fa-chalkboard-teacher me-2"/>Faculty Portal
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a t-attf-href="/university/portal/notifications"
+                                           t-att-class="'nav-link' + (' active' if (filter or '') else '')">
+                                            <i class="fa fa-bell me-2"/>Notifications
+                                            <t t-if="unread_count">
+                                                <span class="badge text-bg-danger ms-2" t-esc="unread_count"/>
+                                            </t>
+                                        </a>
+                                    </li>
+                                </ul>
+                                <hr/>
+                                <div class="small text-muted">
+                                    <i class="fa fa-user me-1"/>
+                                    <span t-esc="request.env.user.display_name"/>
+                                </div>
+                            </div>
+                        </div>
+                    </nav>
+                    <!-- Main content area -->
+                    <main class="col-lg-9 col-md-8 o_uni_portal_main">
+                        <t t-out="0"/>
+                    </main>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- ============================================================ -->
+    <!-- "No portal account" page                                      -->
+    <!-- ============================================================ -->
+    <template id="portal_no_account" name="University Portal — No Account">
+        <t t-call="website.layout">
+            <t t-set="body_classname" t-value="'o_uni_portal'"/>
+            <div class="container py-5">
+                <div class="row justify-content-center">
+                    <div class="col-lg-6">
+                        <div class="card shadow-sm border-warning">
+                            <div class="card-header bg-warning text-dark">
+                                <h4 class="mb-0">
+                                    <i class="fa fa-exclamation-triangle me-2"/>
+                                    No portal account linked
+                                </h4>
+                            </div>
+                            <div class="card-body">
+                                <p class="lead">
+                                    Your Odoo user is not linked to a student
+                                    or faculty portal account yet.
+                                </p>
+                                <p>
+                                    Please contact the University Administration
+                                    to have your portal account activated. Once
+                                    activated, you will be able to access your
+                                    personal dashboard, notifications, and
+                                    academic information.
+                                </p>
+                                <a t-attf-href="/web/logout"
+                                   class="btn btn-outline-secondary">
+                                    <i class="fa fa-sign-out me-1"/>Logout
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>

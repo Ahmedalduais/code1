@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        Timetable paper format — landscape A4 so weekly grids fit nicely.
+    -->
+    <record id="paper_format_timetable_landscape" model="report.paperformat">
+        <field name="name">Timetable Landscape A4</field>
+        <field name="format">A4</field>
+        <field name="orientation">Landscape</field>
+        <field name="margin_top">12</field>
+        <field name="margin_bottom">12</field>
+        <field name="margin_left">8</field>
+        <field name="margin_right">8</field>
+        <field name="header_line" eval="False"/>
+        <field name="dpi">90</field>
+    </record>
+
+    <!--
+        Timetable QWeb report — renders a weekly grid of all timetable lines.
+    -->
+    <record id="report_university_timetable_document" model="ir.actions.report">
+        <field name="name">Timetable Document</field>
+        <field name="model">uni.timetable</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">university_timetable.report_timetable_document</field>
+        <field name="report_file">university_timetable.report_timetable_document</field>
+        <field name="paperformat_id" ref="paper_format_timetable_landscape"/>
+        <field name="print_report_name">'TT-%s' % (object.code or 'timetable')</field>
+        <field name="binding_model_id" ref="model_uni_timetable"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!--
+        QWeb template that renders a weekly grid using only the public fields
+        (day_of_week, start_time, end_time, course_id, faculty_id, classroom_id,
+        section, group). Cells are produced per (day, slot) intersection.
+    -->
+    <template id="report_timetable_document">
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <div class="page">
+                    <h2 class="text-center">
+                        <span t-field="object.name"/>
+                    </h2>
+                    <div class="row mt-3 mb-3">
+                        <div class="col-4">
+                            <strong>Code:</strong>
+                            <span t-field="object.code"/>
+                        </div>
+                        <div class="col-4">
+                            <strong>Academic Year:</strong>
+                            <span t-field="object.academic_year_id"/>
+                        </div>
+                        <div class="col-4">
+                            <strong>Term:</strong>
+                            <span t-field="object.academic_term_id"/>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-4">
+                            <strong>University:</strong>
+                            <span t-field="object.university_id"/>
+                        </div>
+                        <div class="col-4">
+                            <strong>College:</strong>
+                            <span t-field="object.college_id"/>
+                        </div>
+                        <div class="col-4">
+                            <strong>Program:</strong>
+                            <span t-field="object.program_id"/>
+                        </div>
+                    </div>
+                    <table class="table table-sm table-bordered">
+                        <thead>
+                            <tr class="active">
+                                <th>Slot</th>
+                                <th>Saturday</th>
+                                <th>Sunday</th>
+                                <th>Monday</th>
+                                <th>Tuesday</th>
+                                <th>Wednesday</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-set="slots" t-value="object.line_ids.mapped('slot_id').sorted(key=lambda s: (s.day_of_week, s.start_time))"/>
+                            <t t-set="unique_slot_times" t-value="[]"/>
+                            <t t-foreach="slots" t-as="s">
+                                <t t-if="(s.start_time, s.end_time) not in unique_slot_times">
+                                    <t t-set="dummy" t-value="unique_slot_times.append((s.start_time, s.end_time))"/>
+                                </t>
+                            </t>
+                            <t t-foreach="unique_slot_times" t-as="slot_time">
+                                <t t-set="start_label" t-value="'%02d:%02d' % (int(slot_time[0]), int(round((slot_time[0] - int(slot_time[0])) * 60)) % 60)"/>
+                                <t t-set="end_label" t-value="'%02d:%02d' % (int(slot_time[1]), int(round((slot_time[1] - int(slot_time[1])) * 60)) % 60)"/>
+                                <tr>
+                                    <th>
+                                        <t t-esc="start_label"/>
+                                        -
+                                        <t t-esc="end_label"/>
+                                    </th>
+                                    <t t-foreach="['saturday','sunday','monday','tuesday','wednesday']" t-as="day">
+                                        <t t-set="matching_lines" t-value="object.line_ids.filtered(lambda l: l.slot_id.day_of_week == day and l.slot_id.start_time == slot_time[0] and l.slot_id.end_time == slot_time[1])"/>
+                                        <td>
+                                            <t t-foreach="matching_lines" t-as="ml">
+                                                <div>
+                                                    <strong t-field="ml.course_id"/>
+                                                    <br/>
+                                                    <span t-field="ml.faculty_id"/>
+                                                    <br/>
+                                                    <small t-field="ml.classroom_id"/>
+                                                    <t t-if="ml.section">
+                                                        <small> — Sec <t t-esc="ml.section"/></small>
+                                                    </t>
+                                                </div>
+                                            </t>
+                                        </td>
+                                    </t>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>

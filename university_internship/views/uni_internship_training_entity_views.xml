@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ===== Training Entity: List View ===== -->
+    <record id="view_uni_internship_training_entity_list" model="ir.ui.view">
+        <field name="name">uni.internship.training.entity.list</field>
+        <field name="model">uni.internship.training.entity</field>
+        <field name="arch" type="xml">
+            <list string="Training Entities">
+                <field name="entity_code"/>
+                <field name="name"/>
+                <field name="entity_type"/>
+                <field name="industry_sector" optional="hide"/>
+                <field name="is_approved" widget="boolean_toggle"/>
+                <field name="rating" widget="badge"/>
+                <field name="city" optional="show"/>
+                <field name="country_id" optional="show"/>
+                <field name="total_interns_hosted"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ===== Training Entity: Form View ===== -->
+    <record id="view_uni_internship_training_entity_form" model="ir.ui.view">
+        <field name="name">uni.internship.training.entity.form</field>
+        <field name="model">uni.internship.training.entity</field>
+        <field name="arch" type="xml">
+            <form string="Training Entity">
+                <header>
+                    <button name="action_approve" type="object"
+                            string="Approve" class="oe_highlight"
+                            invisible="is_approved"
+                            groups="university_core.group_university_manager"/>
+                    <button name="action_revoke" type="object"
+                            string="Revoke Approval"
+                            invisible="not is_approved"
+                            groups="university_core.group_university_manager"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="toggle_active" type="object"
+                                class="oe_stat_button" icon="fa-archive">
+                            <field name="active" widget="boolean_button"
+                                   string="Active"/>
+                        </button>
+                    </div>
+                    <widget name="web_ribbon" title="Approved"
+                            bg_color="bg-success"
+                            invisible="not is_approved"/>
+                    <div class="oe_title">
+                        <label for="name" string="Entity Name"/>
+                        <h1><field name="name" placeholder="e.g. Acme Corp"/></h1>
+                        <h3>
+                            <field name="entity_code" placeholder="e.g. TE-0001"/>
+                        </h3>
+                    </div>
+                    <group>
+                        <group string="Entity Information">
+                            <field name="entity_type"/>
+                            <field name="industry_sector"/>
+                            <field name="is_approved"/>
+                            <field name="approval_date"/>
+                            <field name="approved_by"/>
+                            <field name="rating"/>
+                        </group>
+                        <group string="Partnership">
+                            <field name="partnership_start_date"/>
+                            <field name="partnership_end_date"/>
+                            <field name="max_interns_per_term"/>
+                            <field name="total_interns_hosted"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Contact Information" name="contact_info">
+                            <group>
+                                <group string="Address">
+                                    <field name="phone"/>
+                                    <field name="email"/>
+                                    <field name="website" widget="url"/>
+                                    <field name="street"/>
+                                    <field name="city"/>
+                                    <field name="country_id"/>
+                                </group>
+                                <group string="Primary Contact Person">
+                                    <field name="contact_person"/>
+                                    <field name="contact_position"/>
+                                    <field name="contact_phone"/>
+                                    <field name="contact_email"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Related Departments" name="departments">
+                            <field name="department_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="code"/>
+                                    <field name="college_id"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="notes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ===== Training Entity: Search View ===== -->
+    <record id="view_uni_internship_training_entity_search" model="ir.ui.view">
+        <field name="name">uni.internship.training.entity.search</field>
+        <field name="model">uni.internship.training.entity</field>
+        <field name="arch" type="xml">
+            <search string="Training Entities">
+                <field name="name"/>
+                <field name="entity_code"/>
+                <field name="industry_sector"/>
+                <field name="contact_person"/>
+                <field name="department_ids"/>
+                <separator/>
+                <filter name="filter_approved" string="Approved"
+                        domain="[('is_approved', '=', True)]"/>
+                <filter name="filter_unapproved" string="Unapproved"
+                        domain="[('is_approved', '=', False)]"/>
+                <separator/>
+                <filter name="filter_active" string="Active"
+                        domain="[('active', '=', True)]"/>
+                <separator/>
+                <group expand="0" string="Group By">
+                    <filter name="group_entity_type" string="Entity Type"
+                            context="{'group_by': 'entity_type'}"/>
+                    <filter name="group_rating" string="Rating"
+                            context="{'group_by': 'rating'}"/>
+                    <filter name="group_country" string="Country"
+                            context="{'group_by': 'country_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ===== Training Entity: Action ===== -->
+    <record id="action_uni_internship_training_entity" model="ir.actions.act_window">
+        <field name="name">Training Entities</field>
+        <field name="res_model">uni.internship.training.entity</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_internship_training_entity_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new training entity
+            </p>
+            <p>
+                Training entities are the external companies, organizations, or
+                institutions that host student interns. Approve an entity before
+                publishing opportunities against it.
+            </p>
+        </field>
+    </record>
+</odoo>

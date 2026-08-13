@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- uni.library.fine — List View                                  -->
+    <!-- ============================================================ -->
+    <record id="view_uni_library_fine_list" model="ir.ui.view">
+        <field name="name">uni.library.fine.list</field>
+        <field name="model">uni.library.fine</field>
+        <field name="arch" type="xml">
+            <list string="Fines"
+                  decoration-success="state == 'paid'"
+                  decoration-danger="state == 'pending'"
+                  decoration-muted="state in ('cancelled', 'waived')">
+                <field name="name"/>
+                <field name="borrow_id"/>
+                <field name="borrower_name"/>
+                <field name="student_name" optional="hide"/>
+                <field name="faculty_name" optional="hide"/>
+                <field name="fine_type"/>
+                <field name="issue_date"/>
+                <field name="due_date"/>
+                <field name="payment_date"/>
+                <field name="amount" sum="Total"
+                       widget="monetary"
+                       options="{'currency_field': 'currency_id'}"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="payment_method"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'paid'"
+                       decoration-danger="state == 'pending'"
+                       decoration-muted="state in ('cancelled', 'waived')"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.library.fine — Form View                                  -->
+    <!-- ============================================================ -->
+    <record id="view_uni_library_fine_form" model="ir.ui.view">
+        <field name="name">uni.library.fine.form</field>
+        <field name="model">uni.library.fine</field>
+        <field name="arch" type="xml">
+            <form string="Fine">
+                <header>
+                    <button name="action_pay" type="object"
+                            string="Mark Paid" class="oe_highlight"
+                            invisible="state != 'pending'"/>
+                    <button name="action_waive" type="object"
+                            string="Waive"
+                            invisible="state != 'pending'"/>
+                    <button name="action_cancel" type="object"
+                            string="Cancel"
+                            invisible="state in ('paid', 'cancelled')"/>
+                    <button name="action_reset_pending" type="object"
+                            string="Reset to Pending"
+                            invisible="state == 'pending'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="pending,paid,waived,cancelled"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" string="Fine Reference"/>
+                        <h1><field name="name" readonly="1"/></h1>
+                        <h3><field name="code" placeholder="Optional code"/></h3>
+                    </div>
+                    <group>
+                        <group string="Borrow">
+                            <field name="borrow_id"
+                                   options="{'no_create': True}"/>
+                            <field name="borrower_name" readonly="1"/>
+                            <field name="student_name" readonly="1"/>
+                            <field name="faculty_name" readonly="1"/>
+                        </group>
+                        <group string="Fine Details">
+                            <field name="fine_type"/>
+                            <field name="amount"
+                                   widget="monetary"
+                                   options="{'currency_field': 'currency_id'}"/>
+                            <field name="currency_id"
+                                   options="{'no_create': True}"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Dates">
+                            <field name="issue_date"/>
+                            <field name="due_date"/>
+                            <field name="payment_date"/>
+                            <field name="paid_by"/>
+                            <field name="payment_method"
+                                   invisible="state != 'paid'"/>
+                        </group>
+                    </group>
+                    <group string="Description">
+                        <field name="description" nolabel="1"
+                               placeholder="Reason and details of the fine..."/>
+                    </group>
+                    <group string="Notes">
+                        <field name="notes" nolabel="1"
+                               placeholder="Internal notes..."/>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.library.fine — Search View                                -->
+    <!-- ============================================================ -->
+    <record id="view_uni_library_fine_search" model="ir.ui.view">
+        <field name="name">uni.library.fine.search</field>
+        <field name="model">uni.library.fine</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="borrow_id"/>
+                <field name="borrower_name"/>
+                <field name="student_name"/>
+                <field name="faculty_name"/>
+                <filter string="Pending" name="filter_pending"
+                        domain="[('state', '=', 'pending')]"/>
+                <filter string="Paid" name="filter_paid"
+                        domain="[('state', '=', 'paid')]"/>
+                <filter string="Waived" name="filter_waived"
+                        domain="[('state', '=', 'waived')]"/>
+                <filter string="Cancelled" name="filter_cancelled"
+                        domain="[('state', '=', 'cancelled')]"/>
+                <separator/>
+                <filter string="Overdue Fines" name="filter_overdue_type"
+                        domain="[('fine_type', '=', 'overdue')]"/>
+                <filter string="Lost Book Fines" name="filter_lost_type"
+                        domain="[('fine_type', '=', 'lost')]"/>
+                <filter string="Damage Fines" name="filter_damage_type"
+                        domain="[('fine_type', '=', 'damage')]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Fine Type" name="group_fine_type"
+                            context="{'group_by': 'fine_type'}"/>
+                    <filter string="State" name="group_state"
+                            context="{'group_by': 'state'}"/>
+                    <filter string="Payment Method" name="group_payment_method"
+                            context="{'group_by': 'payment_method'}"/>
+                    <filter string="Issue Date" name="group_issue_date"
+                            context="{'group_by': 'issue_date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.library.fine — Graph View (fines over time)               -->
+    <!-- ============================================================ -->
+    <record id="view_uni_library_fine_graph" model="ir.ui.view">
+        <field name="name">uni.library.fine.graph</field>
+        <field name="model">uni.library.fine</field>
+        <field name="arch" type="xml">
+            <graph string="Fines Over Time" type="bar">
+                <field name="issue_date" type="row" interval="month"/>
+                <field name="fine_type" type="col"/>
+                <field name="amount" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.library.fine — Action                                      -->
+    <!-- ============================================================ -->
+    <record id="action_uni_library_fine" model="ir.actions.act_window">
+        <field name="name">Fines</field>
+        <field name="res_model">uni.library.fine</field>
+        <field name="view_mode">list,form,graph</field>
+        <field name="search_view_id" ref="view_uni_library_fine_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new fine
+            </p>
+            <p>Fines are generated automatically for overdue borrows or
+               created manually for damaged or lost books. They go
+               through pending → paid / waived / cancelled.</p>
+        </field>
+    </record>
+</odoo>

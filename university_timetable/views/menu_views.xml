@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- Timetable menu — under university_core.menu_university_root  -->
+    <!-- ============================================================ -->
+    <menuitem id="menu_university_timetable_root"
+              name="Timetable"
+              parent="university_core.menu_university_root"
+              sequence="50"/>
+
+    <!-- Timetables -->
+    <menuitem id="menu_uni_timetable"
+              name="Timetables"
+              parent="menu_university_timetable_root"
+              action="action_uni_timetable"
+              sequence="10"/>
+
+    <!-- Timetable Lines (advanced view of all lines) -->
+    <menuitem id="menu_uni_timetable_line"
+              name="Timetable Lines"
+              parent="menu_university_timetable_root"
+              action="action_uni_timetable_line"
+              sequence="20"/>
+
+    <!-- Time Slots -->
+    <menuitem id="menu_uni_timetable_slot"
+              name="Time Slots"
+              parent="menu_university_timetable_root"
+              action="action_uni_timetable_slot"
+              sequence="30"/>
+
+    <!-- Classrooms -->
+    <menuitem id="menu_uni_classroom"
+              name="Classrooms"
+              parent="menu_university_timetable_root"
+              action="action_uni_classroom"
+              sequence="40"/>
+
+    <!-- Classroom Types (manager only) -->
+    <menuitem id="menu_uni_classroom_type"
+              name="Classroom Types"
+              parent="menu_university_timetable_root"
+              action="action_uni_classroom_type"
+              sequence="50"
+              groups="university_core.group_university_manager"/>
+
+    <!-- Bookings -->
+    <menuitem id="menu_uni_classroom_booking"
+              name="Bookings"
+              parent="menu_university_timetable_root"
+              action="action_uni_classroom_booking"
+              sequence="60"/>
+</odoo>

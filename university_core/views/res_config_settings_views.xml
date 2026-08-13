@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form_university" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.university</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('settings')]" position="inside">
+                <div class="app_settings_block" string="University" data-key="university_core">
+                    <h2>University Configuration</h2>
+                    <div class="row mt16 o_settings_container">
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane"/>
+                            <div class="o_setting_right_pane">
+                                <span class="o_form_label">Default University</span>
+                                <span class="fa fa-lg fa-building-o ml-2"
+                                      title="Default university for new records"/>
+                                <div class="text-muted">
+                                    Set the default university used for new records
+                                </div>
+                                <field name="default_university_id"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane"/>
+                            <div class="o_setting_right_pane">
+                                <span class="o_form_label">Default Term Type</span>
+                                <span class="fa fa-lg fa-calendar ml-2"
+                                      title="Default term type"/>
+                                <div class="text-muted">
+                                    Default academic term type
+                                </div>
+                                <field name="default_term_type_id"/>
+                            </div>
+                        </div>
+                    </div>
+                    <h2>Code Generation</h2>
+                    <div class="row mt16 o_settings_container">
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="auto_generate_codes"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <span class="o_form_label">Auto Generate Codes</span>
+                                <div class="text-muted">
+                                    Automatically generate reference codes for records
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-6 o_setting_box"
+                             invisible="not auto_generate_codes">
+                            <div class="o_setting_left_pane"/>
+                            <div class="o_setting_right_pane">
+                                <span class="o_form_label">University Code Prefix</span>
+                                <field name="university_code_prefix"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-6 o_setting_box"
+                             invisible="not auto_generate_codes">
+                            <div class="o_setting_left_pane"/>
+                            <div class="o_setting_right_pane">
+                                <span class="o_form_label">Student Code Prefix</span>
+                                <field name="student_code_prefix"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-6 o_setting_box"
+                             invisible="not auto_generate_codes">
+                            <div class="o_setting_left_pane"/>
+                            <div class="o_setting_right_pane">
+                                <span class="o_form_label">Faculty Code Prefix</span>
+                                <field name="faculty_code_prefix"/>
+                            </div>
+                        </div>
+                    </div>
+                    <h2>Multi-Branch</h2>
+                    <div class="row mt16 o_settings_container">
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="group_university_multi_branch"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <span class="o_form_label">Multi-Branch Management</span>
+                                <div class="text-muted">
+                                    Allow managing multiple university branches
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <h2>Optional Modules</h2>
+                    <div class="row mt16 o_settings_container">
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="module_university_grading"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <span class="o_form_label">Grading System</span>
+                                <div class="text-muted">Install university_grading module</div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="module_university_curriculum"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <span class="o_form_label">Curriculum Management</span>
+                                <div class="text-muted">Install university_curriculum module</div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="module_university_faculty"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <span class="o_form_label">Faculty Management</span>
+                                <div class="text-muted">Install university_faculty module</div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="module_university_student"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <span class="o_form_label">Student Management</span>
+                                <div class="text-muted">Install university_student module</div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="module_university_timetable"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <span class="o_form_label">Timetable Management</span>
+                                <div class="text-muted">Install university_timetable module</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>

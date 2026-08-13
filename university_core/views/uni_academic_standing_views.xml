@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============ uni.academic.standing — List View ============ -->
+    <record id="view_uni_academic_standing_list" model="ir.ui.view">
+        <field name="name">uni.academic.standing.list</field>
+        <field name="model">uni.academic.standing</field>
+        <field name="arch" type="xml">
+            <list string="Academic Standings"
+                  decoration-success="standing_type in ('excellent', 'very_good', 'honors')"
+                  decoration-info="standing_type in ('good', 'acceptable')"
+                  decoration-warning="standing_type == 'warning'"
+                  decoration-danger="standing_type in ('probation', 'dismissal')">
+                <field name="sequence" widget="handle"/>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="university_id" optional="show"/>
+                <field name="standing_type" widget="badge"/>
+                <field name="min_gpa"/>
+                <field name="max_gpa"/>
+                <field name="min_credits" optional="hide"/>
+                <field name="is_negative" optional="hide" widget="boolean_toggle"/>
+                <field name="requires_action" optional="hide" widget="boolean_toggle"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============ uni.academic.standing — Form View ============ -->
+    <record id="view_uni_academic_standing_form" model="ir.ui.view">
+        <field name="name">uni.academic.standing.form</field>
+        <field name="model">uni.academic.standing</field>
+        <field name="arch" type="xml">
+            <form string="Academic Standing">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" type="object"
+                                name="action_send_notification" icon="fa-envelope"
+                                string="Send Notification"
+                                invisible="not notification_message"/>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" string="Standing Name"/>
+                        <h1><field name="name" placeholder="e.g. Academic Probation"/></h1>
+                        <h3><field name="code" placeholder="e.g. PROB"/></h3>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="university_id" options="{'no_create': True}"/>
+                            <field name="standing_type" widget="badge"/>
+                            <field name="sequence"/>
+                            <field name="active" widget="boolean_toggle"/>
+                        </group>
+                        <group>
+                            <field name="min_gpa"/>
+                            <field name="max_gpa"/>
+                            <field name="min_credits"/>
+                        </group>
+                    </group>
+                    <group string="Status Flags">
+                        <group>
+                            <field name="is_warning" readonly="1"/>
+                            <field name="is_probation" readonly="1"/>
+                            <field name="is_dismissed" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="is_honors" readonly="1"/>
+                            <field name="is_negative" readonly="1"/>
+                        </group>
+                    </group>
+                    <group string="Action Required">
+                        <field name="requires_action"/>
+                        <field name="action_description"
+                               invisible="not requires_action"
+                               colspan="2"/>
+                        <field name="notification_message" colspan="2"/>
+                    </group>
+                    <notebook>
+                        <page string="Description" name="description">
+                            <field name="description"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============ uni.academic.standing — Search View ============ -->
+    <record id="view_uni_academic_standing_search" model="ir.ui.view">
+        <field name="name">uni.academic.standing.search</field>
+        <field name="model">uni.academic.standing</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="university_id"/>
+                <filter string="Active" name="filter_active"
+                        domain="[('active', '=', True)]"/>
+                <separator/>
+                <filter string="Honors" name="filter_honors"
+                        domain="[('standing_type', '=', 'honors')]"/>
+                <filter string="Warnings" name="filter_warning"
+                        domain="[('standing_type', '=', 'warning')]"/>
+                <filter string="Probation" name="filter_probation"
+                        domain="[('standing_type', '=', 'probation')]"/>
+                <filter string="Dismissal" name="filter_dismissal"
+                        domain="[('standing_type', '=', 'dismissal')]"/>
+                <separator/>
+                <filter string="Negative Standings" name="filter_negative"
+                        domain="[('is_negative', '=', True)]"/>
+                <filter string="Requires Action" name="filter_action"
+                        domain="[('requires_action', '=', True)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="University" name="group_university"
+                            context="{'group_by': 'university_id'}"/>
+                    <filter string="Standing Type" name="group_type"
+                            context="{'group_by': 'standing_type'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============ uni.academic.standing — Action ============ -->
+    <record id="action_uni_academic_standing" model="ir.actions.act_window">
+        <field name="name">Academic Standings</field>
+        <field name="res_model">uni.academic.standing</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_academic_standing_search"/>
+        <field name="context">{'search_default_filter_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new academic standing policy
+            </p>
+            <p>
+                Academic standings define thresholds (GPA + credits) used to
+                classify student performance — honors, warnings, probation,
+                and dismissal policies can be configured per university.
+            </p>
+        </field>
+    </record>
+</odoo>

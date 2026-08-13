@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- Transport menu — under university_core.menu_university_root   -->
+    <!-- ============================================================ -->
+    <menuitem id="menu_university_transport_root"
+              name="Transport"
+              parent="university_core.menu_university_root"
+              sequence="85"/>
+
+    <!-- Vehicles -->
+    <menuitem id="menu_uni_transport_vehicle"
+              name="Vehicles"
+              parent="menu_university_transport_root"
+              action="action_uni_transport_vehicle"
+              sequence="10"/>
+
+    <!-- Routes -->
+    <menuitem id="menu_uni_transport_route"
+              name="Routes"
+              parent="menu_university_transport_root"
+              action="action_uni_transport_route"
+              sequence="20"/>
+
+    <!-- Stops -->
+    <menuitem id="menu_uni_transport_stop"
+              name="Stops"
+              parent="menu_university_transport_root"
+              action="action_uni_transport_stop"
+              sequence="30"/>
+
+    <!-- Passes -->
+    <menuitem id="menu_uni_transport_pass"
+              name="Passes"
+              parent="menu_university_transport_root"
+              action="action_uni_transport_pass"
+              sequence="40"/>
+
+    <!-- Attendance -->
+    <menuitem id="menu_uni_transport_attendance"
+              name="Attendance"
+              parent="menu_university_transport_root"
+              action="action_uni_transport_attendance"
+              sequence="50"/>
+
+    <!-- Attendance Lines (manager only) -->
+    <menuitem id="menu_uni_transport_attendance_line"
+              name="Attendance Lines"
+              parent="menu_university_transport_root"
+              action="action_uni_transport_attendance_line"
+              sequence="60"
+              groups="university_core.group_university_manager"/>
+</odoo>

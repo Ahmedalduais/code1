@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ===== Application: List View ===== -->
+    <record id="view_uni_internship_application_list" model="ir.ui.view">
+        <field name="name">uni.internship.application.list</field>
+        <field name="model">uni.internship.application</field>
+        <field name="arch" type="xml">
+            <list string="Internship Applications"
+                  decoration-success="status == 'accepted'"
+                  decoration-danger="status == 'rejected'"
+                  decoration-muted="status == 'withdrawn'"
+                  decoration-info="status == 'interview_scheduled'"
+                  decoration-warning="status == 'under_review'">
+                <field name="name"/>
+                <field name="student_id"/>
+                <field name="student_code" optional="show"/>
+                <field name="opportunity_id"/>
+                <field name="entity_id"/>
+                <field name="department_id" optional="hide"/>
+                <field name="application_date"/>
+                <field name="preferred_start_date" optional="hide"/>
+                <field name="status" widget="badge"
+                       decoration-success="status == 'accepted'"
+                       decoration-danger="status == 'rejected'"
+                       decoration-info="status == 'interview_scheduled'"
+                       decoration-warning="status == 'under_review'"
+                       decoration-secondary="status in ('draft', 'withdrawn')"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ===== Application: Kanban View ===== -->
+    <record id="view_uni_internship_application_kanban" model="ir.ui.view">
+        <field name="name">uni.internship.application.kanban</field>
+        <field name="model">uni.internship.application</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="status" class="o_kanban_small_column"
+                    sample="1">
+                <field name="status"/>
+                <field name="name"/>
+                <field name="student_id"/>
+                <field name="student_code"/>
+                <field name="opportunity_id"/>
+                <field name="entity_id"/>
+                <field name="application_date"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div t-attf-class="oe_kanban_card oe_kanban_global_click">
+                            <div class="o_kanban_record_top">
+                                <div class="o_kanban_record_headings">
+                                    <strong class="o_kanban_record_title">
+                                        <field name="student_id"/>
+                                    </strong>
+                                    <div class="o_kanban_record_subtitle text-muted">
+                                        <field name="name"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="o_kanban_record_body">
+                                <div>
+                                    <i class="fa fa-graduation-cap" title="Student Code"/>
+                                    <field name="student_code"/>
+                                </div>
+                                <div>
+                                    <i class="fa fa-briefcase" title="Opportunity"/>
+                                    <field name="opportunity_id"/>
+                                </div>
+                                <div>
+                                    <i class="fa fa-building-o" title="Entity"/>
+                                    <field name="entity_id"/>
+                                </div>
+                                <div>
+                                    <i class="fa fa-calendar" title="Applied on"/>
+                                    <field name="application_date"/>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- ===== Application: Form View ===== -->
+    <record id="view_uni_internship_application_form" model="ir.ui.view">
+        <field name="name">uni.internship.application.form</field>
+        <field name="model">uni.internship.application</field>
+        <field name="arch" type="xml">
+            <form string="Internship Application">
+                <header>
+                    <button name="action_submit" type="object" string="Submit"
+                            class="oe_highlight"
+                            invisible="status != 'draft'"/>
+                    <button name="action_review" type="object" string="Start Review"
+                            invisible="status not in ('submitted', 'interview_scheduled')"/>
+                    <button name="action_schedule_interview" type="object"
+                            string="Schedule Interview"
+                            invisible="status not in ('submitted', 'under_review')"/>
+                    <button name="action_accept" type="object" string="Accept"
+                            class="oe_highlight"
+                            invisible="status in ('accepted', 'rejected', 'withdrawn', 'draft')"/>
+                    <button name="action_reject" type="object" string="Reject"
+                            invisible="status in ('accepted', 'rejected', 'withdrawn', 'draft')"/>
+                    <button name="action_withdraw" type="object" string="Withdraw"
+                            invisible="status in ('withdrawn', 'accepted', 'rejected')"/>
+                    <button name="action_draft" type="object" string="Reset to Draft"
+                            invisible="status == 'draft'"/>
+                    <field name="status" widget="statusbar"
+                           statusbar_visible="draft,submitted,under_review,interview_scheduled,accepted"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="toggle_active" type="object"
+                                class="oe_stat_button" icon="fa-archive">
+                            <field name="active" widget="boolean_button"
+                                   string="Active"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" string="Reference"/>
+                        <h2><field name="name" readonly="1"/></h2>
+                    </div>
+                    <group>
+                        <group string="Student">
+                            <field name="student_id"/>
+                            <field name="student_name"/>
+                            <field name="student_code"/>
+                            <field name="university_id"/>
+                            <field name="college_id"/>
+                            <field name="department_id"/>
+                        </group>
+                        <group string="Opportunity">
+                            <field name="opportunity_id"/>
+                            <field name="entity_id"/>
+                            <field name="application_date"/>
+                            <field name="preferred_start_date"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Documents" name="documents">
+                            <group>
+                                <field name="cv_file" filename="cv_filename"/>
+                                <field name="cv_filename" invisible="1"/>
+                                <field name="additional_documents"
+                                       filename="additional_documents_filename"/>
+                                <field name="additional_documents_filename" invisible="1"/>
+                            </group>
+                        </page>
+                        <page string="Cover Letter &amp; Statement" name="cover_letter">
+                            <group string="Cover Letter">
+                                <field name="cover_letter" nolabel="1"/>
+                            </group>
+                            <group string="Student Statement">
+                                <field name="student_statement" nolabel="1"/>
+                            </group>
+                        </page>
+                        <page string="Review" name="review">
+                            <group>
+                                <group>
+                                    <field name="reviewed_by"/>
+                                    <field name="reviewed_date"/>
+                                </group>
+                                <group>
+                                    <field name="review_comments"
+                                           placeholder="Internal review notes..."/>
+                                    <field name="rejection_reason"
+                                           invisible="status != 'rejected'"
+                                           placeholder="Explain why this application was rejected..."/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Interviews" name="interviews">
+                            <field name="interview_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="interview_date"/>
+                                    <field name="interview_type"/>
+                                    <field name="interviewer_id"/>
+                                    <field name="result" widget="badge"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="notes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ===== Application: Search View ===== -->
+    <record id="view_uni_internship_application_search" model="ir.ui.view">
+        <field name="name">uni.internship.application.search</field>
+        <field name="model">uni.internship.application</field>
+        <field name="arch" type="xml">
+            <search string="Internship Applications">
+                <field name="name"/>
+                <field name="student_id"/>
+                <field name="student_code"/>
+                <field name="opportunity_id"/>
+                <field name="entity_id"/>
+                <field name="university_id"/>
+                <field name="college_id"/>
+                <field name="department_id"/>
+                <separator/>
+                <filter name="filter_draft" string="Draft"
+                        domain="[('status', '=', 'draft')]"/>
+                <filter name="filter_submitted" string="Submitted"
+                        domain="[('status', '=', 'submitted')]"/>
+                <filter name="filter_review" string="Under Review"
+                        domain="[('status', '=', 'under_review')]"/>
+                <filter name="filter_interview" string="Interview Scheduled"
+                        domain="[('status', '=', 'interview_scheduled')]"/>
+                <filter name="filter_accepted" string="Accepted"
+                        domain="[('status', '=', 'accepted')]"/>
+                <filter name="filter_rejected" string="Rejected"
+                        domain="[('status', '=', 'rejected')]"/>
+                <filter name="filter_withdrawn" string="Withdrawn"
+                        domain="[('status', '=', 'withdrawn')]"/>
+                <separator/>
+                <group expand="0" string="Group By">
+                    <filter name="group_status" string="Status"
+                            context="{'group_by': 'status'}"/>
+                    <filter name="group_opportunity" string="Opportunity"
+                            context="{'group_by': 'opportunity_id'}"/>
+                    <filter name="group_entity" string="Training Entity"
+                            context="{'group_by': 'entity_id'}"/>
+                    <filter name="group_department" string="Department"
+                            context="{'group_by': 'department_id'}"/>
+                    <filter name="group_student" string="Student"
+                            context="{'group_by': 'student_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ===== Application: Action ===== -->
+    <record id="action_uni_internship_application" model="ir.actions.act_window">
+        <field name="name">Internship Applications</field>
+        <field name="res_model">uni.internship.application</field>
+        <field name="view_mode">list,kanban,form</field>
+        <field name="search_view_id" ref="view_uni_internship_application_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new internship application
+            </p>
+            <p>
+                Track student applications for internship opportunities.
+                Each application can be reviewed, scheduled for interviews,
+                accepted or rejected.
+            </p>
+        </field>
+    </record>
+</odoo>

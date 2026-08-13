@@ -1,0 +1,13 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_uni_housing_room_type_user,uni.housing.room.type.user,model_uni_housing_room_type,university_core.group_university_user,1,0,0,0
+access_uni_housing_room_type_manager,uni.housing.room.type.manager,model_uni_housing_room_type,university_core.group_university_manager,1,1,1,1
+access_uni_housing_building_user,uni.housing.building.user,model_uni_housing_building,university_core.group_university_user,1,0,0,0
+access_uni_housing_building_manager,uni.housing.building.manager,model_uni_housing_building,university_core.group_university_manager,1,1,1,1
+access_uni_housing_room_user,uni.housing.room.user,model_uni_housing_room,university_core.group_university_user,1,0,0,0
+access_uni_housing_room_manager,uni.housing.room.manager,model_uni_housing_room,university_core.group_university_manager,1,1,1,1
+access_uni_housing_allocation_user,uni.housing.allocation.user,model_uni_housing_allocation,university_core.group_university_user,1,0,0,0
+access_uni_housing_allocation_manager,uni.housing.allocation.manager,model_uni_housing_allocation,university_core.group_university_manager,1,1,1,1
+access_uni_housing_contract_user,uni.housing.contract.user,model_uni_housing_contract,university_core.group_university_user,1,0,0,0
+access_uni_housing_contract_manager,uni.housing.contract.manager,model_uni_housing_contract,university_core.group_university_manager,1,1,1,1
+access_uni_housing_maintenance_user,uni.housing.maintenance.user,model_uni_housing_maintenance,university_core.group_university_user,1,0,0,0
+access_uni_housing_maintenance_manager,uni.housing.maintenance.manager,model_uni_housing_maintenance,university_core.group_university_manager,1,1,1,1

@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- uni.library.category — List View                              -->
+    <!-- ============================================================ -->
+    <record id="view_uni_library_category_list" model="ir.ui.view">
+        <field name="name">uni.library.category.list</field>
+        <field name="model">uni.library.category</field>
+        <field name="arch" type="xml">
+            <list string="Categories"
+                  decoration-muted="active == False">
+                <field name="sequence" widget="handle"/>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="classification_system"/>
+                <field name="classification_code"/>
+                <field name="parent_id" optional="show"/>
+                <field name="book_count"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.library.category — Form View                              -->
+    <!-- ============================================================ -->
+    <record id="view_uni_library_category_form" model="ir.ui.view">
+        <field name="name">uni.library.category.form</field>
+        <field name="model">uni.library.category</field>
+        <field name="arch" type="xml">
+            <form string="Category">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_open_books" type="object"
+                                class="oe_stat_button" icon="fa-book">
+                            <div class="o_stat_info">
+                                <span class="o_stat_value"><field name="book_count"/></span>
+                                <span class="o_stat_text">Books</span>
+                            </div>
+                        </button>
+                        <button name="action_open_children" type="object"
+                                class="oe_stat_button" icon="fa-sitemap">
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">Sub-Categories</span>
+                            </div>
+                        </button>
+                        <button name="action_archive" type="object"
+                                class="oe_stat_button" icon="fa-archive"
+                                invisible="active == False">
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">Unarchive</span>
+                            </div>
+                        </button>
+                        <button name="action_unarchive" type="object"
+                                class="oe_stat_button" icon="fa-archive"
+                                invisible="active == True">
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">Restore</span>
+                            </div>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" string="Category"/>
+                        <h1><field name="name" placeholder="e.g. Computer Science"/></h1>
+                        <h3><field name="code" placeholder="e.g. CS"/></h3>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="parent_id"
+                                   options="{'no_create': True}"/>
+                            <field name="classification_system"/>
+                            <field name="classification_code"
+                                   placeholder="e.g. 004 for Dewey"/>
+                            <field name="sequence"/>
+                        </group>
+                        <group>
+                            <field name="active" invisible="1"/>
+                        </group>
+                    </group>
+                    <group string="Description">
+                        <field name="description" nolabel="1"
+                               placeholder="Describe the scope of this category..."/>
+                    </group>
+                    <notebook>
+                        <page string="Sub-Categories" name="sub_categories">
+                            <field name="child_ids">
+                                <list>
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="code"/>
+                                    <field name="name"/>
+                                    <field name="classification_system"/>
+                                    <field name="book_count"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.library.category — Search View                            -->
+    <!-- ============================================================ -->
+    <record id="view_uni_library_category_search" model="ir.ui.view">
+        <field name="name">uni.library.category.search</field>
+        <field name="model">uni.library.category</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="parent_id"/>
+                <field name="classification_system"/>
+                <filter string="Archived" name="filter_archived"
+                        domain="[('active', '=', False)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Parent Category" name="group_parent"
+                            context="{'group_by': 'parent_id'}"/>
+                    <filter string="Classification System" name="group_system"
+                            context="{'group_by': 'classification_system'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.library.category — Action                                  -->
+    <!-- ============================================================ -->
+    <record id="action_uni_library_category" model="ir.actions.act_window">
+        <field name="name">Categories</field>
+        <field name="res_model">uni.library.category</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_library_category_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new library category
+            </p>
+            <p>Categories organise library books into a hierarchical
+               classification system (Dewey Decimal, Library of Congress,
+               or custom).</p>
+        </field>
+    </record>
+</odoo>

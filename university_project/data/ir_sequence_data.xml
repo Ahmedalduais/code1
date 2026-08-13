@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- Project Proposal Sequence -->
+    <record id="seq_uni_project_proposal" model="ir.sequence">
+        <field name="name">Project Proposal Sequence</field>
+        <field name="code">uni.project.proposal</field>
+        <field name="prefix">PPR/%(year)s/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <!-- Project Approval Sequence -->
+    <record id="seq_uni_project_approval" model="ir.sequence">
+        <field name="name">Project Approval Sequence</field>
+        <field name="code">uni.project.approval</field>
+        <field name="prefix">PAP/%(year)s/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <!-- Project Sequence -->
+    <record id="seq_uni_project" model="ir.sequence">
+        <field name="name">Project Sequence</field>
+        <field name="code">uni.project</field>
+        <field name="prefix">PRJ/%(year)s/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <!-- Project Defense Sequence -->
+    <record id="seq_uni_project_defense" model="ir.sequence">
+        <field name="name">Project Defense Sequence</field>
+        <field name="code">uni.project.defense</field>
+        <field name="prefix">PDEF/%(year)s/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <!-- Project Evaluation Sequence -->
+    <record id="seq_uni_project_evaluation" model="ir.sequence">
+        <field name="name">Project Evaluation Sequence</field>
+        <field name="code">uni.project.evaluation</field>
+        <field name="prefix">PEV/%(year)s/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <!-- Project Meeting Sequence -->
+    <record id="seq_uni_project_meeting" model="ir.sequence">
+        <field name="name">Project Meeting Sequence</field>
+        <field name="code">uni.project.meeting</field>
+        <field name="prefix">PMT/%(year)s/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <!-- Project Progress Sequence -->
+    <record id="seq_uni_project_progress" model="ir.sequence">
+        <field name="name">Project Progress Sequence</field>
+        <field name="code">uni.project.progress</field>
+        <field name="prefix">PPG/%(year)s/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <!-- Project Publication Sequence -->
+    <record id="seq_uni_project_publication" model="ir.sequence">
+        <field name="name">Project Publication Sequence</field>
+        <field name="code">uni.project.publication</field>
+        <field name="prefix">PPB/%(year)s/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <!-- Project Supervisor Sequence -->
+    <record id="seq_uni_project_supervisor" model="ir.sequence">
+        <field name="name">Project Supervisor Sequence</field>
+        <field name="code">uni.project.supervisor</field>
+        <field name="prefix">PSU/%(year)s/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+</odoo>

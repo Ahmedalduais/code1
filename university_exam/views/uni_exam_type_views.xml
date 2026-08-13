@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- uni.exam.type — List View                                     -->
+    <!-- ============================================================ -->
+    <record id="view_uni_exam_type_list" model="ir.ui.view">
+        <field name="name">uni.exam.type.list</field>
+        <field name="model">uni.exam.type</field>
+        <field name="arch" type="xml">
+            <list string="Exam Types">
+                <field name="sequence" widget="handle"/>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="exam_nature"/>
+                <field name="default_duration" widget="float_time"/>
+                <field name="default_max_score"/>
+                <field name="weight_percentage"/>
+                <field name="passing_percentage"/>
+                <field name="is_final" widget="boolean_toggle"/>
+                <field name="is_midterm" widget="boolean_toggle"/>
+                <field name="exam_count"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.exam.type — Form View                                     -->
+    <!-- ============================================================ -->
+    <record id="view_uni_exam_type_form" model="ir.ui.view">
+        <field name="name">uni.exam.type.form</field>
+        <field name="model">uni.exam.type</field>
+        <field name="arch" type="xml">
+            <form string="Exam Type">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_open_exams" type="object"
+                                class="oe_stat_button" icon="fa-file-text-o">
+                            <field name="exam_count" widget="statinfo"
+                                   string="Exams"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" string="Exam Type"/>
+                        <h1><field name="name" placeholder="e.g. Final Exam"/></h1>
+                        <h3><field name="code" placeholder="e.g. FINAL"/></h3>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="sequence"/>
+                            <field name="exam_nature"/>
+                            <field name="default_duration" widget="float_time"/>
+                            <field name="active"/>
+                        </group>
+                        <group>
+                            <field name="default_max_score"/>
+                            <field name="weight_percentage"/>
+                            <field name="passing_percentage"/>
+                            <field name="is_final"/>
+                            <field name="is_midterm"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="description"/>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.exam.type — Search View                                   -->
+    <!-- ============================================================ -->
+    <record id="view_uni_exam_type_search" model="ir.ui.view">
+        <field name="name">uni.exam.type.search</field>
+        <field name="model">uni.exam.type</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="code"/>
+                <filter string="Final" name="filter_is_final"
+                        domain="[('is_final', '=', True)]"/>
+                <filter string="Midterm" name="filter_is_midterm"
+                        domain="[('is_midterm', '=', True)]"/>
+                <filter string="Archived" name="filter_archived"
+                        domain="[('active', '=', False)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Exam Nature" name="group_nature"
+                            context="{'group_by': 'exam_nature'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.exam.type — Action                                        -->
+    <!-- ============================================================ -->
+    <record id="action_uni_exam_type" model="ir.actions.act_window">
+        <field name="name">Exam Types</field>
+        <field name="res_model">uni.exam.type</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_exam_type_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new exam type
+            </p>
+            <p>Exam types define the default properties of exams (duration,
+               max score, weight, passing percentage, nature) and serve as
+               templates when creating new exams.</p>
+        </field>
+    </record>
+</odoo>

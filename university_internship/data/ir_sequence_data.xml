@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- Training Entity Sequence -->
+    <record id="seq_uni_internship_training_entity" model="ir.sequence">
+        <field name="name">Training Entity Sequence</field>
+        <field name="code">uni.internship.training.entity</field>
+        <field name="prefix">TE/%(year)s/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <!-- Opportunity Sequence -->
+    <record id="seq_uni_internship_opportunity" model="ir.sequence">
+        <field name="name">Internship Opportunity Sequence</field>
+        <field name="code">uni.internship.opportunity</field>
+        <field name="prefix">OPP/%(year)s/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <!-- Application Sequence -->
+    <record id="seq_uni_internship_application" model="ir.sequence">
+        <field name="name">Internship Application Sequence</field>
+        <field name="code">uni.internship.application</field>
+        <field name="prefix">APP/%(year)s/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <!-- Application Interview Sequence -->
+    <record id="seq_uni_internship_application_interview" model="ir.sequence">
+        <field name="name">Application Interview Sequence</field>
+        <field name="code">uni.internship.application.interview</field>
+        <field name="prefix">INT/%(year)s/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <!-- Internship Sequence -->
+    <record id="seq_uni_internship" model="ir.sequence">
+        <field name="name">Internship Sequence</field>
+        <field name="code">uni.internship</field>
+        <field name="prefix">INT/%(year)s/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <!-- Internship Student Sequence -->
+    <record id="seq_uni_internship_student" model="ir.sequence">
+        <field name="name">Internship Student Sequence</field>
+        <field name="code">uni.internship.student</field>
+        <field name="prefix">IST/%(year)s/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <!-- Supervisor Sequence -->
+    <record id="seq_uni_internship_supervisor" model="ir.sequence">
+        <field name="name">Internship Supervisor Sequence</field>
+        <field name="code">uni.internship.supervisor</field>
+        <field name="prefix">SUP/%(year)s/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <!-- Supervision Plan Sequence -->
+    <record id="seq_uni_internship_supervision_plan" model="ir.sequence">
+        <field name="name">Supervision Plan Sequence</field>
+        <field name="code">uni.internship.supervision.plan</field>
+        <field name="prefix">SPN/%(year)s/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <!-- Log Sequence -->
+    <record id="seq_uni_internship_log" model="ir.sequence">
+        <field name="name">Internship Log Sequence</field>
+        <field name="code">uni.internship.log</field>
+        <field name="prefix">LOG/%(year)s/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <!-- Attendance Sequence -->
+    <record id="seq_uni_internship_attendance" model="ir.sequence">
+        <field name="name">Internship Attendance Sequence</field>
+        <field name="code">uni.internship.attendance</field>
+        <field name="prefix">ATT/%(year)s/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <!-- Weekly Report Sequence -->
+    <record id="seq_uni_internship_weekly_report" model="ir.sequence">
+        <field name="name">Weekly Report Sequence</field>
+        <field name="code">uni.internship.weekly.report</field>
+        <field name="prefix">WKR/%(year)s/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <!-- Report Sequence -->
+    <record id="seq_uni_internship_report" model="ir.sequence">
+        <field name="name">Internship Report Sequence</field>
+        <field name="code">uni.internship.report</field>
+        <field name="prefix">RPT/%(year)s/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <!-- Evaluation Sequence -->
+    <record id="seq_uni_internship_evaluation" model="ir.sequence">
+        <field name="name">Internship Evaluation Sequence</field>
+        <field name="code">uni.internship.evaluation</field>
+        <field name="prefix">EVL/%(year)s/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <!-- Completion Sequence -->
+    <record id="seq_uni_internship_completion" model="ir.sequence">
+        <field name="name">Internship Completion Sequence</field>
+        <field name="code">uni.internship.completion</field>
+        <field name="prefix">CMP/%(year)s/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <!-- Certificate Sequence -->
+    <record id="seq_uni_internship_certificate" model="ir.sequence">
+        <field name="name">Internship Certificate Sequence</field>
+        <field name="code">uni.internship.certificate</field>
+        <field name="prefix">CRT/%(year)s/</field>
+        <field name="padding">6</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <!-- Placement Sequence -->
+    <record id="seq_uni_internship_placement" model="ir.sequence">
+        <field name="name">Internship Placement Sequence</field>
+        <field name="code">uni.internship.placement</field>
+        <field name="prefix">PLC/%(year)s/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+</odoo>

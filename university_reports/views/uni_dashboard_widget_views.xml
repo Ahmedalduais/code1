@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- uni.dashboard.widget — Kanban View (grouped by widget_type)  -->
+    <!-- ============================================================ -->
+    <record id="view_uni_dashboard_widget_kanban" model="ir.ui.view">
+        <field name="name">uni.dashboard.widget.kanban</field>
+        <field name="model">uni.dashboard.widget</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="widget_type" class="o_kanban_small_column">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="widget_type"/>
+                <field name="color"/>
+                <field name="icon"/>
+                <field name="is_active"/>
+                <field name="user_id"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div t-attf-class="oe_kanban_card oe_kanban_global_click">
+                            <div class="o_kanban_record_top">
+                                <div class="o_kanban_record_head">
+                                    <i t-attf-class="fa {{record.icon.raw_value}} me-2"
+                                       t-attf-style="color: {{record.color.raw_value}};"/>
+                                    <strong>
+                                        <field name="name"/>
+                                    </strong>
+                                </div>
+                            </div>
+                            <div class="o_kanban_record_body">
+                                <div>
+                                    <span class="text-muted">Code:</span>
+                                    <field name="code"/>
+                                </div>
+                                <div>
+                                    <span class="text-muted">Owner:</span>
+                                    <field name="user_id"/>
+                                </div>
+                            </div>
+                            <div class="o_kanban_record_footer">
+                                <div class="oe_kanban_bottom_right">
+                                    <field name="is_active"
+                                           widget="boolean_toggle"/>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.dashboard.widget — List View                             -->
+    <!-- ============================================================ -->
+    <record id="view_uni_dashboard_widget_list" model="ir.ui.view">
+        <field name="name">uni.dashboard.widget.list</field>
+        <field name="model">uni.dashboard.widget</field>
+        <field name="arch" type="xml">
+            <list string="Dashboard Widgets"
+                  decoration-info="widget_type == 'kpi'"
+                  decoration-success="widget_type == 'chart'"
+                  decoration-warning="widget_type == 'table'"
+                  decoration-secondary="widget_type == 'list'"
+                  decoration-primary="widget_type == 'calendar'"
+                  decoration-muted="not is_active">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="user_id"/>
+                <field name="widget_type" widget="badge"/>
+                <field name="data_source_model" optional="show"/>
+                <field name="data_source_method" optional="show"/>
+                <field name="width" optional="show"/>
+                <field name="height" optional="show"/>
+                <field name="refresh_interval_seconds" optional="hide"/>
+                <field name="is_active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.dashboard.widget — Form View                             -->
+    <!-- ============================================================ -->
+    <record id="view_uni_dashboard_widget_form" model="ir.ui.view">
+        <field name="name">uni.dashboard.widget.form</field>
+        <field name="model">uni.dashboard.widget</field>
+        <field name="arch" type="xml">
+            <form string="Dashboard Widget">
+                <header>
+                    <button name="action_refresh" string="Refresh"
+                            type="object" class="oe_highlight"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" string="Widget"/>
+                        <h1>
+                            <field name="name" placeholder="e.g. Total Students"/>
+                        </h1>
+                        <h3>
+                            <field name="code" placeholder="STUD-KPI-1"/>
+                        </h3>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="user_id"
+                                   options="{'no_create': True}"
+                                   required="1"/>
+                            <field name="widget_type" widget="radio"/>
+                            <field name="sequence"/>
+                            <field name="is_active" widget="boolean_toggle"/>
+                        </group>
+                        <group>
+                            <field name="color"
+                                   placeholder="#0d6efd"/>
+                            <field name="icon"
+                                   placeholder="fa-users"/>
+                            <field name="refresh_interval_seconds"/>
+                        </group>
+                    </group>
+                    <group string="Data Source">
+                        <group>
+                            <field name="data_source_model"
+                                   placeholder="uni.student"/>
+                            <field name="data_source_method"
+                                   placeholder="search_count_default"/>
+                        </group>
+                        <group>
+                            <field name="configuration"
+                                   widget="ace"
+                                   options="{'mode': 'json'}"
+                                   placeholder="{}"/>
+                        </group>
+                    </group>
+                    <group string="Layout">
+                        <group>
+                            <field name="position_x"/>
+                            <field name="position_y"/>
+                        </group>
+                        <group>
+                            <field name="width"/>
+                            <field name="height"/>
+                        </group>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.dashboard.widget — Search View                           -->
+    <!-- ============================================================ -->
+    <record id="view_uni_dashboard_widget_search" model="ir.ui.view">
+        <field name="name">uni.dashboard.widget.search</field>
+        <field name="model">uni.dashboard.widget</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="user_id"/>
+                <field name="data_source_model"/>
+                <separator/>
+                <filter string="Active" name="filter_active"
+                        domain="[('is_active', '=', True)]"/>
+                <filter string="My Widgets" name="filter_mine"
+                        domain="[('user_id', '=', uid)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Type" name="group_type"
+                            context="{'group_by': 'widget_type'}"/>
+                    <filter string="Owner" name="group_owner"
+                            context="{'group_by': 'user_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.dashboard.widget — Action                                -->
+    <!-- ============================================================ -->
+    <record id="action_uni_dashboard_widget" model="ir.actions.act_window">
+        <field name="name">Dashboard Widgets</field>
+        <field name="res_model">uni.dashboard.widget</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="search_view_id" ref="view_uni_dashboard_widget_search"/>
+        <field name="context">{'search_default_filter_mine': 1,
+                              'search_default_filter_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a dashboard widget
+            </p>
+            <p>Widgets render KPIs, charts, tables and other visual elements
+               on the dashboard. Each widget references a model and method
+               for fetching its data.</p>
+        </field>
+    </record>
+</odoo>

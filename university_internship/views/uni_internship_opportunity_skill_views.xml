@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ===== Opportunity Skill: List View ===== -->
+    <record id="view_uni_internship_opportunity_skill_list" model="ir.ui.view">
+        <field name="name">uni.internship.opportunity.skill.list</field>
+        <field name="model">uni.internship.opportunity.skill</field>
+        <field name="arch" type="xml">
+            <list string="Required Skills">
+                <field name="sequence" widget="handle"/>
+                <field name="opportunity_id"/>
+                <field name="name"/>
+                <field name="level" widget="badge"
+                       decoration-success="level == 'expert'"
+                       decoration-info="level == 'advanced'"
+                       decoration-warning="level == 'intermediate'"
+                       decoration-secondary="level == 'beginner'"/>
+                <field name="is_mandatory" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ===== Opportunity Skill: Form View ===== -->
+    <record id="view_uni_internship_opportunity_skill_form" model="ir.ui.view">
+        <field name="name">uni.internship.opportunity.skill.form</field>
+        <field name="model">uni.internship.opportunity.skill</field>
+        <field name="arch" type="xml">
+            <form string="Required Skill">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" string="Skill Name"/>
+                        <h2><field name="name" placeholder="e.g. Python Programming"/></h2>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="opportunity_id"/>
+                            <field name="sequence"/>
+                        </group>
+                        <group>
+                            <field name="level" widget="selection"/>
+                            <field name="is_mandatory"/>
+                        </group>
+                    </group>
+                    <group string="Description">
+                        <field name="description" nolabel="1"
+                               placeholder="Describe the expected proficiency..."/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ===== Opportunity Skill: Search View ===== -->
+    <record id="view_uni_internship_opportunity_skill_search" model="ir.ui.view">
+        <field name="name">uni.internship.opportunity.skill.search</field>
+        <field name="model">uni.internship.opportunity.skill</field>
+        <field name="arch" type="xml">
+            <search string="Required Skills">
+                <field name="name"/>
+                <field name="opportunity_id"/>
+                <separator/>
+                <filter name="filter_mandatory" string="Mandatory"
+                        domain="[('is_mandatory', '=', True)]"/>
+                <separator/>
+                <group expand="0" string="Group By">
+                    <filter name="group_opportunity" string="Opportunity"
+                            context="{'group_by': 'opportunity_id'}"/>
+                    <filter name="group_level" string="Level"
+                            context="{'group_by': 'level'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ===== Opportunity Skill: Action ===== -->
+    <record id="action_uni_internship_opportunity_skill" model="ir.actions.act_window">
+        <field name="name">Required Skills</field>
+        <field name="res_model">uni.internship.opportunity.skill</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_internship_opportunity_skill_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Add a required skill
+            </p>
+            <p>
+                Define the skills required for each internship opportunity.
+                Skills can be marked as mandatory and have a required
+                proficiency level.
+            </p>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- Library menu — under university_core.menu_university_root     -->
+    <!-- ============================================================ -->
+    <menuitem id="menu_university_library_root"
+              name="Library"
+              parent="university_core.menu_university_root"
+              sequence="75"/>
+
+    <!-- Books -->
+    <menuitem id="menu_uni_library_book"
+              name="Books"
+              parent="menu_university_library_root"
+              action="action_uni_library_book"
+              sequence="10"/>
+
+    <!-- Authors -->
+    <menuitem id="menu_uni_library_author"
+              name="Authors"
+              parent="menu_university_library_root"
+              action="action_uni_library_author"
+              sequence="20"/>
+
+    <!-- Categories -->
+    <menuitem id="menu_uni_library_category"
+              name="Categories"
+              parent="menu_university_library_root"
+              action="action_uni_library_category"
+              sequence="30"
+              groups="university_core.group_university_manager"/>
+
+    <!-- Borrows -->
+    <menuitem id="menu_uni_library_borrow"
+              name="Borrows"
+              parent="menu_university_library_root"
+              action="action_uni_library_borrow"
+              sequence="40"/>
+
+    <!-- Digital Repository -->
+    <menuitem id="menu_uni_library_digital"
+              name="Digital Repository"
+              parent="menu_university_library_root"
+              action="action_uni_library_digital"
+              sequence="50"/>
+
+    <!-- Fines -->
+    <menuitem id="menu_uni_library_fine"
+              name="Fines"
+              parent="menu_university_library_root"
+              action="action_uni_library_fine"
+              sequence="60"/>
+</odoo>

@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- uni.library.book — List View                                  -->
+    <!-- ============================================================ -->
+    <record id="view_uni_library_book_list" model="ir.ui.view">
+        <field name="name">uni.library.book.list</field>
+        <field name="model">uni.library.book</field>
+        <field name="arch" type="xml">
+            <list string="Books"
+                  decoration-success="state == 'available'"
+                  decoration-danger="state == 'lost'"
+                  decoration-warning="state == 'damaged'"
+                  decoration-muted="state == 'removed'">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="author_ids" widget="many2many_tags"/>
+                <field name="category_id" optional="show"/>
+                <field name="isbn" optional="hide"/>
+                <field name="publication_year" optional="show"/>
+                <field name="binding_type"/>
+                <field name="total_copies"/>
+                <field name="available_copies"/>
+                <field name="borrowed_count"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'available'"
+                       decoration-danger="state == 'lost'"
+                       decoration-warning="state == 'damaged'"
+                       decoration-info="state == 'all_borrowed'"/>
+                <field name="active" widget="boolean_toggle" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.library.book — Kanban View (grouped by state)             -->
+    <!-- ============================================================ -->
+    <record id="view_uni_library_book_kanban" model="ir.ui.view">
+        <field name="name">uni.library.book.kanban</field>
+        <field name="model">uni.library.book</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" class="o_kanban_small_column">
+                <field name="state"/>
+                <field name="code"/>
+                <field name="category_id"/>
+                <field name="available_copies"/>
+                <field name="total_copies"/>
+                <field name="cover_image"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div t-attf-class="oe_kanban_card oe_kanban_global_click">
+                            <div class="o_kanban_image">
+                                <img t-att-src="kanban_image(record, 'cover_image', record.id.raw_value)"
+                                     alt="Cover" class="o_image_64_contain"/>
+                            </div>
+                            <div class="oe_kanban_details">
+                                <strong class="o_kanban_record_title">
+                                    <field name="name"/>
+                                </strong>
+                                <div>
+                                    <field name="code"/>
+                                </div>
+                                <div>
+                                    <field name="author_ids" widget="many2many_tags"/>
+                                </div>
+                                <div>
+                                    <field name="category_id"/>
+                                </div>
+                                <div>
+                                    <span><field name="available_copies"/> / <field name="total_copies"/> copies</span>
+                                </div>
+                                <div>
+                                    <field name="state" widget="label"
+                                           decoration-success="state == 'available'"
+                                           decoration-danger="state == 'lost'"
+                                           decoration-warning="state == 'damaged'"
+                                           decoration-info="state == 'all_borrowed'"/>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.library.book — Form View                                  -->
+    <!-- ============================================================ -->
+    <record id="view_uni_library_book_form" model="ir.ui.view">
+        <field name="name">uni.library.book.form</field>
+        <field name="model">uni.library.book</field>
+        <field name="arch" type="xml">
+            <form string="Book">
+                <header>
+                    <button name="action_mark_lost" type="object"
+                            string="Mark Lost" class="oe_highlight"
+                            invisible="state == 'lost'"/>
+                    <button name="action_mark_damaged" type="object"
+                            string="Mark Damaged"
+                            invisible="state == 'damaged'"/>
+                    <button name="action_restore" type="object"
+                            string="Restore to Available"
+                            invisible="state == 'available'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="available,all_borrowed,lost,damaged,removed"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_open_borrows" type="object"
+                                class="oe_stat_button" icon="fa-exchange">
+                            <div class="o_stat_info">
+                                <span class="o_stat_value"><field name="borrowed_count"/></span>
+                                <span class="o_stat_text">Borrowed</span>
+                            </div>
+                        </button>
+                        <button name="action_archive" type="object"
+                                class="oe_stat_button" icon="fa-archive"
+                                invisible="active == False">
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">Unarchive</span>
+                            </div>
+                        </button>
+                        <button name="action_unarchive" type="object"
+                                class="oe_stat_button" icon="fa-archive"
+                                invisible="active == True">
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">Restore</span>
+                            </div>
+                        </button>
+                    </div>
+                    <field name="cover_image" widget="image"
+                           class="oe_avatar" options="{'size': [120, 160]}"/>
+                    <div class="oe_title">
+                        <label for="name" string="Book Title"/>
+                        <h1><field name="name" placeholder="e.g. Introduction to Algorithms"/></h1>
+                        <h3><field name="subtitle" placeholder="Subtitle (optional)"/></h3>
+                        <h3><field name="code" placeholder="e.g. BK-0001"/></h3>
+                    </div>
+                    <group>
+                        <group string="Identification">
+                            <field name="isbn" placeholder="978-0-123456-78-9"/>
+                            <field name="category_id"
+                                   options="{'no_create': True}"/>
+                            <field name="language_id"
+                                   options="{'no_create': True}"/>
+                            <field name="tags" placeholder="algorithms, data-structures"/>
+                        </group>
+                        <group string="Publication">
+                            <field name="publisher"/>
+                            <field name="publication_date"/>
+                            <field name="publication_year"/>
+                            <field name="edition"/>
+                            <field name="pages"/>
+                            <field name="binding_type"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Copies &amp; Inventory">
+                            <field name="total_copies"/>
+                            <field name="available_copies"/>
+                            <field name="borrowed_count"/>
+                            <field name="reserved_count"/>
+                            <field name="location"
+                                   placeholder="e.g. A-12-3"/>
+                            <field name="is_reference_only"/>
+                        </group>
+                        <group string="Acquisition">
+                            <field name="acquisition_date"/>
+                            <field name="acquisition_price"
+                                   widget="monetary"
+                                   options="{'currency_field': 'currency_id'}"/>
+                            <field name="currency_id"
+                                   options="{'no_create': True}"/>
+                            <field name="is_digital"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Authors" name="authors">
+                            <field name="author_ids">
+                                <list>
+                                    <field name="code"/>
+                                    <field name="name"/>
+                                    <field name="nationality_id"/>
+                                    <field name="book_count"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Digital Assets" name="digital">
+                            <group>
+                                <group>
+                                    <field name="file" filename="filename"/>
+                                    <field name="filename" invisible="1"/>
+                                    <field name="digital_url"
+                                           widget="url"
+                                           placeholder="https://..."/>
+                                </group>
+                                <group>
+                                    <field name="binding_type"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Description" name="description">
+                            <group>
+                                <field name="summary" nolabel="1"
+                                       placeholder="Short summary for catalogs..."/>
+                            </group>
+                            <group>
+                                <field name="description" nolabel="1"
+                                       placeholder="Full description of the book..."/>
+                            </group>
+                        </page>
+                        <page string="Borrow History" name="borrow_history">
+                            <field name="borrow_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="borrower_name"/>
+                                    <field name="borrow_date"/>
+                                    <field name="due_date"/>
+                                    <field name="actual_return_date"/>
+                                    <field name="state" widget="badge"
+                                           decoration-success="state == 'returned'"
+                                           decoration-danger="state == 'overdue' or state == 'lost'"
+                                           decoration-info="state == 'borrowed'"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.library.book — Search View                                -->
+    <!-- ============================================================ -->
+    <record id="view_uni_library_book_search" model="ir.ui.view">
+        <field name="name">uni.library.book.search</field>
+        <field name="model">uni.library.book</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="isbn"/>
+                <field name="author_ids"/>
+                <field name="category_id"/>
+                <field name="publisher"/>
+                <filter string="Available" name="filter_available"
+                        domain="[('state', '=', 'available')]"/>
+                <filter string="Lost" name="filter_lost"
+                        domain="[('state', '=', 'lost')]"/>
+                <filter string="Damaged" name="filter_damaged"
+                        domain="[('state', '=', 'damaged')]"/>
+                <filter string="Reference Only" name="filter_reference"
+                        domain="[('is_reference_only', '=', True)]"/>
+                <filter string="Digital" name="filter_digital"
+                        domain="[('is_digital', '=', True)]"/>
+                <filter string="Archived" name="filter_archived"
+                        domain="[('active', '=', False)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Category" name="group_category"
+                            context="{'group_by': 'category_id'}"/>
+                    <filter string="State" name="group_state"
+                            context="{'group_by': 'state'}"/>
+                    <filter string="Binding Type" name="group_binding"
+                            context="{'group_by': 'binding_type'}"/>
+                    <filter string="Language" name="group_language"
+                            context="{'group_by': 'language_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.library.book — Action (list, kanban, form)                -->
+    <!-- ============================================================ -->
+    <record id="action_uni_library_book" model="ir.actions.act_window">
+        <field name="name">Books</field>
+        <field name="res_model">uni.library.book</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="search_view_id" ref="view_uni_library_book_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Add a new book to the library
+            </p>
+            <p>Library books are the central records of the library module.
+               Track copies, borrowing, digital assets, and book state.</p>
+        </field>
+    </record>
+</odoo>

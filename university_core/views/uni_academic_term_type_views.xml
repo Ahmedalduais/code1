@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_uni_academic_term_type_list" model="ir.ui.view">
+        <field name="name">uni.academic.term.type.list</field>
+        <field name="model">uni.academic.term.type</field>
+        <field name="arch" type="xml">
+            <list string="Term Types">
+                <field name="sequence" widget="handle"/>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="terms_per_year"/>
+                <field name="weeks_per_term"/>
+                <field name="term_count"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_uni_academic_term_type_form" model="ir.ui.view">
+        <field name="name">uni.academic.term.type.form</field>
+        <field name="model">uni.academic.term.type</field>
+        <field name="arch" type="xml">
+            <form string="Term Type">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" string="Type Name"/>
+                        <h1><field name="name" placeholder="e.g. Semester System"/></h1>
+                        <h3><field name="code" placeholder="e.g. SEM"/></h3>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="sequence"/>
+                            <field name="terms_per_year"/>
+                            <field name="weeks_per_term"/>
+                        </group>
+                        <group>
+                            <field name="term_count"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="description"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_uni_academic_term_type" model="ir.actions.act_window">
+        <field name="name">Term Types</field>
+        <field name="res_model">uni.academic.term.type</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- ============================================================ -->
+    <!-- Default admission requirements                                -->
+    <!-- ============================================================ -->
+
+    <!-- High School Transcript (mandatory document) -->
+    <record id="requirement_high_school_transcript" model="uni.admission.requirement">
+        <field name="name">High School Transcript</field>
+        <field name="code">HS-TRANSCRIPT</field>
+        <field name="requirement_type">document</field>
+        <field name="is_mandatory">True</field>
+        <field name="sequence">10</field>
+        <field name="description">Official copy of the applicant's high school transcript
+showing all grades and the cumulative grade point average or percentage.</field>
+    </record>
+
+    <!-- ID Copy (mandatory document) -->
+    <record id="requirement_id_copy" model="uni.admission.requirement">
+        <field name="name">ID Copy</field>
+        <field name="code">ID-COPY</field>
+        <field name="requirement_type">document</field>
+        <field name="is_mandatory">True</field>
+        <field name="sequence">20</field>
+        <field name="description">Clear scanned copy of a government-issued identification
+document (national ID card or passport).</field>
+    </record>
+
+    <!-- Personal Photo (mandatory document) -->
+    <record id="requirement_personal_photo" model="uni.admission.requirement">
+        <field name="name">Personal Photo</field>
+        <field name="code">PHOTO</field>
+        <field name="requirement_type">document</field>
+        <field name="is_mandatory">True</field>
+        <field name="sequence">30</field>
+        <field name="description">Recent passport-sized photograph of the applicant.</field>
+    </record>
+
+    <!-- Personal Statement (mandatory document) -->
+    <record id="requirement_personal_statement" model="uni.admission.requirement">
+        <field name="name">Personal Statement</field>
+        <field name="code">PERSONAL-STATEMENT</field>
+        <field name="requirement_type">document</field>
+        <field name="is_mandatory">True</field>
+        <field name="sequence">40</field>
+        <field name="description">A written personal statement in which the applicant
+describes their academic background, motivation and future goals.</field>
+    </record>
+
+    <!-- Recommendation Letter (optional document) -->
+    <record id="requirement_recommendation_letter" model="uni.admission.requirement">
+        <field name="name">Recommendation Letter</field>
+        <field name="code">REC-LETTER</field>
+        <field name="requirement_type">document</field>
+        <field name="is_mandatory">False</field>
+        <field name="sequence">50</field>
+        <field name="description">At least one letter of recommendation from a teacher,
+employer or community leader familiar with the applicant.</field>
+    </record>
+
+    <!-- Application Fee Receipt (mandatory payment) -->
+    <record id="requirement_application_fee_receipt" model="uni.admission.requirement">
+        <field name="name">Application Fee Receipt</field>
+        <field name="code">APP-FEE</field>
+        <field name="requirement_type">payment</field>
+        <field name="is_mandatory">True</field>
+        <field name="sequence">60</field>
+        <field name="description">Proof of payment of the non-refundable admission
+application processing fee.</field>
+    </record>
+</odoo>

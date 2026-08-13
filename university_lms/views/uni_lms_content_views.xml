@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============ uni.lms.content — List View ============ -->
+    <record id="view_uni_lms_content_list" model="ir.ui.view">
+        <field name="name">uni.lms.content.list</field>
+        <field name="model">uni.lms.content</field>
+        <field name="arch" type="xml">
+            <list string="LMS Content"
+                  decoration-success="state=='published'"
+                  decoration-warning="state=='draft'"
+                  decoration-muted="state=='archived'">
+                <field name="sequence" widget="handle"/>
+                <field name="sequence_number"/>
+                <field name="lms_course_id"/>
+                <field name="parent_id" optional="hide"/>
+                <field name="content_type"/>
+                <field name="title"/>
+                <field name="filename" optional="hide"/>
+                <field name="url" widget="url" optional="hide"/>
+                <field name="duration" widget="float_time"/>
+                <field name="file_size" widget="integer"/>
+                <field name="is_required" widget="boolean_toggle"/>
+                <field name="is_downloadable" widget="boolean_toggle" optional="hide"/>
+                <field name="view_count"/>
+                <field name="state" widget="badge"/>
+                <field name="active" widget="boolean_toggle" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============ uni.lms.content — Form View ============ -->
+    <record id="view_uni_lms_content_form" model="ir.ui.view">
+        <field name="name">uni.lms.content.form</field>
+        <field name="model">uni.lms.content</field>
+        <field name="arch" type="xml">
+            <form string="LMS Content">
+                <header>
+                    <button name="action_publish" type="object" string="Publish"
+                            class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_archive" type="object" string="Archive"
+                            class="btn-danger" invisible="state == 'archived'"/>
+                    <button name="action_unarchive" type="object" string="Restore"
+                            class="btn-secondary" invisible="state != 'archived'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,published,archived"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" type="object"
+                                name="action_increment_view" icon="fa-eye">
+                            <field name="view_count" widget="statinfo" string="Views"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="title" string="Title"/>
+                        <h1><field name="title" placeholder="e.g. Lecture 1 — Introduction"/></h1>
+                        <h3><field name="name" placeholder="Internal reference (optional)"/></h3>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="lms_course_id" options="{'no_create': True}"/>
+                            <field name="content_type"/>
+                            <field name="parent_id" options="{'no_create': True}"/>
+                            <field name="sequence"/>
+                            <field name="sequence_number"/>
+                            <field name="is_required" widget="boolean_toggle"/>
+                            <field name="is_downloadable" widget="boolean_toggle"/>
+                            <field name="active" widget="boolean_toggle"/>
+                        </group>
+                        <group>
+                            <field name="file" filename="filename"
+                                   invisible="content_type not in ('video', 'document', 'presentation', 'image', 'audio', 'other')"/>
+                            <field name="filename"
+                                   invisible="content_type not in ('video', 'document', 'presentation', 'image', 'audio', 'other')"/>
+                            <field name="url" widget="url"
+                                   invisible="content_type != 'link'"
+                                   placeholder="https://example.com/resource"/>
+                            <field name="duration" widget="float_time"/>
+                            <field name="file_size"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Description" name="description">
+                            <field name="description" placeholder="Short summary of this content item..."/>
+                        </page>
+                        <page string="Text Content" name="text_content"
+                              invisible="content_type != 'text'">
+                            <field name="text_content" nolabel="1"/>
+                        </page>
+                        <page string="Child Items" name="child_items">
+                            <field name="child_ids">
+                                <list>
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="sequence_number"/>
+                                    <field name="title"/>
+                                    <field name="content_type"/>
+                                    <field name="duration" widget="float_time"/>
+                                    <field name="is_required" widget="boolean_toggle"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="notes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============ uni.lms.content — Search View ============ -->
+    <record id="view_uni_lms_content_search" model="ir.ui.view">
+        <field name="name">uni.lms.content.search</field>
+        <field name="model">uni.lms.content</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="title"/>
+                <field name="lms_course_id"/>
+                <field name="parent_id"/>
+                <field name="content_type"/>
+                <filter string="Published" name="filter_published"
+                        domain="[('state', '=', 'published')]"/>
+                <filter string="Draft" name="filter_draft"
+                        domain="[('state', '=', 'draft')]"/>
+                <filter string="Required" name="filter_required"
+                        domain="[('is_required', '=', True)]"/>
+                <filter string="Downloadable" name="filter_downloadable"
+                        domain="[('is_downloadable', '=', True)]"/>
+                <separator/>
+                <filter string="Active Only" name="filter_active"
+                        domain="[('active', '=', True)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="LMS Course" name="group_course"
+                            context="{'group_by': 'lms_course_id'}"/>
+                    <filter string="Parent" name="group_parent"
+                            context="{'group_by': 'parent_id'}"/>
+                    <filter string="Content Type" name="group_type"
+                            context="{'group_by': 'content_type'}"/>
+                    <filter string="Status" name="group_state"
+                            context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============ uni.lms.content — Action ============ -->
+    <record id="action_uni_lms_content" model="ir.actions.act_window">
+        <field name="name">LMS Content</field>
+        <field name="res_model">uni.lms.content</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_lms_content_search"/>
+        <field name="context">{'search_default_filter_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new content item
+            </p>
+            <p>
+                Content items are the building blocks of an LMS course:
+                videos, documents, presentations, links, text, images, audio.
+                Organize them hierarchically via parent sections.
+            </p>
+        </field>
+    </record>
+</odoo>

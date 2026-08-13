@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============ uni.project.progress — List View ============ -->
+    <record id="view_uni_project_progress_list" model="ir.ui.view">
+        <field name="name">uni.project.progress.list</field>
+        <field name="model">uni.project.progress</field>
+        <field name="arch" type="xml">
+            <list string="Progress Reports"
+                  decoration-danger="needs_attention == True"
+                  decoration-success="is_on_track == True and needs_attention == False"
+                  decoration-warning="is_on_track == False and needs_attention == False">
+                <field name="name"/>
+                <field name="project_id"/>
+                <field name="report_date"/>
+                <field name="reported_by" optional="show"/>
+                <field name="progress_percentage" widget="progressbar"/>
+                <field name="is_on_track" optional="hide"
+                       widget="boolean_toggle"/>
+                <field name="needs_attention" optional="hide"
+                       widget="boolean_toggle"/>
+                <field name="budget_used" sum="Total Budget Used" optional="hide"/>
+                <field name="currency_id" optional="hide"/>
+                <field name="active" widget="boolean_toggle" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============ uni.project.progress — Form View ============ -->
+    <record id="view_uni_project_progress_form" model="ir.ui.view">
+        <field name="name">uni.project.progress.form</field>
+        <field name="model">uni.project.progress</field>
+        <field name="arch" type="xml">
+            <form string="Progress Report">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" string="Reference"/>
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group string="Project">
+                            <field name="project_id" options="{'no_create': True}"/>
+                            <field name="report_date"/>
+                            <field name="reported_by" options="{'no_create': True}"/>
+                        </group>
+                        <group string="Progress">
+                            <field name="progress_percentage" widget="progressbar"/>
+                            <field name="is_on_track" widget="boolean_toggle"/>
+                            <field name="needs_attention" widget="boolean_toggle"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Budget">
+                            <field name="budget_used"/>
+                            <field name="currency_id" options="{'no_create': True}"/>
+                        </group>
+                        <group string="Attachment">
+                            <field name="file" filename="filename"/>
+                            <field name="filename" invisible="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Tasks" name="tasks">
+                            <group>
+                                <field name="completed_tasks"
+                                       placeholder="What has been accomplished..."/>
+                                <field name="upcoming_tasks"
+                                       placeholder="What is planned next..."/>
+                            </group>
+                        </page>
+                        <page string="Issues" name="issues">
+                            <group>
+                                <field name="challenges"
+                                       placeholder="Difficulties encountered..."/>
+                                <field name="risks"
+                                       placeholder="Risks &amp; mitigation..."/>
+                            </group>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="notes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============ uni.project.progress — Search View ============ -->
+    <record id="view_uni_project_progress_search" model="ir.ui.view">
+        <field name="name">uni.project.progress.search</field>
+        <field name="model">uni.project.progress</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="project_id"/>
+                <field name="reported_by"/>
+                <separator/>
+                <filter string="On Track" name="filter_on_track"
+                        domain="[('is_on_track', '=', True)]"/>
+                <filter string="Needs Attention" name="filter_needs_attention"
+                        domain="[('needs_attention', '=', True)]"/>
+                <filter string="Archived" name="filter_inactive"
+                        domain="[('active', '=', False)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Project" name="group_project"
+                            context="{'group_by': 'project_id'}"/>
+                    <filter string="Reported By" name="group_reported_by"
+                            context="{'group_by': 'reported_by'}"/>
+                    <filter string="Report Date" name="group_report_date"
+                            context="{'group_by': 'report_date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============ uni.project.progress — Action ============ -->
+    <record id="action_uni_project_progress" model="ir.actions.act_window">
+        <field name="name">Progress Reports</field>
+        <field name="res_model">uni.project.progress</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_project_progress_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first progress report
+            </p>
+            <p>
+                Track periodic project status updates: completion percentage,
+                completed and upcoming tasks, challenges, risks, and budget
+                consumption.
+            </p>
+        </field>
+    </record>
+</odoo>

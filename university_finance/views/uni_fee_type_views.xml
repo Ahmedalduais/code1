@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- uni.fee.type — List View                                      -->
+    <!-- ============================================================ -->
+    <record id="view_uni_fee_type_list" model="ir.ui.view">
+        <field name="name">uni.fee.type.list</field>
+        <field name="model">uni.fee.type</field>
+        <field name="arch" type="xml">
+            <list string="Fee Types"
+                  decoration-success="is_recurring == True"
+                  decoration-muted="active == False">
+                <field name="sequence" widget="handle"/>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="fee_category"/>
+                <field name="is_recurring" widget="boolean_toggle"/>
+                <field name="default_amount" sum="Total Default"/>
+                <field name="currency_id" optional="hide"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.fee.type — Form View                                      -->
+    <!-- ============================================================ -->
+    <record id="view_uni_fee_type_form" model="ir.ui.view">
+        <field name="name">uni.fee.type.form</field>
+        <field name="model">uni.fee.type</field>
+        <field name="arch" type="xml">
+            <form string="Fee Type">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_archive" type="object"
+                                class="oe_stat_button" icon="fa-archive"
+                                invisible="active == False">
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">Archive</span>
+                            </div>
+                        </button>
+                        <button name="action_unarchive" type="object"
+                                class="oe_stat_button" icon="fa-undo"
+                                invisible="active == True">
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">Unarchive</span>
+                            </div>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" string="Fee Type"/>
+                        <h1><field name="name" placeholder="e.g. Tuition Fee"/></h1>
+                        <h3><field name="code" placeholder="e.g. TUITION"/></h3>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="fee_category"/>
+                            <field name="is_recurring"/>
+                            <field name="sequence"/>
+                        </group>
+                        <group>
+                            <field name="default_amount" widget="monetary"
+                                   options="{'currency_field': 'currency_id'}"/>
+                            <field name="currency_id"
+                                   options="{'no_create': True}"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                    </group>
+                    <group string="Description">
+                        <field name="description" nolabel="1"
+                               placeholder="Describe the purpose and scope of this fee type..."/>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.fee.type — Search View                                    -->
+    <!-- ============================================================ -->
+    <record id="view_uni_fee_type_search" model="ir.ui.view">
+        <field name="name">uni.fee.type.search</field>
+        <field name="model">uni.fee.type</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="fee_category"/>
+                <filter string="Recurring" name="filter_recurring"
+                        domain="[('is_recurring', '=', True)]"/>
+                <filter string="One-time" name="filter_one_time"
+                        domain="[('is_recurring', '=', False)]"/>
+                <filter string="Archived" name="filter_archived"
+                        domain="[('active', '=', False)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Category" name="group_category"
+                            context="{'group_by': 'fee_category'}"/>
+                    <filter string="Recurring" name="group_recurring"
+                            context="{'group_by': 'is_recurring'}"/>
+                    <filter string="Currency" name="group_currency"
+                            context="{'group_by': 'currency_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.fee.type — Action                                         -->
+    <!-- ============================================================ -->
+    <record id="action_uni_fee_type" model="ir.actions.act_window">
+        <field name="name">Fee Types</field>
+        <field name="res_model">uni.fee.type</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_fee_type_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new fee type
+            </p>
+            <p>Fee types define the categories of charges that can be applied
+               to students (tuition, lab, library, activity, registration,
+               graduation, housing, transport, late penalty, other).</p>
+        </field>
+    </record>
+</odoo>

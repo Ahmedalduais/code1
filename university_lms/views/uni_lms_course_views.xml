@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============ uni.lms.course — List View ============ -->
+    <record id="view_uni_lms_course_list" model="ir.ui.view">
+        <field name="name">uni.lms.course.list</field>
+        <field name="model">uni.lms.course</field>
+        <field name="arch" type="xml">
+            <list string="LMS Courses"
+                  decoration-success="state=='published'"
+                  decoration-warning="state=='draft'"
+                  decoration-muted="state=='archived'">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="course_id"/>
+                <field name="academic_term_id" optional="show"/>
+                <field name="faculty_name" optional="show"/>
+                <field name="college_id" optional="hide"/>
+                <field name="department_id" optional="hide"/>
+                <field name="enrollment_open" widget="boolean_toggle"/>
+                <field name="enrolled_count"/>
+                <field name="max_students" optional="hide"/>
+                <field name="content_count" optional="show"/>
+                <field name="assignment_count" optional="hide"/>
+                <field name="quiz_count" optional="hide"/>
+                <field name="state" widget="badge"/>
+                <field name="active" widget="boolean_toggle" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============ uni.lms.course — Form View ============ -->
+    <record id="view_uni_lms_course_form" model="ir.ui.view">
+        <field name="name">uni.lms.course.form</field>
+        <field name="model">uni.lms.course</field>
+        <field name="arch" type="xml">
+            <form string="LMS Course">
+                <header>
+                    <button name="action_publish" type="object" string="Publish"
+                            class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_archive" type="object" string="Archive"
+                            class="btn-danger" invisible="state == 'archived'"/>
+                    <button name="action_draft" type="object" string="Set to Draft"
+                            class="btn-secondary" invisible="state == 'draft'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,published,archived"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" type="object"
+                                name="action_view_contents" icon="fa-folder-open">
+                            <field name="content_count" widget="statinfo"
+                                   string="Contents"/>
+                        </button>
+                        <button class="oe_stat_button" type="object"
+                                name="action_view_assignments" icon="fa-tasks">
+                            <field name="assignment_count" widget="statinfo"
+                                   string="Assignments"/>
+                        </button>
+                        <button class="oe_stat_button" type="object"
+                                name="action_view_quizzes" icon="fa-question-circle">
+                            <field name="quiz_count" widget="statinfo"
+                                   string="Quizzes"/>
+                        </button>
+                        <button class="oe_stat_button" type="object"
+                                name="action_view_forums" icon="fa-comments">
+                            <field name="forum_count" widget="statinfo"
+                                   string="Forums"/>
+                        </button>
+                        <button class="oe_stat_button" type="object"
+                                name="action_view_progress" icon="fa-users">
+                            <field name="enrolled_count" widget="statinfo"
+                                   string="Enrolled"/>
+                        </button>
+                    </div>
+                    <field name="cover_image" widget="image"
+                           class="oe_avatar"
+                           options="{'preview_image': 'cover_image',
+                                     'size': [128, 72]}"/>
+                    <div class="oe_title">
+                        <label for="name" string="Reference"/>
+                        <h1><field name="name" placeholder="e.g. LMS/2024/00001"/></h1>
+                        <h3><field name="code" placeholder="e.g. CS101-LMS"/></h3>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="course_id" options="{'no_create': True}"/>
+                            <field name="academic_term_id" options="{'no_create': True}"/>
+                            <field name="faculty_name" placeholder="e.g. Dr. Ahmed Hassan"/>
+                            <field name="university_id" options="{'no_create': True}"/>
+                            <field name="college_id" options="{'no_create': True}"/>
+                            <field name="department_id" options="{'no_create': True}"/>
+                            <field name="branch_id" options="{'no_create': True}"/>
+                        </group>
+                        <group>
+                            <field name="start_date"/>
+                            <field name="end_date"/>
+                            <field name="enrollment_open" widget="boolean_toggle"/>
+                            <field name="max_students"/>
+                            <field name="enrolled_count"/>
+                            <field name="active" widget="boolean_toggle"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Description" name="description">
+                            <group>
+                                <field name="description" placeholder="Short summary shown in the course catalog..."/>
+                            </group>
+                            <group string="Introduction">
+                                <field name="introduction" nolabel="1"/>
+                            </group>
+                        </page>
+                        <page string="Objectives" name="objectives">
+                            <field name="objectives" placeholder="List the learning objectives..."/>
+                            <field name="prerequisites" placeholder="Required prior knowledge..."/>
+                        </page>
+                        <page string="Content" name="content">
+                            <field name="content_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="sequence_number"/>
+                                    <field name="title"/>
+                                    <field name="content_type"/>
+                                    <field name="duration" widget="float_time"/>
+                                    <field name="is_required" widget="boolean_toggle"/>
+                                    <field name="is_downloadable" widget="boolean_toggle"/>
+                                    <field name="view_count"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Assignments" name="assignments">
+                            <field name="assignment_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="title"/>
+                                    <field name="assignment_type"/>
+                                    <field name="due_date"/>
+                                    <field name="max_score"/>
+                                    <field name="weight"/>
+                                    <field name="submission_count"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Quizzes" name="quizzes">
+                            <field name="quiz_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="title"/>
+                                    <field name="quiz_type"/>
+                                    <field name="question_count"/>
+                                    <field name="attempt_count"/>
+                                    <field name="start_date"/>
+                                    <field name="end_date"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Forums" name="forums">
+                            <field name="forum_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="moderator_name"/>
+                                    <field name="post_count"/>
+                                    <field name="is_announcements_only" widget="boolean_toggle"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Enrolled Students" name="progress">
+                            <field name="progress_ids">
+                                <list>
+                                    <field name="student_name"/>
+                                    <field name="student_code" optional="hide"/>
+                                    <field name="enrollment_date"/>
+                                    <field name="last_access"/>
+                                    <field name="completion_percentage" widget="progressbar"/>
+                                    <field name="average_score"/>
+                                    <field name="time_spent_hours" widget="float_time"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="notes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============ uni.lms.course — Kanban View ============ -->
+    <record id="view_uni_lms_course_kanban" model="ir.ui.view">
+        <field name="name">uni.lms.course.kanban</field>
+        <field name="model">uni.lms.course</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" class="o_kanban_small_column">
+                <field name="state"/>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="course_id"/>
+                <field name="academic_term_id"/>
+                <field name="faculty_name"/>
+                <field name="enrolled_count"/>
+                <field name="max_students"/>
+                <field name="content_count"/>
+                <field name="cover_image"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_card oe_kanban_global_click">
+                            <div class="o_kanban_image">
+                                <img t-att-src="kanban_image('uni.lms.course', 'cover_image', record.id.raw_value)"
+                                     alt="Cover" class="oe_avatar"
+                                     t-att-style="record.cover_image.raw_value ? '' : 'display:none;'"/>
+                            </div>
+                            <div class="oe_kanban_details">
+                                <strong class="o_kanban_record_title">
+                                    <field name="course_id"/>
+                                </strong>
+                                <div>
+                                    <span class="text-muted">
+                                        <field name="name"/>
+                                    </span>
+                                </div>
+                                <div>
+                                    <field name="code"/>
+                                </div>
+                                <div>
+                                    <i class="fa fa-calendar me-1"/>
+                                    <field name="academic_term_id"/>
+                                </div>
+                                <div>
+                                    <i class="fa fa-user me-1"/>
+                                    <field name="faculty_name"/>
+                                </div>
+                                <div>
+                                    <i class="fa fa-users me-1"/>
+                                    <field name="enrolled_count"/>
+                                    <span t-if="record.max_students.raw_value">
+                                        / <field name="max_students"/>
+                                    </span>
+                                </div>
+                                <div>
+                                    <i class="fa fa-folder-open me-1"/>
+                                    <field name="content_count"/>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- ============ uni.lms.course — Search View ============ -->
+    <record id="view_uni_lms_course_search" model="ir.ui.view">
+        <field name="name">uni.lms.course.search</field>
+        <field name="model">uni.lms.course</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="course_id"/>
+                <field name="academic_term_id"/>
+                <field name="faculty_name"/>
+                <field name="college_id"/>
+                <field name="department_id"/>
+                <filter string="Published" name="filter_published"
+                        domain="[('state', '=', 'published')]"/>
+                <filter string="Draft" name="filter_draft"
+                        domain="[('state', '=', 'draft')]"/>
+                <filter string="Archived" name="filter_archived"
+                        domain="[('state', '=', 'archived')]"/>
+                <separator/>
+                <filter string="Open Enrollment" name="filter_open_enrollment"
+                        domain="[('enrollment_open', '=', True)]"/>
+                <separator/>
+                <filter string="Active Only" name="filter_active"
+                        domain="[('active', '=', True)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Academic Course" name="group_course"
+                            context="{'group_by': 'course_id'}"/>
+                    <filter string="Term" name="group_term"
+                            context="{'group_by': 'academic_term_id'}"/>
+                    <filter string="Instructor" name="group_faculty"
+                            context="{'group_by': 'faculty_name'}"/>
+                    <filter string="College" name="group_college"
+                            context="{'group_by': 'college_id'}"/>
+                    <filter string="Department" name="group_department"
+                            context="{'group_by': 'department_id'}"/>
+                    <filter string="Status" name="group_state"
+                            context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============ uni.lms.course — Action ============ -->
+    <record id="action_uni_lms_course" model="ir.actions.act_window">
+        <field name="name">LMS Courses</field>
+        <field name="res_model">uni.lms.course</field>
+        <field name="view_mode">list,kanban,form</field>
+        <field name="search_view_id" ref="view_uni_lms_course_search"/>
+        <field name="context">{'search_default_filter_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new LMS course
+            </p>
+            <p>
+                LMS courses are electronic versions of academic courses.
+                Each course contains content (videos, documents, links),
+                assignments, quizzes, forums, and tracks student progress.
+            </p>
+        </field>
+    </record>
+</odoo>

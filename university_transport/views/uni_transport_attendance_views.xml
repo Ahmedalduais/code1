@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- uni.transport.attendance — List View                          -->
+    <!-- ============================================================ -->
+    <record id="view_uni_transport_attendance_list" model="ir.ui.view">
+        <field name="name">uni.transport.attendance.list</field>
+        <field name="model">uni.transport.attendance</field>
+        <field name="arch" type="xml">
+            <list string="Transport Attendance"
+                  decoration-muted="state == 'draft'"
+                  decoration-success="state == 'validated'">
+                <field name="name"/>
+                <field name="date"/>
+                <field name="route_id"/>
+                <field name="university_id"/>
+                <field name="vehicle_id"/>
+                <field name="driver_id"/>
+                <field name="direction"/>
+                <field name="total_passengers"/>
+                <field name="present_count"/>
+                <field name="absent_count"/>
+                <field name="state" widget="badge"
+                       decoration-muted="state == 'draft'"
+                       decoration-success="state == 'validated'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.transport.attendance — Form View                          -->
+    <!-- ============================================================ -->
+    <record id="view_uni_transport_attendance_form" model="ir.ui.view">
+        <field name="name">uni.transport.attendance.form</field>
+        <field name="model">uni.transport.attendance</field>
+        <field name="arch" type="xml">
+            <form string="Transport Attendance">
+                <header>
+                    <button name="action_populate_lines" type="object"
+                            string="Populate Lines" class="oe_highlight"
+                            invisible="state != 'draft'"/>
+                    <button name="action_validate" type="object"
+                            string="Validate" class="oe_highlight"
+                            invisible="state != 'draft'"/>
+                    <button name="action_draft" type="object"
+                            string="Reset to Draft"
+                            invisible="state != 'validated'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,validated"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button type="object"
+                                class="oe_stat_button" icon="fa-users"
+                                name="action_view_lines">
+                            <div class="o_stat_info">
+                                <span class="o_stat_value"><field name="total_passengers"/></span>
+                                <span class="o_stat_text">Passengers</span>
+                            </div>
+                        </button>
+                        <button type="object"
+                                class="oe_stat_button" icon="fa-check"
+                                name="action_view_lines">
+                            <div class="o_stat_info">
+                                <span class="o_stat_value"><field name="present_count"/></span>
+                                <span class="o_stat_text">Present</span>
+                            </div>
+                        </button>
+                        <button type="object"
+                                class="oe_stat_button" icon="fa-times"
+                                name="action_view_lines">
+                            <div class="o_stat_info">
+                                <span class="o_stat_value"><field name="absent_count"/></span>
+                                <span class="o_stat_text">Absent</span>
+                            </div>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" string="Attendance Reference"/>
+                        <h1><field name="name" readonly="1"/></h1>
+                        <h3><field name="code" placeholder="Optional code"/></h3>
+                    </div>
+                    <group>
+                        <group string="Trip">
+                            <field name="date"/>
+                            <field name="route_id"
+                                   options="{'no_create': True}"/>
+                            <field name="direction"/>
+                        </group>
+                        <group string="Resources">
+                            <field name="university_id" readonly="1"/>
+                            <field name="vehicle_id" readonly="1"/>
+                            <field name="driver_id" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Lines" name="lines">
+                            <field name="line_ids">
+                                <list editable="bottom">
+                                    <field name="pass_id"
+                                           options="{'no_create': True}"/>
+                                    <field name="student_id"
+                                           options="{'no_create': True}"/>
+                                    <field name="pickup_stop_id"
+                                           options="{'no_create': True}"
+                                           domain="[('route_id', '=', parent.route_id), ('is_pickup_point', '=', True)]"/>
+                                    <field name="status"
+                                           decoration-success="status == 'present'"
+                                           decoration-danger="status == 'absent'"
+                                           decoration-warning="status == 'late'"
+                                           decoration-muted="status == 'cancelled'"/>
+                                    <field name="pickup_time" widget="float_time"/>
+                                    <field name="actual_pickup_time" widget="float_time"/>
+                                    <field name="notes"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="notes" nolabel="1"
+                                   placeholder="Internal notes about this attendance..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.transport.attendance — Calendar View                      -->
+    <!-- ============================================================ -->
+    <record id="view_uni_transport_attendance_calendar" model="ir.ui.view">
+        <field name="name">uni.transport.attendance.calendar</field>
+        <field name="model">uni.transport.attendance</field>
+        <field name="arch" type="xml">
+            <calendar string="Transport Attendance"
+                      date_start="date"
+                      color="direction">
+                <field name="name"/>
+                <field name="route_id"/>
+                <field name="vehicle_id"/>
+                <field name="driver_id"/>
+                <field name="direction"/>
+            </calendar>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.transport.attendance — Search View                        -->
+    <!-- ============================================================ -->
+    <record id="view_uni_transport_attendance_search" model="ir.ui.view">
+        <field name="name">uni.transport.attendance.search</field>
+        <field name="model">uni.transport.attendance</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="date"/>
+                <field name="route_id"/>
+                <field name="vehicle_id"/>
+                <field name="driver_id"/>
+                <field name="university_id"/>
+                <filter string="Draft" name="filter_draft"
+                        domain="[('state', '=', 'draft')]"/>
+                <filter string="Validated" name="filter_validated"
+                        domain="[('state', '=', 'validated')]"/>
+                <separator/>
+                <filter string="Today" name="filter_today"
+                        domain="[('date', '=', context_today().strftime('%Y-%m-%d'))]"/>
+                <filter string="This Week" name="filter_week"
+                        domain="[('date', '&gt;=', (context_today() - relativedelta(days=7)).strftime('%Y-%m-%d'))]"/>
+                <separator/>
+                <filter string="Morning Pickup" name="filter_morning"
+                        domain="[('direction', '=', 'morning_pickup')]"/>
+                <filter string="Afternoon Drop" name="filter_afternoon"
+                        domain="[('direction', '=', 'afternoon_drop')]"/>
+                <filter string="Night Drop" name="filter_night"
+                        domain="[('direction', '=', 'night_drop')]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Route" name="group_route"
+                            context="{'group_by': 'route_id'}"/>
+                    <filter string="Vehicle" name="group_vehicle"
+                            context="{'group_by': 'vehicle_id'}"/>
+                    <filter string="Driver" name="group_driver"
+                            context="{'group_by': 'driver_id'}"/>
+                    <filter string="Direction" name="group_direction"
+                            context="{'group_by': 'direction'}"/>
+                    <filter string="State" name="group_state"
+                            context="{'group_by': 'state'}"/>
+                    <filter string="Date" name="group_date"
+                            context="{'group_by': 'date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.transport.attendance.line — List View                     -->
+    <!-- ============================================================ -->
+    <record id="view_uni_transport_attendance_line_list" model="ir.ui.view">
+        <field name="name">uni.transport.attendance.line.list</field>
+        <field name="model">uni.transport.attendance.line</field>
+        <field name="arch" type="xml">
+            <list string="Attendance Lines">
+                <field name="date"/>
+                <field name="route_id"/>
+                <field name="student_id"/>
+                <field name="pickup_stop_id"/>
+                <field name="status" widget="badge"
+                       decoration-success="status == 'present'"
+                       decoration-danger="status == 'absent'"
+                       decoration-warning="status == 'late'"
+                       decoration-muted="status == 'cancelled'"/>
+                <field name="pickup_time" widget="float_time"/>
+                <field name="actual_pickup_time" widget="float_time"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.transport.attendance.line — Search View                   -->
+    <!-- ============================================================ -->
+    <record id="view_uni_transport_attendance_line_search" model="ir.ui.view">
+        <field name="name">uni.transport.attendance.line.search</field>
+        <field name="model">uni.transport.attendance.line</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="student_id"/>
+                <field name="pass_id"/>
+                <field name="route_id"/>
+                <field name="pickup_stop_id"/>
+                <field name="date"/>
+                <filter string="Present" name="filter_present"
+                        domain="[('status', '=', 'present')]"/>
+                <filter string="Absent" name="filter_absent"
+                        domain="[('status', '=', 'absent')]"/>
+                <filter string="Late" name="filter_late"
+                        domain="[('status', '=', 'late')]"/>
+                <filter string="Cancelled" name="filter_cancelled"
+                        domain="[('status', '=', 'cancelled')]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Student" name="group_student"
+                            context="{'group_by': 'student_id'}"/>
+                    <filter string="Route" name="group_route"
+                            context="{'group_by': 'route_id'}"/>
+                    <filter string="Pickup Stop" name="group_stop"
+                            context="{'group_by': 'pickup_stop_id'}"/>
+                    <filter string="Status" name="group_status"
+                            context="{'group_by': 'status'}"/>
+                    <filter string="Date" name="group_date"
+                            context="{'group_by': 'date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.transport.attendance.line — Action                        -->
+    <!-- ============================================================ -->
+    <record id="action_uni_transport_attendance_line" model="ir.actions.act_window">
+        <field name="name">Attendance Lines</field>
+        <field name="res_model">uni.transport.attendance.line</field>
+        <field name="view_mode">list</field>
+        <field name="search_view_id" ref="view_uni_transport_attendance_line_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No attendance lines yet
+            </p>
+            <p>Attendance lines are created automatically from the
+               parent attendance record when you click "Populate Lines".</p>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.transport.attendance — Action                             -->
+    <!-- ============================================================ -->
+    <record id="action_uni_transport_attendance" model="ir.actions.act_window">
+        <field name="name">Transport Attendance</field>
+        <field name="res_model">uni.transport.attendance</field>
+        <field name="view_mode">list,form,calendar</field>
+        <field name="search_view_id" ref="view_uni_transport_attendance_search"/>
+        <field name="context">{'default_date': context_today()}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new transport attendance record
+            </p>
+            <p>Attendance records track who rode the bus on a given
+               trip. Pick a route, click "Populate Lines" to load the
+               active passes, then validate.</p>
+        </field>
+    </record>
+</odoo>

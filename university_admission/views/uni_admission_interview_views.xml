@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- uni.admission.interview — List View                          -->
+    <!-- ============================================================ -->
+    <record id="view_uni_admission_interview_list" model="ir.ui.view">
+        <field name="name">uni.admission.interview.list</field>
+        <field name="model">uni.admission.interview</field>
+        <field name="arch" type="xml">
+            <list string="Interviews"
+                  decoration-success="state == 'completed'"
+                  decoration-info="state == 'scheduled'"
+                  decoration-danger="state == 'no_show'"
+                  decoration-muted="state == 'cancelled'">
+                <field name="name"/>
+                <field name="application_id"/>
+                <field name="applicant_name"/>
+                <field name="program_id" optional="hide"/>
+                <field name="interviewer_name"/>
+                <field name="interview_date"/>
+                <field name="start_time" widget="float_time"/>
+                <field name="end_time" widget="float_time"/>
+                <field name="is_online" optional="hide"/>
+                <field name="location" optional="hide"/>
+                <field name="score"/>
+                <field name="score_max"/>
+                <field name="score_percentage" widget="progressbar"/>
+                <field name="recommendation"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'completed'"
+                       decoration-info="state == 'scheduled'"
+                       decoration-danger="state == 'no_show'"
+                       decoration-muted="state == 'cancelled'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.admission.interview — Form View                          -->
+    <!-- ============================================================ -->
+    <record id="view_uni_admission_interview_form" model="ir.ui.view">
+        <field name="name">uni.admission.interview.form</field>
+        <field name="model">uni.admission.interview</field>
+        <field name="arch" type="xml">
+            <form string="Admission Interview">
+                <header>
+                    <button name="action_complete" string="Complete"
+                            type="object" class="oe_highlight"
+                            invisible="state != 'scheduled'"/>
+                    <button name="action_no_show" string="No Show"
+                            type="object"
+                            invisible="state != 'scheduled'"
+                            confirm="Mark this applicant as not having shown up?"/>
+                    <button name="action_cancel" string="Cancel"
+                            type="object"
+                            invisible="state != 'scheduled'"/>
+                    <button name="action_reschedule" string="Reschedule"
+                            type="object"
+                            invisible="state not in ('cancelled', 'no_show')"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="scheduled,completed"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" string="Interview"/>
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group string="Application">
+                            <field name="application_id"
+                                   options="{'no_create': True}"/>
+                            <field name="applicant_name"/>
+                            <field name="program_id"/>
+                            <field name="university_id" invisible="1"/>
+                        </group>
+                        <group string="Interviewer">
+                            <field name="interviewer_name"/>
+                        </group>
+                    </group>
+                    <group string="Schedule">
+                        <group>
+                            <field name="interview_date"/>
+                            <field name="start_time" widget="float_time"/>
+                            <field name="end_time" widget="float_time"/>
+                        </group>
+                        <group>
+                            <field name="is_online"/>
+                            <field name="location"
+                                   invisible="is_online"/>
+                            <field name="meeting_url"
+                                   invisible="not is_online"
+                                   widget="url"/>
+                        </group>
+                    </group>
+                    <group string="Evaluation">
+                        <group>
+                            <field name="score"/>
+                            <field name="score_max"/>
+                            <field name="score_percentage" widget="progressbar"/>
+                        </group>
+                        <group>
+                            <field name="recommendation"
+                                   widget="badge"
+                                   decoration-success="recommendation in ('strong_accept', 'accept')"
+                                   decoration-info="recommendation == 'neutral'"
+                                   decoration-danger="recommendation in ('reject', 'strong_reject')"/>
+                        </group>
+                    </group>
+                    <group string="Notes">
+                        <field name="notes" nolabel="1"
+                               placeholder="Detailed interviewer notes..."/>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.admission.interview — Calendar View                      -->
+    <!-- ============================================================ -->
+    <record id="view_uni_admission_interview_calendar" model="ir.ui.view">
+        <field name="name">uni.admission.interview.calendar</field>
+        <field name="model">uni.admission.interview</field>
+        <field name="arch" type="xml">
+            <calendar string="Interviews"
+                      date_start="interview_date"
+                      color="state">
+                <field name="application_id"/>
+                <field name="applicant_name"/>
+                <field name="interviewer_name"/>
+                <field name="location"/>
+            </calendar>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.admission.interview — Search View                        -->
+    <!-- ============================================================ -->
+    <record id="view_uni_admission_interview_search" model="ir.ui.view">
+        <field name="name">uni.admission.interview.search</field>
+        <field name="model">uni.admission.interview</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="application_id"/>
+                <field name="applicant_name"/>
+                <field name="interviewer_name"/>
+                <field name="university_id"/>
+                <field name="program_id"/>
+                <separator/>
+                <filter string="Scheduled" name="filter_scheduled"
+                        domain="[('state', '=', 'scheduled')]"/>
+                <filter string="Completed" name="filter_completed"
+                        domain="[('state', '=', 'completed')]"/>
+                <filter string="Cancelled" name="filter_cancelled"
+                        domain="[('state', '=', 'cancelled')]"/>
+                <filter string="No Show" name="filter_no_show"
+                        domain="[('state', '=', 'no_show')]"/>
+                <separator/>
+                <filter string="Today" name="filter_today"
+                        domain="[('interview_date', '=', context_today())]"/>
+                <filter string="This Week" name="filter_week"
+                        domain="[('interview_date', '>=', (context_today() - relativedelta(days=7)).strftime('%Y-%m-%d')),
+                                ('interview_date', '&lt;=', context_today().strftime('%Y-%m-%d'))]"/>
+                <group expand="0" string="Group By">
+                    <filter string="State" name="group_state"
+                            context="{'group_by': 'state'}"/>
+                    <filter string="Interviewer" name="group_interviewer"
+                            context="{'group_by': 'interviewer_name'}"/>
+                    <filter string="Recommendation" name="group_rec"
+                            context="{'group_by': 'recommendation'}"/>
+                    <filter string="Application" name="group_app"
+                            context="{'group_by': 'application_id'}"/>
+                    <filter string="Interview Date" name="group_date"
+                            context="{'group_by': 'interview_date:day'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.admission.interview — Action                             -->
+    <!-- ============================================================ -->
+    <record id="action_uni_admission_interview" model="ir.actions.act_window">
+        <field name="name">Interviews</field>
+        <field name="res_model">uni.admission.interview</field>
+        <field name="view_mode">list,form,calendar</field>
+        <field name="search_view_id" ref="view_uni_admission_interview_search"/>
+        <field name="context">{'default_state': 'scheduled'}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Schedule a new admission interview
+            </p>
+            <p>Interviews are conducted by faculty members and feed the
+               recommendation (strong accept → strong reject) used in the
+               admission decision.</p>
+        </field>
+    </record>
+</odoo>

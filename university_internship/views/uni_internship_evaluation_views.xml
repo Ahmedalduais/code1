@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- List View -->
+    <record id="view_uni_internship_evaluation_list" model="ir.ui.view">
+        <field name="name">uni.internship.evaluation.list</field>
+        <field name="model">uni.internship.evaluation</field>
+        <field name="arch" type="xml">
+            <list string="Internship Evaluations"
+                  decoration-success="is_passing"
+                  decoration-danger="not is_passing and total_score > 0">
+                <field name="name"/>
+                <field name="evaluation_date"/>
+                <field name="internship_id"/>
+                <field name="team_id" optional="show"/>
+                <field name="member_id" optional="show"/>
+                <field name="evaluation_type"/>
+                <field name="evaluator_type"/>
+                <field name="evaluator_id"/>
+                <field name="total_score"/>
+                <field name="max_score"/>
+                <field name="score_percentage"/>
+                <field name="grade" widget="badge"/>
+                <field name="is_passing" optional="hide"/>
+                <field name="is_final" optional="hide"/>
+                <field name="state" widget="badge"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_uni_internship_evaluation_form" model="ir.ui.view">
+        <field name="name">uni.internship.evaluation.form</field>
+        <field name="model">uni.internship.evaluation</field>
+        <field name="arch" type="xml">
+            <form string="Internship Evaluation">
+                <header>
+                    <button name="action_complete" type="object" string="Complete"
+                            class="oe_highlight"
+                            invisible="state != 'draft'"/>
+                    <button name="action_appeal" type="object" string="Appeal"
+                            invisible="state != 'completed'"/>
+                    <button name="action_finalize" type="object" string="Finalize"
+                            class="oe_highlight"
+                            invisible="state not in ('completed', 'appealed')"/>
+                    <button name="action_draft" type="object" string="Back to Draft"
+                            invisible="state not in ('completed', 'appealed', 'finalized')"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,completed,finalized"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group string="Target">
+                            <field name="internship_id"/>
+                            <field name="evaluation_type"/>
+                            <field name="team_id"
+                                   invisible="evaluation_type not in ('team', 'mixed')"
+                                   required="evaluation_type in ('team', 'mixed')"/>
+                            <field name="member_id"
+                                   invisible="evaluation_type not in ('individual', 'mixed')"
+                                   required="evaluation_type in ('individual', 'mixed')"/>
+                        </group>
+                        <group string="Evaluator">
+                            <field name="evaluator_type"/>
+                            <field name="evaluator_id"/>
+                            <field name="faculty_id"
+                                   invisible="evaluator_type != 'academic'"/>
+                            <field name="entity_supervisor_id"
+                                   invisible="evaluator_type != 'field'"/>
+                            <field name="evaluation_date"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Scores">
+                            <field name="team_score"
+                                   invisible="evaluation_type not in ('team', 'mixed')"/>
+                            <field name="individual_score"
+                                   invisible="evaluation_type not in ('individual', 'mixed')"/>
+                            <field name="total_score"/>
+                            <field name="max_score"/>
+                            <field name="score_percentage" widget="progressbar"/>
+                            <field name="grade"/>
+                            <field name="is_passing" readonly="1"/>
+                        </group>
+                        <group string="Settings">
+                            <field name="criteria_scores" invisible="1"/>
+                            <field name="is_final"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Comments" name="comments">
+                            <group>
+                                <field name="comments" placeholder="Overall comments..."/>
+                                <field name="strengths"/>
+                                <field name="areas_for_improvement"/>
+                            </group>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="notes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_uni_internship_evaluation_search" model="ir.ui.view">
+        <field name="name">uni.internship.evaluation.search</field>
+        <field name="model">uni.internship.evaluation</field>
+        <field name="arch" type="xml">
+            <search string="Search Evaluations">
+                <field name="name"/>
+                <field name="internship_id"/>
+                <field name="team_id"/>
+                <field name="member_id"/>
+                <field name="evaluator_id"/>
+                <field name="faculty_id"/>
+                <separator/>
+                <filter name="filter_passing" string="Passing"
+                        domain="[('is_passing', '=', True)]"/>
+                <filter name="filter_failing" string="Failing"
+                        domain="[('is_passing', '=', False), ('total_score', '>', 0)]"/>
+                <filter name="filter_final" string="Final Evaluations"
+                        domain="[('is_final', '=', True)]"/>
+                <separator/>
+                <group expand="0" string="Group By">
+                    <filter name="group_internship" string="Internship"
+                            context="{'group_by': 'internship_id'}"/>
+                    <filter name="group_team" string="Team"
+                            context="{'group_by': 'team_id'}"/>
+                    <filter name="group_type" string="Evaluation Type"
+                            context="{'group_by': 'evaluation_type'}"/>
+                    <filter name="group_evaluator_type" string="Evaluator Type"
+                            context="{'group_by': 'evaluator_type'}"/>
+                    <filter name="group_grade" string="Grade"
+                            context="{'group_by': 'grade'}"/>
+                    <filter name="group_state" string="Status"
+                            context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_uni_internship_evaluation" model="ir.actions.act_window">
+        <field name="name">Evaluations</field>
+        <field name="res_model">uni.internship.evaluation</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_internship_evaluation_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new evaluation
+            </p>
+            <p>
+                Evaluate internships individually, as a team or mixed,
+                with criteria-based scoring, grade computation and finalization workflow.
+            </p>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============ uni.internship.student — List View ============ -->
+    <record id="view_uni_internship_student_list" model="ir.ui.view">
+        <field name="name">uni.internship.student.list</field>
+        <field name="model">uni.internship.student</field>
+        <field name="arch" type="xml">
+            <list string="Internship Student Records">
+                <field name="student_id"/>
+                <field name="student_code"/>
+                <field name="name"/>
+                <field name="college_id" optional="show"/>
+                <field name="department_id" optional="show"/>
+                <field name="total_internships"/>
+                <field name="completed_internships"/>
+                <field name="total_hours_completed"/>
+                <field name="average_grade"/>
+                <field name="active" widget="boolean_toggle" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============ uni.internship.student — Form View ============ -->
+    <record id="view_uni_internship_student_form" model="ir.ui.view">
+        <field name="name">uni.internship.student.form</field>
+        <field name="model">uni.internship.student</field>
+        <field name="arch" type="xml">
+            <form string="Internship Student Record">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" type="object"
+                                name="action_view_internships" icon="fa-briefcase">
+                            <field name="total_internships" widget="statinfo"
+                                   string="Internships"/>
+                        </button>
+                        <button class="oe_stat_button" type="object"
+                                name="action_view_internships" icon="fa-check-square-o"
+                                invisible="completed_internships == 0">
+                            <field name="completed_internships" widget="statinfo"
+                                   string="Completed"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="student_id" string="Student"/>
+                        <h1><field name="student_id" options="{'no_create': True}"/></h1>
+                        <h3><field name="student_code" readonly="1"/></h3>
+                    </div>
+                    <group>
+                        <group string="Identity (Delegated from uni.student)">
+                            <field name="name" readonly="1"/>
+                            <field name="email" readonly="1" optional="show"/>
+                            <field name="phone" readonly="1" optional="show"/>
+                            <field name="college_id" readonly="1" options="{'no_create': True}"/>
+                            <field name="department_id" readonly="1" options="{'no_create': True}"/>
+                            <field name="program_id" readonly="1" options="{'no_create': True}"/>
+                        </group>
+                        <group string="Internship Statistics">
+                            <field name="total_internships" readonly="1"/>
+                            <field name="completed_internships" readonly="1"/>
+                            <field name="total_hours_completed" readonly="1"/>
+                            <field name="average_grade" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Internship Records" name="internship_records">
+                            <field name="internship_record_ids">
+                                <list>
+                                    <field name="code"/>
+                                    <field name="name"/>
+                                    <field name="internship_type"/>
+                                    <field name="training_entity_id"/>
+                                    <field name="start_date"/>
+                                    <field name="end_date"/>
+                                    <field name="hours_completed"/>
+                                    <field name="final_grade"/>
+                                    <field name="internship_state" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="notes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============ uni.internship.student — Search View ============ -->
+    <record id="view_uni_internship_student_search" model="ir.ui.view">
+        <field name="name">uni.internship.student.search</field>
+        <field name="model">uni.internship.student</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="student_id"/>
+                <field name="student_code"/>
+                <field name="name"/>
+                <field name="college_id"/>
+                <field name="department_id"/>
+                <field name="program_id"/>
+                <separator/>
+                <filter string="Has Internships" name="filter_has_internships"
+                        domain="[('total_internships', '>', 0)]"/>
+                <filter string="Has Completed" name="filter_has_completed"
+                        domain="[('completed_internships', '>', 0)]"/>
+                <filter string="Archived" name="filter_archived"
+                        domain="[('active', '=', False)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="College" name="group_college"
+                            context="{'group_by': 'college_id'}"/>
+                    <filter string="Department" name="group_dept"
+                            context="{'group_by': 'department_id'}"/>
+                    <filter string="Program" name="group_program"
+                            context="{'group_by': 'program_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============ uni.internship.student — Action ============ -->
+    <record id="action_uni_internship_student" model="ir.actions.act_window">
+        <field name="name">Student Records</field>
+        <field name="res_model">uni.internship.student</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_internship_student_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a student internship record
+            </p>
+            <p>
+                Student internship records aggregate each student's
+                internship history — totals, completed hours, average
+                grade — by delegating identity data from uni.student.
+            </p>
+        </field>
+    </record>
+</odoo>

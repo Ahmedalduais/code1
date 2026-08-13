@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- uni.transport.stop — List View                                -->
+    <!-- ============================================================ -->
+    <record id="view_uni_transport_stop_list" model="ir.ui.view">
+        <field name="name">uni.transport.stop.list</field>
+        <field name="model">uni.transport.stop</field>
+        <field name="arch" type="xml">
+            <list string="Stops">
+                <field name="sequence" widget="handle"/>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="route_id"/>
+                <field name="university_id"/>
+                <field name="location_name"/>
+                <field name="coordinates"/>
+                <field name="arrival_time" widget="float_time"/>
+                <field name="departure_time" widget="float_time"/>
+                <field name="is_pickup_point"/>
+                <field name="is_drop_point"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.transport.stop — Form View                                -->
+    <!-- ============================================================ -->
+    <record id="view_uni_transport_stop_form" model="ir.ui.view">
+        <field name="name">uni.transport.stop.form</field>
+        <field name="model">uni.transport.stop</field>
+        <field name="arch" type="xml">
+            <form string="Stop">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" string="Stop Name"/>
+                        <h1><field name="name" placeholder="e.g. Gate A — Library"/></h1>
+                        <h3><field name="code" placeholder="e.g. STP-001"/></h3>
+                    </div>
+                    <group>
+                        <group string="Route">
+                            <field name="route_id"
+                                   options="{'no_create': True}"/>
+                            <field name="university_id"
+                                   readonly="1"/>
+                            <field name="sequence"/>
+                        </group>
+                        <group string="Location">
+                            <field name="location_name"/>
+                            <field name="coordinates"
+                                   placeholder="lat,long (e.g. 24.7136,46.6753)"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Schedule">
+                            <field name="arrival_time" widget="float_time"/>
+                            <field name="departure_time" widget="float_time"/>
+                        </group>
+                        <group string="Classification">
+                            <field name="is_pickup_point"/>
+                            <field name="is_drop_point"/>
+                        </group>
+                    </group>
+                    <group string="Notes">
+                        <field name="notes" nolabel="1"
+                               placeholder="Internal notes about this stop..."/>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.transport.stop — Search View                              -->
+    <!-- ============================================================ -->
+    <record id="view_uni_transport_stop_search" model="ir.ui.view">
+        <field name="name">uni.transport.stop.search</field>
+        <field name="model">uni.transport.stop</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="location_name"/>
+                <field name="route_id"/>
+                <field name="university_id"/>
+                <filter string="Pickup Points" name="filter_pickup"
+                        domain="[('is_pickup_point', '=', True)]"/>
+                <filter string="Drop Points" name="filter_drop"
+                        domain="[('is_drop_point', '=', True)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Route" name="group_route"
+                            context="{'group_by': 'route_id'}"/>
+                    <filter string="University" name="group_university"
+                            context="{'group_by': 'university_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.transport.stop — Action                                   -->
+    <!-- ============================================================ -->
+    <record id="action_uni_transport_stop" model="ir.actions.act_window">
+        <field name="name">Stops</field>
+        <field name="res_model">uni.transport.stop</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_transport_stop_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new transport stop
+            </p>
+            <p>Stops are points along a route where students are picked
+               up or dropped off. They carry a sequence, schedule and
+               optional geographic coordinates.</p>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- Gradebook sequence -->
+    <record id="seq_uni_gradebook" model="ir.sequence">
+        <field name="name">Gradebook Sequence</field>
+        <field name="code">uni.gradebook</field>
+        <field name="prefix">GB/%(year)s/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <!-- Transcript sequence -->
+    <record id="seq_uni_transcript" model="ir.sequence">
+        <field name="name">Transcript Sequence</field>
+        <field name="code">uni.transcript</field>
+        <field name="prefix">TRN/%(year)s/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <!-- GPA calculation sequence (extends uni.grading.calculator) -->
+    <record id="seq_uni_gpa_calculation" model="ir.sequence">
+        <field name="name">GPA Calculation Sequence</field>
+        <field name="code">uni.gpa.calculation</field>
+        <field name="prefix">GPA/%(year)s/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <!-- Gradebook approval sequence -->
+    <record id="seq_uni_gradebook_approval" model="ir.sequence">
+        <field name="name">Gradebook Approval Sequence</field>
+        <field name="code">uni.gradebook.approval</field>
+        <field name="prefix">GBA/%(year)s/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+</odoo>

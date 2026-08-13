@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============ uni.project.approval — List View ============ -->
+    <record id="view_uni_project_approval_list" model="ir.ui.view">
+        <field name="name">uni.project.approval.list</field>
+        <field name="model">uni.project.approval</field>
+        <field name="arch" type="xml">
+            <list string="Project Approvals"
+                  decoration-success="decision=='approved'"
+                  decoration-warning="decision=='conditional'"
+                  decoration-danger="decision=='rejected'"
+                  decoration-muted="state=='cancelled'">
+                <field name="name"/>
+                <field name="approval_type"/>
+                <field name="proposal_id" optional="show"/>
+                <field name="project_id" optional="show"/>
+                <field name="approver_id"/>
+                <field name="approval_date" optional="show"/>
+                <field name="decision" optional="show"/>
+                <field name="state" widget="badge"/>
+                <field name="active" widget="boolean_toggle" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============ uni.project.approval — Form View ============ -->
+    <record id="view_uni_project_approval_form" model="ir.ui.view">
+        <field name="name">uni.project.approval.form</field>
+        <field name="model">uni.project.approval</field>
+        <field name="arch" type="xml">
+            <form string="Project Approval">
+                <header>
+                    <button name="action_submit" type="object" string="Submit"
+                            class="btn-primary"
+                            invisible="state != 'draft'"/>
+                    <button name="action_decide" type="object" string="Decide"
+                            class="btn-primary"
+                            invisible="state != 'submitted'"/>
+                    <button name="action_cancel" type="object" string="Cancel"
+                            class="btn-danger"
+                            invisible="state in ('cancelled', 'decided')"/>
+                    <button name="action_draft" type="object"
+                            string="Set to Draft" class="btn-secondary"
+                            invisible="state not in ('submitted', 'cancelled')"/>
+                    <field name="state" widget="statusbar"
+                          statusbar_visible="draft,submitted,decided"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" string="Approval Reference"/>
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group string="Approval Scope">
+                            <field name="approval_type"/>
+                            <field name="approver_id" options="{'no_create': True}"/>
+                            <field name="approval_date"/>
+                        </group>
+                        <group string="Linked Records">
+                            <field name="proposal_id" options="{'no_create': True}"/>
+                            <field name="project_id" options="{'no_create': True}"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Decision">
+                            <field name="decision"/>
+                            <field name="conditions"
+                                   invisible="decision != 'conditional'"/>
+                        </group>
+                        <group string="Comments">
+                            <field name="comments"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Notes" name="notes">
+                            <field name="notes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============ uni.project.approval — Search View ============ -->
+    <record id="view_uni_project_approval_search" model="ir.ui.view">
+        <field name="name">uni.project.approval.search</field>
+        <field name="model">uni.project.approval</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="proposal_id"/>
+                <field name="project_id"/>
+                <field name="approver_id"/>
+                <separator/>
+                <filter string="Draft" name="filter_draft"
+                        domain="[('state', '=', 'draft')]"/>
+                <filter string="Submitted" name="filter_submitted"
+                        domain="[('state', '=', 'submitted')]"/>
+                <filter string="Decided" name="filter_decided"
+                        domain="[('state', '=', 'decided')]"/>
+                <filter string="Cancelled" name="filter_cancelled"
+                        domain="[('state', '=', 'cancelled')]"/>
+                <filter string="Approved" name="filter_approved"
+                        domain="[('decision', '=', 'approved')]"/>
+                <filter string="Rejected" name="filter_rejected"
+                        domain="[('decision', '=', 'rejected')]"/>
+                <filter string="Conditional" name="filter_conditional"
+                        domain="[('decision', '=', 'conditional')]"/>
+                <filter string="Archived" name="filter_inactive"
+                        domain="[('active', '=', False)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Status" name="group_state"
+                            context="{'group_by': 'state'}"/>
+                    <filter string="Decision" name="group_decision"
+                            context="{'group_by': 'decision'}"/>
+                    <filter string="Type" name="group_type"
+                            context="{'group_by': 'approval_type'}"/>
+                    <filter string="Approver" name="group_approver"
+                            context="{'group_by': 'approver_id'}"/>
+                    <filter string="Project" name="group_project"
+                            context="{'group_by': 'project_id'}"/>
+                    <filter string="Proposal" name="group_proposal"
+                            context="{'group_by': 'proposal_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============ uni.project.approval — Action ============ -->
+    <record id="action_uni_project_approval" model="ir.actions.act_window">
+        <field name="name">Project Approvals</field>
+        <field name="res_model">uni.project.approval</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_project_approval_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first project approval
+            </p>
+            <p>
+                Approval records formalize each sign-off in the project
+                lifecycle (initial, revision, final, ethics, budget).
+            </p>
+        </field>
+    </record>
+</odoo>

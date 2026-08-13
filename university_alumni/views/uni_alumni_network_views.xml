@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- uni.alumni.network — List View                               -->
+    <!-- ============================================================ -->
+    <record id="view_uni_alumni_network_list" model="ir.ui.view">
+        <field name="name">uni.alumni.network.list</field>
+        <field name="model">uni.alumni.network</field>
+        <field name="arch" type="xml">
+            <list string="Alumni Networks"
+                  decoration-success="state == 'active'"
+                  decoration-info="state == 'draft'"
+                  decoration-muted="state in ('inactive', 'closed')">
+                <field name="name"/>
+                <field name="code" optional="hide"/>
+                <field name="network_type"/>
+                <field name="industry" optional="hide"/>
+                <field name="country_id" optional="hide"/>
+                <field name="region" optional="hide"/>
+                <field name="coordinator_id" optional="hide"/>
+                <field name="member_count"/>
+                <field name="established_date" optional="hide"/>
+                <field name="meeting_frequency" optional="hide"/>
+                <field name="next_meeting_date" optional="hide"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'active'"
+                       decoration-info="state == 'draft'"
+                       decoration-muted="state in ('inactive', 'closed')"/>
+                <field name="active" invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.alumni.network — Form View                               -->
+    <!-- ============================================================ -->
+    <record id="view_uni_alumni_network_form" model="ir.ui.view">
+        <field name="name">uni.alumni.network.form</field>
+        <field name="model">uni.alumni.network</field>
+        <field name="arch" type="xml">
+            <form string="Alumni Network">
+                <header>
+                    <button name="action_activate" string="Activate"
+                            type="object" class="oe_highlight"
+                            invisible="state not in ('draft', 'inactive')"/>
+                    <button name="action_deactivate" string="Deactivate"
+                            type="object"
+                            invisible="state != 'active'"
+                            confirm="Deactivate this network?"/>
+                    <button name="action_close" string="Close"
+                            type="object"
+                            invisible="state == 'closed'"
+                            confirm="Permanently close this network?"/>
+                    <button name="action_reset_to_draft" string="Reset to Draft"
+                            type="object"
+                            invisible="state not in ('inactive', 'closed')"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,active,inactive,closed"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button type="object" class="oe_stat_button" icon="fa-users">
+                            <field name="member_count" widget="statinfo"
+                                   string="Members"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" string="Network"/>
+                        <h1><field name="name" placeholder="e.g. Engineering Alumni Network"/></h1>
+                        <h3><field name="code" placeholder="Optional unique code..."/></h3>
+                    </div>
+                    <group>
+                        <group string="Type &amp; Scope">
+                            <field name="network_type"/>
+                            <field name="industry"/>
+                            <field name="country_id"
+                                   options="{'no_create': True}"/>
+                            <field name="region"/>
+                        </group>
+                        <group string="Coordination">
+                            <field name="coordinator_id"
+                                   options="{'no_create': True}"/>
+                            <field name="established_date"/>
+                            <field name="meeting_frequency"/>
+                            <field name="next_meeting_date"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Description" name="description">
+                            <field name="description" nolabel="1"
+                                   placeholder="Network purpose, scope, charter..."/>
+                        </page>
+                        <page string="Members" name="members">
+                            <field name="member_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="student_id"/>
+                                    <field name="graduation_year"/>
+                                    <field name="current_job_title"/>
+                                    <field name="current_employer"/>
+                                    <field name="membership_status" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="notes" nolabel="1"
+                                   placeholder="Internal notes..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.alumni.network — Search View                             -->
+    <!-- ============================================================ -->
+    <record id="view_uni_alumni_network_search" model="ir.ui.view">
+        <field name="name">uni.alumni.network.search</field>
+        <field name="model">uni.alumni.network</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="network_type"/>
+                <field name="industry"/>
+                <field name="country_id"/>
+                <field name="region"/>
+                <field name="coordinator_id"/>
+                <field name="member_ids"/>
+                <separator/>
+                <filter string="Draft" name="filter_draft"
+                        domain="[('state', '=', 'draft')]"/>
+                <filter string="Active" name="filter_active"
+                        domain="[('state', '=', 'active')]"/>
+                <filter string="Inactive" name="filter_inactive"
+                        domain="[('state', '=', 'inactive')]"/>
+                <filter string="Closed" name="filter_closed"
+                        domain="[('state', '=', 'closed')]"/>
+                <separator/>
+                <filter string="Has Coordinator" name="filter_coordinator"
+                        domain="[('coordinator_id', '!=', False)]"/>
+                <separator/>
+                <filter string="Upcoming Meeting" name="filter_upcoming"
+                        domain="[('next_meeting_date', '>=', context_today())]"/>
+                <separator/>
+                <filter string="Archived" name="filter_archived"
+                        domain="[('active', '=', False)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="State" name="group_state"
+                            context="{'group_by': 'state'}"/>
+                    <filter string="Network Type" name="group_type"
+                            context="{'group_by': 'network_type'}"/>
+                    <filter string="Country" name="group_country"
+                            context="{'group_by': 'country_id'}"/>
+                    <filter string="Coordinator" name="group_coordinator"
+                            context="{'group_by': 'coordinator_id'}"/>
+                    <filter string="Meeting Frequency" name="group_freq"
+                            context="{'group_by': 'meeting_frequency'}"/>
+                    <filter string="Established Date" name="group_established"
+                            context="{'group_by': 'established_date:year'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- uni.alumni.network — Action                                  -->
+    <!-- ============================================================ -->
+    <record id="action_uni_alumni_network" model="ir.actions.act_window">
+        <field name="name">Alumni Networks</field>
+        <field name="res_model">uni.alumni.network</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_alumni_network_search"/>
+        <field name="context">{'default_state': 'draft'}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new alumni network
+            </p>
+            <p>Alumni networks group graduates by industry, region,
+               academic background, profession, or shared interests,
+               and are coordinated by an alumni member.</p>
+        </field>
+    </record>
+</odoo>

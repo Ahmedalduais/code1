@@ -1,0 +1,15 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_uni_exam_type_user,uni.exam.type.user,model_uni_exam_type,university_core.group_university_user,1,0,0,0
+access_uni_exam_type_manager,uni.exam.type.manager,model_uni_exam_type,university_core.group_university_manager,1,1,1,1
+access_uni_exam_user,uni.exam.user,model_uni_exam,university_core.group_university_user,1,0,0,0
+access_uni_exam_manager,uni.exam.manager,model_uni_exam,university_core.group_university_manager,1,1,1,1
+access_uni_exam_schedule_user,uni.exam.schedule.user,model_uni_exam_schedule,university_core.group_university_user,1,0,0,0
+access_uni_exam_schedule_manager,uni.exam.schedule.manager,model_uni_exam_schedule,university_core.group_university_manager,1,1,1,1
+access_uni_exam_room_user,uni.exam.room.user,model_uni_exam_room,university_core.group_university_user,1,0,0,0
+access_uni_exam_room_manager,uni.exam.room.manager,model_uni_exam_room,university_core.group_university_manager,1,1,1,1
+access_uni_exam_invigilator_user,uni.exam.invigilator.user,model_uni_exam_invigilator,university_core.group_university_user,1,0,0,0
+access_uni_exam_invigilator_manager,uni.exam.invigilator.manager,model_uni_exam_invigilator,university_core.group_university_manager,1,1,1,1
+access_uni_exam_violation_user,uni.exam.violation.user,model_uni_exam_violation,university_core.group_university_user,1,0,0,0
+access_uni_exam_violation_manager,uni.exam.violation.manager,model_uni_exam_violation,university_core.group_university_manager,1,1,1,1
+access_uni_exam_accommodation_user,uni.exam.accommodation.user,model_uni_exam_accommodation,university_core.group_university_user,1,0,0,0
+access_uni_exam_accommodation_manager,uni.exam.accommodation.manager,model_uni_exam_accommodation,university_core.group_university_manager,1,1,1,1

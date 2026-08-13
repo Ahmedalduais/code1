@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- Portal-specific security groups                              -->
+    <!-- ============================================================ -->
+
+    <!-- Portal Student Group -->
+    <record id="group_university_portal_student" model="res.groups">
+        <field name="name">University / Portal Student</field>
+        <field name="category_id" ref="university_core.module_category_university_core"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_portal'))]"/>
+    </record>
+
+    <!-- Portal Faculty Group -->
+    <record id="group_university_portal_faculty" model="res.groups">
+        <field name="name">University / Portal Faculty</field>
+        <field name="category_id" ref="university_core.module_category_university_core"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_portal'))]"/>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- Record rules — a portal user reads/writes only their own     -->
+    <!-- portal student / faculty / dashboard / notification records. -->
+    <!-- ============================================================ -->
+
+    <!-- uni.portal.student -->
+    <record id="rule_uni_portal_student_self_read" model="ir.rule">
+        <field name="name">Portal Student: read own record</field>
+        <field name="model_id" ref="model_uni_portal_student"/>
+        <field name="domain_force">['|', ('portal_user_id', '=', user.id), ('user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_university_portal_student'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="rule_uni_portal_student_manager" model="ir.rule">
+        <field name="name">Portal Student: manager full access</field>
+        <field name="model_id" ref="model_uni_portal_student"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('university_core.group_university_manager'))]"/>
+    </record>
+
+    <!-- uni.portal.faculty -->
+    <record id="rule_uni_portal_faculty_self_read" model="ir.rule">
+        <field name="name">Portal Faculty: read own record</field>
+        <field name="model_id" ref="model_uni_portal_faculty"/>
+        <field name="domain_force">['|', ('portal_user_id', '=', user.id), ('user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_university_portal_faculty'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="rule_uni_portal_faculty_manager" model="ir.rule">
+        <field name="name">Portal Faculty: manager full access</field>
+        <field name="model_id" ref="model_uni_portal_faculty"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('university_core.group_university_manager'))]"/>
+    </record>
+
+    <!-- uni.portal.dashboard — user reads/writes own dashboards -->
+    <record id="rule_uni_portal_dashboard_self" model="ir.rule">
+        <field name="name">Portal Dashboard: own user</field>
+        <field name="model_id" ref="model_uni_portal_dashboard"/>
+        <field name="domain_force">[('user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+    </record>
+
+    <record id="rule_uni_portal_dashboard_manager" model="ir.rule">
+        <field name="name">Portal Dashboard: manager full access</field>
+        <field name="model_id" ref="model_uni_portal_dashboard"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('university_core.group_university_manager'))]"/>
+    </record>
+
+    <!-- uni.portal.notification — recipient sees only their notifications -->
+    <record id="rule_uni_portal_notification_self" model="ir.rule">
+        <field name="name">Portal Notification: own user</field>
+        <field name="model_id" ref="model_uni_portal_notification"/>
+        <field name="domain_force">[('user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+    </record>
+
+    <record id="rule_uni_portal_notification_manager" model="ir.rule">
+        <field name="name">Portal Notification: manager full access</field>
+        <field name="model_id" ref="model_uni_portal_notification"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('university_core.group_university_manager'))]"/>
+    </record>
+</odoo>

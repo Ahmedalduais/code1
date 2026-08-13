@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ===== Entity Supervisor: List View ===== -->
+    <record id="view_uni_internship_entity_supervisor_list" model="ir.ui.view">
+        <field name="name">uni.internship.entity.supervisor.list</field>
+        <field name="model">uni.internship.entity.supervisor</field>
+        <field name="arch" type="xml">
+            <list string="Entity Supervisors">
+                <field name="entity_id"/>
+                <field name="name"/>
+                <field name="position"/>
+                <field name="department" optional="hide"/>
+                <field name="phone" optional="show"/>
+                <field name="email" optional="show"/>
+                <field name="is_primary_contact" widget="boolean_toggle"/>
+                <field name="is_active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ===== Entity Supervisor: Form View ===== -->
+    <record id="view_uni_internship_entity_supervisor_form" model="ir.ui.view">
+        <field name="name">uni.internship.entity.supervisor.form</field>
+        <field name="model">uni.internship.entity.supervisor</field>
+        <field name="arch" type="xml">
+            <form string="Entity Supervisor">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="toggle_active" type="object"
+                                class="oe_stat_button" icon="fa-archive">
+                            <field name="active" widget="boolean_button"
+                                   string="Active"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" string="Supervisor Name"/>
+                        <h1><field name="name" placeholder="e.g. John Smith"/></h1>
+                    </div>
+                    <group>
+                        <group string="Assignment">
+                            <field name="entity_id"/>
+                            <field name="employee_id"/>
+                            <field name="is_primary_contact"/>
+                            <field name="is_active"/>
+                        </group>
+                        <group string="Position">
+                            <field name="position"/>
+                            <field name="department"/>
+                        </group>
+                    </group>
+                    <group string="Contact">
+                        <field name="phone"/>
+                        <field name="email"/>
+                    </group>
+                    <notebook>
+                        <page string="Notes" name="notes">
+                            <field name="notes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ===== Entity Supervisor: Search View ===== -->
+    <record id="view_uni_internship_entity_supervisor_search" model="ir.ui.view">
+        <field name="name">uni.internship.entity.supervisor.search</field>
+        <field name="model">uni.internship.entity.supervisor</field>
+        <field name="arch" type="xml">
+            <search string="Entity Supervisors">
+                <field name="name"/>
+                <field name="entity_id"/>
+                <field name="position"/>
+                <field name="email"/>
+                <field name="employee_id"/>
+                <separator/>
+                <filter name="filter_primary" string="Primary Contacts"
+                        domain="[('is_primary_contact', '=', True)]"/>
+                <filter name="filter_active_sup" string="Active"
+                        domain="[('is_active', '=', True)]"/>
+                <separator/>
+                <group expand="0" string="Group By">
+                    <filter name="group_entity" string="Training Entity"
+                            context="{'group_by': 'entity_id'}"/>
+                    <filter name="group_active" string="Active"
+                            context="{'group_by': 'is_active'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ===== Entity Supervisor: Action ===== -->
+    <record id="action_uni_internship_entity_supervisor" model="ir.actions.act_window">
+        <field name="name">Entity Supervisors</field>
+        <field name="res_model">uni.internship.entity.supervisor</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_internship_entity_supervisor_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new entity supervisor
+            </p>
+            <p>
+                Entity supervisors are the field supervisors at the training
+                entity who will oversee the student interns during their
+                internship period.
+            </p>
+        </field>
+    </record>
+</odoo>

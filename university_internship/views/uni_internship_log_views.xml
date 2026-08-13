@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- List View -->
+    <record id="view_uni_internship_log_list" model="ir.ui.view">
+        <field name="name">uni.internship.log.list</field>
+        <field name="model">uni.internship.log</field>
+        <field name="arch" type="xml">
+            <list string="Internship Daily Logs" decoration-success="is_approved"
+                  decoration-muted="not is_approved">
+                <field name="name"/>
+                <field name="date"/>
+                <field name="student_id"/>
+                <field name="internship_id"/>
+                <field name="hours"/>
+                <field name="activity" optional="hide"/>
+                <field name="is_remote" optional="hide"/>
+                <field name="supervisor_approval"/>
+                <field name="entity_supervisor_approval"/>
+                <field name="is_approved"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_uni_internship_log_form" model="ir.ui.view">
+        <field name="name">uni.internship.log.form</field>
+        <field name="model">uni.internship.log</field>
+        <field name="arch" type="xml">
+            <form string="Internship Daily Log">
+                <header>
+                    <button name="action_approve_supervisor" type="object"
+                            string="Approve (Academic Supervisor)"
+                            class="oe_highlight"
+                            invisible="supervisor_approval"/>
+                    <button name="action_approve_entity" type="object"
+                            string="Approve (Field Supervisor)"
+                            class="oe_highlight"
+                            invisible="entity_supervisor_approval"/>
+                </header>
+                <sheet>
+                    <widget name="web_ribbon" title="Approved" bg_color="bg-success"
+                            invisible="not is_approved"/>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group string="Internship Info">
+                            <field name="internship_id"/>
+                            <field name="student_id"/>
+                            <field name="student_name" invisible="1"/>
+                            <field name="team_member_id"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                        <group string="Day Info">
+                            <field name="date"/>
+                            <field name="hours"/>
+                            <field name="location"/>
+                            <field name="is_remote"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Activity" name="activity">
+                            <group>
+                                <field name="activity" placeholder="Describe the activities performed during this day..."/>
+                                <field name="achievements"/>
+                                <field name="challenges"/>
+                            </group>
+                        </page>
+                        <page string="Approvals" name="approvals">
+                            <group>
+                                <group string="Academic Supervisor">
+                                    <field name="supervisor_approval" readonly="1"/>
+                                    <field name="supervisor_approved_by" readonly="1"/>
+                                    <field name="supervisor_approved_date" readonly="1"/>
+                                </group>
+                                <group string="Field Supervisor">
+                                    <field name="entity_supervisor_id"/>
+                                    <field name="entity_supervisor_approval" readonly="1"/>
+                                    <field name="entity_approved_date" readonly="1"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="notes" placeholder="Additional notes..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_uni_internship_log_search" model="ir.ui.view">
+        <field name="name">uni.internship.log.search</field>
+        <field name="model">uni.internship.log</field>
+        <field name="arch" type="xml">
+            <search string="Search Internship Logs">
+                <field name="name"/>
+                <field name="internship_id"/>
+                <field name="student_id"/>
+                <field name="team_member_id"/>
+                <field name="activity"/>
+                <separator/>
+                <filter name="filter_approved" string="Fully Approved"
+                        domain="[('is_approved', '=', True)]"/>
+                <filter name="filter_pending" string="Pending Approval"
+                        domain="[('is_approved', '=', False)]"/>
+                <filter name="filter_remote" string="Remote Work"
+                        domain="[('is_remote', '=', True)]"/>
+                <separator/>
+                <filter name="filter_today" string="Today"
+                        domain="[('date', '=', context_today().strftime('%Y-%m-%d'))]"/>
+                <separator/>
+                <group expand="0" string="Group By">
+                    <filter name="group_student" string="Student"
+                            context="{'group_by': 'student_id'}"/>
+                    <filter name="group_date" string="Date"
+                            context="{'group_by': 'date'}"/>
+                    <filter name="group_internship" string="Internship"
+                            context="{'group_by': 'internship_id'}"/>
+                    <filter name="group_remote" string="Remote"
+                            context="{'group_by': 'is_remote'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Calendar View -->
+    <record id="view_uni_internship_log_calendar" model="ir.ui.view">
+        <field name="name">uni.internship.log.calendar</field>
+        <field name="model">uni.internship.log</field>
+        <field name="arch" type="xml">
+            <calendar string="Daily Logs" date_start="date" color="student_id">
+                <field name="name"/>
+                <field name="student_id"/>
+                <field name="hours"/>
+            </calendar>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_uni_internship_log" model="ir.actions.act_window">
+        <field name="name">Daily Logs</field>
+        <field name="res_model">uni.internship.log</field>
+        <field name="view_mode">list,form,calendar</field>
+        <field name="search_view_id" ref="view_uni_internship_log_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new internship daily log
+            </p>
+            <p>
+                Daily logs track student activities during the internship,
+                with both academic and field supervisor approvals.
+            </p>
+        </field>
+    </record>
+</odoo>

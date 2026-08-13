@@ -1,0 +1,15 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_uni_gradebook_user,uni.gradebook.user,model_uni_gradebook,group_university_user,1,0,0,0
+access_uni_gradebook_manager,uni.gradebook.manager,model_uni_gradebook,group_university_manager,1,1,1,1
+access_uni_gradebook_line_user,uni.gradebook.line.user,model_uni_gradebook_line,group_university_user,1,0,0,0
+access_uni_gradebook_line_manager,uni.gradebook.line.manager,model_uni_gradebook_line,group_university_manager,1,1,1,1
+access_uni_gradebook_entry_user,uni.gradebook.entry.user,model_uni_gradebook_entry,group_university_user,1,0,0,0
+access_uni_gradebook_entry_manager,uni.gradebook.entry.manager,model_uni_gradebook_entry,group_university_manager,1,1,1,1
+access_uni_gradebook_final_user,uni.gradebook.final.user,model_uni_gradebook_final,group_university_user,1,0,0,0
+access_uni_gradebook_final_manager,uni.gradebook.final.manager,model_uni_gradebook_final,group_university_manager,1,1,1,1
+access_uni_gpa_calculation_user,uni.gpa.calculation.user,model_uni_gpa_calculation,group_university_user,1,0,0,0
+access_uni_gpa_calculation_manager,uni.gpa.calculation.manager,model_uni_gpa_calculation,group_university_manager,1,1,1,1
+access_uni_transcript_user,uni.transcript.user,model_uni_transcript,group_university_user,1,0,0,0
+access_uni_transcript_manager,uni.transcript.manager,model_uni_transcript,group_university_manager,1,1,1,1
+access_uni_gradebook_approval_user,uni.gradebook.approval.user,model_uni_gradebook_approval,university_core.group_university_user,1,0,0,0
+access_uni_gradebook_approval_manager,uni.gradebook.approval.manager,model_uni_gradebook_approval,university_core.group_university_manager,1,1,1,1

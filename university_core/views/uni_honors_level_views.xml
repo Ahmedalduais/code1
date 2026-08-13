@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============ uni.honors.level — List View ============ -->
+    <record id="view_uni_honors_level_list" model="ir.ui.view">
+        <field name="name">uni.honors.level.list</field>
+        <field name="model">uni.honors.level</field>
+        <field name="arch" type="xml">
+            <list string="Honor Levels"
+                  decoration-success="latin_honors == 'summa_cum_laude'"
+                  decoration-info="latin_honors == 'magna_cum_laude'"
+                  decoration-warning="latin_honors == 'cum_laude'">
+                <field name="sequence" widget="handle"/>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="university_id" optional="show"/>
+                <field name="level_type" widget="badge"/>
+                <field name="latin_honors" widget="badge"/>
+                <field name="min_gpa"/>
+                <field name="max_gpa"/>
+                <field name="min_credits" optional="hide"/>
+                <field name="min_total_credits" optional="hide"/>
+                <field name="ceremony_date" optional="hide"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============ uni.honors.level — Form View ============ -->
+    <record id="view_uni_honors_level_form" model="ir.ui.view">
+        <field name="name">uni.honors.level.form</field>
+        <field name="model">uni.honors.level</field>
+        <field name="arch" type="xml">
+            <form string="Honor Level">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" type="object"
+                                name="action_recognize" icon="fa-trophy"
+                                string="Recognize"/>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" string="Honor Name"/>
+                        <h1><field name="name" placeholder="e.g. Dean's List"/></h1>
+                        <h3><field name="code" placeholder="e.g. DL"/></h3>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="university_id" options="{'no_create': True}"/>
+                            <field name="level_type" widget="badge"/>
+                            <field name="latin_honors" widget="badge"/>
+                            <field name="sequence"/>
+                            <field name="active" widget="boolean_toggle"/>
+                        </group>
+                        <group>
+                            <field name="min_gpa"/>
+                            <field name="max_gpa"/>
+                            <field name="min_credits"/>
+                            <field name="min_total_credits"/>
+                            <field name="ceremony_date"/>
+                            <field name="certificate_template"/>
+                        </group>
+                    </group>
+                    <group string="Recognition">
+                        <field name="recognition_text" colspan="2"/>
+                    </group>
+                    <notebook>
+                        <page string="Description" name="description">
+                            <field name="description"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============ uni.honors.level — Search View ============ -->
+    <record id="view_uni_honors_level_search" model="ir.ui.view">
+        <field name="name">uni.honors.level.search</field>
+        <field name="model">uni.honors.level</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="university_id"/>
+                <filter string="Active" name="filter_active"
+                        domain="[('active', '=', True)]"/>
+                <separator/>
+                <filter string="Dean's List" name="filter_deans"
+                        domain="[('level_type', '=', 'deans_list')]"/>
+                <filter string="President's List" name="filter_presidents"
+                        domain="[('level_type', '=', 'presidents_list')]"/>
+                <filter string="Graduation Honors" name="filter_graduation"
+                        domain="[('level_type', '=', 'graduation_honors')]"/>
+                <filter string="Semester Honors" name="filter_semester"
+                        domain="[('level_type', '=', 'semester_honors')]"/>
+                <separator/>
+                <filter string="Cum Laude" name="filter_cum_laude"
+                        domain="[('latin_honors', '=', 'cum_laude')]"/>
+                <filter string="Magna Cum Laude" name="filter_magna"
+                        domain="[('latin_honors', '=', 'magna_cum_laude')]"/>
+                <filter string="Summa Cum Laude" name="filter_summa"
+                        domain="[('latin_honors', '=', 'summa_cum_laude')]"/>
+                <group expand="0" string="Group By">
+                    <filter string="University" name="group_university"
+                            context="{'group_by': 'university_id'}"/>
+                    <filter string="Honor Type" name="group_type"
+                            context="{'group_by': 'level_type'}"/>
+                    <filter string="Latin Honors" name="group_latin"
+                            context="{'group_by': 'latin_honors'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============ uni.honors.level — Action ============ -->
+    <record id="action_uni_honors_level" model="ir.actions.act_window">
+        <field name="name">Honor Levels</field>
+        <field name="res_model">uni.honors.level</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_honors_level_search"/>
+        <field name="context">{'search_default_filter_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new honor level
+            </p>
+            <p>
+                Honor levels define tiers of academic recognition such as
+                Dean's List, President's List, graduation honors, and Latin
+                honors. Each tier has configurable GPA and credits thresholds.
+            </p>
+        </field>
+    </record>
+</odoo>

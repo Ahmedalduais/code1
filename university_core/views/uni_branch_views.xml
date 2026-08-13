@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_uni_branch_list" model="ir.ui.view">
+        <field name="name">uni.branch.list</field>
+        <field name="model">uni.branch</field>
+        <field name="arch" type="xml">
+            <list string="Branches">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="university_id"/>
+                <field name="manager_id"/>
+                <field name="city"/>
+                <field name="country_id"/>
+                <field name="college_count"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_uni_branch_form" model="ir.ui.view">
+        <field name="name">uni.branch.form</field>
+        <field name="model">uni.branch</field>
+        <field name="arch" type="xml">
+            <form string="Branch">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_colleges" type="object"
+                                class="oe_stat_button" icon="fa-graduation-cap">
+                            <field name="college_count" widget="statinfo" string="Colleges"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" string="Branch Name"/>
+                        <h1><field name="name" placeholder="e.g. Main Branch"/></h1>
+                        <h3><field name="code" placeholder="e.g. BR001"/></h3>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="university_id"/>
+                            <field name="manager_id"/>
+                            <field name="establishment_date" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="phone"/>
+                            <field name="email"/>
+                            <field name="city"/>
+                            <field name="country_id"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Colleges">
+                            <field name="college_ids">
+                                <list>
+                                    <field name="code"/>
+                                    <field name="name"/>
+                                    <field name="dean_id"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Notes">
+                            <field name="notes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_uni_branch_search" model="ir.ui.view">
+        <field name="name">uni.branch.search</field>
+        <field name="model">uni.branch</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="university_id"/>
+                <field name="manager_id"/>
+                <filter string="Active" name="filter_active"
+                        domain="[('active', '=', True)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="University" name="group_university"
+                            context="{'group_by': 'university_id'}"/>
+                    <filter string="Country" name="group_country"
+                            context="{'group_by': 'country_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_uni_branch" model="ir.actions.act_window">
+        <field name="name">Branches</field>
+        <field name="res_model">uni.branch</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_branch_search"/>
+        <field name="context">{'search_default_filter_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Create a new university branch</p>
+        </field>
+    </record>
+</odoo>

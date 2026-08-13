@@ -1,0 +1,547 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============ uni.course — List View ============ -->
+    <record id="view_uni_course_list" model="ir.ui.view">
+        <field name="name">uni.course.list</field>
+        <field name="model">uni.course</field>
+        <field name="arch" type="xml">
+            <list string="Courses"
+                  decoration-success="state=='active'"
+                  decoration-warning="state=='suspended'"
+                  decoration-muted="state=='closed'"
+                  decoration-danger="state=='draft'">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="university_id" optional="hide"/>
+                <field name="college_id"/>
+                <field name="department_id" optional="show"/>
+                <field name="branch_id" optional="hide"/>
+                <field name="level"/>
+                <field name="course_type"/>
+                <field name="course_type_id" optional="show"/>
+                <field name="delivery_id" optional="hide"/>
+                <field name="credit_hours"/>
+                <field name="contact_hours" optional="hide"/>
+                <field name="coordinator_id" optional="show"/>
+                <field name="program_count"/>
+                <field name="state" widget="badge"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============ uni.course — Form View ============ -->
+    <record id="view_uni_course_form" model="ir.ui.view">
+        <field name="name">uni.course.form</field>
+        <field name="model">uni.course</field>
+        <field name="arch" type="xml">
+            <form string="Course">
+                <header>
+                    <button name="action_activate" type="object" string="Activate"
+                            class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_suspend" type="object" string="Suspend"
+                            class="btn-warning" invisible="state != 'active'"/>
+                    <button name="action_close" type="object" string="Close"
+                            class="btn-danger" invisible="state in ('draft', 'closed')"/>
+                    <button name="action_draft" type="object" string="Set to Draft"
+                            class="btn-secondary" invisible="state == 'draft'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,active,suspended,closed"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" type="object"
+                                name="action_view_program_links" icon="fa-sitemap">
+                            <field name="program_count" widget="statinfo"
+                                   string="Programs"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" string="Course Name"/>
+                        <h1><field name="name" placeholder="e.g. Introduction to Computer Science"/></h1>
+                        <h3><field name="code" placeholder="e.g. CS101"/></h3>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="university_id" options="{'no_create': True}"/>
+                            <field name="college_id" options="{'no_create': True}"/>
+                            <field name="department_id" options="{'no_create': True}"/>
+                            <field name="branch_id"/>
+                            <field name="coordinator_id" options="{'no_create': True}"/>
+                        </group>
+                        <group>
+                            <field name="course_type"/>
+                            <field name="course_type_id" options="{'no_create': True}"/>
+                            <field name="delivery_id" options="{'no_create': True}"/>
+                            <field name="level"/>
+                            <field name="credit_hours"/>
+                            <field name="contact_hours"/>
+                            <field name="total_syllabus_hours"/>
+                            <field name="active" widget="boolean_toggle"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Objectives" name="objectives">
+                            <field name="objectives"/>
+                        </page>
+                        <page string="Description" name="description">
+                            <field name="description"/>
+                        </page>
+                        <page string="Prerequisites" name="prerequisites">
+                            <field name="prerequisite_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="prerequisite_course_id"
+                                           domain="[('college_id', '=', parent.college_id), ('id', '!=', parent.id)]"
+                                           options="{'no_create': True}"/>
+                                    <field name="prerequisite_course_code"/>
+                                    <field name="minimum_grade"/>
+                                    <field name="is_strict"/>
+                                    <field name="note"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Equivalents" name="equivalents">
+                            <field name="equivalent_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="equivalent_course_id"
+                                           options="{'no_create': True}"/>
+                                    <field name="equivalent_course_code"/>
+                                    <field name="equivalence_type"/>
+                                    <field name="equivalent_credit_hours"/>
+                                    <field name="note"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Learning Outcomes" name="outcomes">
+                            <field name="outcome_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="name"/>
+                                    <field name="outcome_type"/>
+                                    <field name="bloom_level"/>
+                                </list>
+                            </field>
+                            <form string="Outcome">
+                                <sheet>
+                                    <group>
+                                        <group>
+                                            <field name="name"/>
+                                            <field name="outcome_type"/>
+                                            <field name="bloom_level"/>
+                                            <field name="sequence"/>
+                                        </group>
+                                        <group>
+                                            <field name="description"/>
+                                        </group>
+                                    </group>
+                                </sheet>
+                            </form>
+                        </page>
+                        <page string="Syllabus" name="syllabus">
+                            <field name="syllabus_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="week_number"/>
+                                    <field name="name"/>
+                                    <field name="hours"/>
+                                    <field name="topic"/>
+                                </list>
+                            </field>
+                            <form string="Syllabus Entry">
+                                <sheet>
+                                    <group>
+                                        <group>
+                                            <field name="week_number"/>
+                                            <field name="name"/>
+                                            <field name="hours"/>
+                                            <field name="sequence"/>
+                                        </group>
+                                        <group>
+                                            <field name="topic"/>
+                                            <field name="teaching_methods"/>
+                                            <field name="assessment_methods"/>
+                                        </group>
+                                    </group>
+                                    <group>
+                                        <field name="content"/>
+                                    </group>
+                                </sheet>
+                            </form>
+                        </page>
+                        <page string="Evaluations" name="evaluations">
+                            <field name="evaluation_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="academic_term_id"/>
+                                    <field name="total_weight"/>
+                                    <field name="weight_complete"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Program Links" name="program_links">
+                            <field name="program_course_ids">
+                                <list>
+                                    <field name="program_id"/>
+                                    <field name="level"/>
+                                    <field name="semester"/>
+                                    <field name="effective_credit_hours"/>
+                                    <field name="is_mandatory" widget="boolean_toggle"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="notes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============ uni.course — Search View ============ -->
+    <record id="view_uni_course_search" model="ir.ui.view">
+        <field name="name">uni.course.search</field>
+        <field name="model">uni.course</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="college_id"/>
+                <field name="department_id"/>
+                <field name="coordinator_id"/>
+                <filter string="Active" name="filter_active"
+                        domain="[('active', '=', True)]"/>
+                <filter string="Mandatory" name="filter_mandatory"
+                        domain="[('course_type', '=', 'mandatory')]"/>
+                <filter string="Elective" name="filter_elective"
+                        domain="[('course_type', 'in', ('elective', 'free_elective'))]"/>
+                <separator/>
+                <filter string="Has Lab Component" name="filter_lab"
+                        domain="[('course_type_id.has_lab', '=', True)]"/>
+                <filter string="Online/Hybrid Delivery" name="filter_online"
+                        domain="[('delivery_id.delivery_method', 'in', ('online_sync', 'online_async', 'hybrid', 'blended', 'distance'))]"/>
+                <separator/>
+                <filter string="Undergraduate" name="filter_undergrad"
+                        domain="[('level', '=', 'undergraduate')]"/>
+                <filter string="Postgraduate" name="filter_postgrad"
+                        domain="[('level', '=', 'postgraduate')]"/>
+                <separator/>
+                <filter string="Draft" name="filter_draft"
+                        domain="[('state', '=', 'draft')]"/>
+                <filter string="Active Courses" name="state_active"
+                        domain="[('state', '=', 'active')]"/>
+                <group expand="0" string="Group By">
+                    <filter string="University" name="group_university"
+                            context="{'group_by': 'university_id'}"/>
+                    <filter string="College" name="group_college"
+                            context="{'group_by': 'college_id'}"/>
+                    <filter string="Department" name="group_department"
+                            context="{'group_by': 'department_id'}"/>
+                    <filter string="Type" name="group_type"
+                            context="{'group_by': 'course_type'}"/>
+                    <filter string="Nature Type" name="group_nature"
+                            context="{'group_by': 'course_type_id'}"/>
+                    <filter string="Delivery Mode" name="group_delivery"
+                            context="{'group_by': 'delivery_id'}"/>
+                    <filter string="Level" name="group_level"
+                            context="{'group_by': 'level'}"/>
+                    <filter string="Status" name="group_state"
+                            context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============ uni.course — Action ============ -->
+    <record id="action_uni_course" model="ir.actions.act_window">
+        <field name="name">Courses</field>
+        <field name="res_model">uni.course</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_course_search"/>
+        <field name="context">{'search_default_filter_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new course
+            </p>
+            <p>
+                Courses are the building blocks of academic programs. Each course
+                has credit hours, prerequisites, learning outcomes, syllabus,
+                and evaluation structure.
+            </p>
+        </field>
+    </record>
+
+    <!-- ============ uni.course.prerequisite — List/Form (standalone) ============ -->
+    <record id="view_uni_course_prerequisite_list" model="ir.ui.view">
+        <field name="name">uni.course.prerequisite.list</field>
+        <field name="model">uni.course.prerequisite</field>
+        <field name="arch" type="xml">
+            <list string="Prerequisites">
+                <field name="sequence" widget="handle"/>
+                <field name="course_id"/>
+                <field name="prerequisite_course_id"/>
+                <field name="prerequisite_course_code"/>
+                <field name="minimum_grade"/>
+                <field name="is_strict" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_uni_course_prerequisite_form" model="ir.ui.view">
+        <field name="name">uni.course.prerequisite.form</field>
+        <field name="model">uni.course.prerequisite</field>
+        <field name="arch" type="xml">
+            <form string="Prerequisite">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="course_id" options="{'no_create': True}"/>
+                            <field name="prerequisite_course_id" options="{'no_create': True}"/>
+                            <field name="prerequisite_course_code"/>
+                        </group>
+                        <group>
+                            <field name="minimum_grade"/>
+                            <field name="is_strict"/>
+                            <field name="sequence"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="note"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_uni_course_prerequisite_search" model="ir.ui.view">
+        <field name="name">uni.course.prerequisite.search</field>
+        <field name="model">uni.course.prerequisite</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="course_id"/>
+                <field name="prerequisite_course_id"/>
+                <group expand="0" string="Group By">
+                    <filter string="Course" name="group_course"
+                            context="{'group_by': 'course_id'}"/>
+                    <filter string="Prerequisite" name="group_prereq"
+                            context="{'group_by': 'prerequisite_course_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_uni_course_prerequisite" model="ir.actions.act_window">
+        <field name="name">Course Prerequisites</field>
+        <field name="res_model">uni.course.prerequisite</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_course_prerequisite_search"/>
+    </record>
+
+    <!-- ============ uni.course.equivalent — List/Form ============ -->
+    <record id="view_uni_course_equivalent_list" model="ir.ui.view">
+        <field name="name">uni.course.equivalent.list</field>
+        <field name="model">uni.course.equivalent</field>
+        <field name="arch" type="xml">
+            <list string="Equivalents">
+                <field name="sequence" widget="handle"/>
+                <field name="course_id"/>
+                <field name="equivalent_course_id"/>
+                <field name="equivalent_course_code"/>
+                <field name="equivalence_type"/>
+                <field name="equivalent_credit_hours"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_uni_course_equivalent_form" model="ir.ui.view">
+        <field name="name">uni.course.equivalent.form</field>
+        <field name="model">uni.course.equivalent</field>
+        <field name="arch" type="xml">
+            <form string="Equivalent Course">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="course_id" options="{'no_create': True}"/>
+                            <field name="equivalent_course_id" options="{'no_create': True}"/>
+                            <field name="equivalent_course_code"/>
+                        </group>
+                        <group>
+                            <field name="equivalence_type"/>
+                            <field name="equivalent_credit_hours"/>
+                            <field name="sequence"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="note"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_uni_course_equivalent_search" model="ir.ui.view">
+        <field name="name">uni.course.equivalent.search</field>
+        <field name="model">uni.course.equivalent</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="course_id"/>
+                <field name="equivalent_course_id"/>
+                <group expand="0" string="Group By">
+                    <filter string="Course" name="group_course"
+                            context="{'group_by': 'course_id'}"/>
+                    <filter string="Equivalent" name="group_equiv"
+                            context="{'group_by': 'equivalent_course_id'}"/>
+                    <filter string="Type" name="group_type"
+                            context="{'group_by': 'equivalence_type'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_uni_course_equivalent" model="ir.actions.act_window">
+        <field name="name">Course Equivalents</field>
+        <field name="res_model">uni.course.equivalent</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_course_equivalent_search"/>
+    </record>
+
+    <!-- ============ uni.course.outcome — List/Form ============ -->
+    <record id="view_uni_course_outcome_list" model="ir.ui.view">
+        <field name="name">uni.course.outcome.list</field>
+        <field name="model">uni.course.outcome</field>
+        <field name="arch" type="xml">
+            <list string="Learning Outcomes">
+                <field name="sequence" widget="handle"/>
+                <field name="course_id"/>
+                <field name="name"/>
+                <field name="outcome_type"/>
+                <field name="bloom_level"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_uni_course_outcome_form" model="ir.ui.view">
+        <field name="name">uni.course.outcome.form</field>
+        <field name="model">uni.course.outcome</field>
+        <field name="arch" type="xml">
+            <form string="Learning Outcome">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="course_id" options="{'no_create': True}"/>
+                            <field name="name"/>
+                            <field name="sequence"/>
+                        </group>
+                        <group>
+                            <field name="outcome_type"/>
+                            <field name="bloom_level"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="description"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_uni_course_outcome_search" model="ir.ui.view">
+        <field name="name">uni.course.outcome.search</field>
+        <field name="model">uni.course.outcome</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="course_id"/>
+                <field name="name"/>
+                <group expand="0" string="Group By">
+                    <filter string="Course" name="group_course"
+                            context="{'group_by': 'course_id'}"/>
+                    <filter string="Type" name="group_type"
+                            context="{'group_by': 'outcome_type'}"/>
+                    <filter string="Bloom Level" name="group_bloom"
+                            context="{'group_by': 'bloom_level'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_uni_course_outcome" model="ir.actions.act_window">
+        <field name="name">Course Outcomes</field>
+        <field name="res_model">uni.course.outcome</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_course_outcome_search"/>
+    </record>
+
+    <!-- ============ uni.course.syllabus — List/Form ============ -->
+    <record id="view_uni_course_syllabus_list" model="ir.ui.view">
+        <field name="name">uni.course.syllabus.list</field>
+        <field name="model">uni.course.syllabus</field>
+        <field name="arch" type="xml">
+            <list string="Syllabus Entries">
+                <field name="sequence" widget="handle"/>
+                <field name="course_id"/>
+                <field name="week_number"/>
+                <field name="name"/>
+                <field name="hours"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_uni_course_syllabus_form" model="ir.ui.view">
+        <field name="name">uni.course.syllabus.form</field>
+        <field name="model">uni.course.syllabus</field>
+        <field name="arch" type="xml">
+            <form string="Syllabus Entry">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="course_id" options="{'no_create': True}"/>
+                            <field name="name"/>
+                            <field name="week_number"/>
+                            <field name="hours"/>
+                            <field name="sequence"/>
+                        </group>
+                        <group>
+                            <field name="topic"/>
+                            <field name="teaching_methods"/>
+                            <field name="assessment_methods"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="content"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_uni_course_syllabus_search" model="ir.ui.view">
+        <field name="name">uni.course.syllabus.search</field>
+        <field name="model">uni.course.syllabus</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="course_id"/>
+                <field name="name"/>
+                <group expand="0" string="Group By">
+                    <filter string="Course" name="group_course"
+                            context="{'group_by': 'course_id'}"/>
+                    <filter string="Week" name="group_week"
+                            context="{'group_by': 'week_number'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_uni_course_syllabus" model="ir.actions.act_window">
+        <field name="name">Course Syllabus</field>
+        <field name="res_model">uni.course.syllabus</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_uni_course_syllabus_search"/>
+    </record>
+</odoo>

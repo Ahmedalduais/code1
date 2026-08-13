@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- Standard Grade Letters (4.0 GPA Scale) -->
+    <record id="grade_letter_aplus" model="uni.grade.letter">
+        <field name="name">A+</field>
+        <field name="code">A+</field>
+        <field name="sequence">10</field>
+        <field name="gpa_value">4.0</field>
+        <field name="percentage_min">97</field>
+        <field name="percentage_max">100</field>
+        <field name="color">10</field>
+    </record>
+    <record id="grade_letter_a" model="uni.grade.letter">
+        <field name="name">A</field>
+        <field name="code">A</field>
+        <field name="sequence">20</field>
+        <field name="gpa_value">4.0</field>
+        <field name="percentage_min">93</field>
+        <field name="percentage_max">96.99</field>
+        <field name="color">10</field>
+    </record>
+    <record id="grade_letter_aminus" model="uni.grade.letter">
+        <field name="name">A-</field>
+        <field name="code">A-</field>
+        <field name="sequence">30</field>
+        <field name="gpa_value">3.7</field>
+        <field name="percentage_min">90</field>
+        <field name="percentage_max">92.99</field>
+        <field name="color">10</field>
+    </record>
+    <record id="grade_letter_bplus" model="uni.grade.letter">
+        <field name="name">B+</field>
+        <field name="code">B+</field>
+        <field name="sequence">40</field>
+        <field name="gpa_value">3.3</field>
+        <field name="percentage_min">87</field>
+        <field name="percentage_max">89.99</field>
+        <field name="color">9</field>
+    </record>
+    <record id="grade_letter_b" model="uni.grade.letter">
+        <field name="name">B</field>
+        <field name="code">B</field>
+        <field name="sequence">50</field>
+        <field name="gpa_value">3.0</field>
+        <field name="percentage_min">83</field>
+        <field name="percentage_max">86.99</field>
+        <field name="color">9</field>
+    </record>
+    <record id="grade_letter_bminus" model="uni.grade.letter">
+        <field name="name">B-</field>
+        <field name="code">B-</field>
+        <field name="sequence">60</field>
+        <field name="gpa_value">2.7</field>
+        <field name="percentage_min">80</field>
+        <field name="percentage_max">82.99</field>
+        <field name="color">9</field>
+    </record>
+    <record id="grade_letter_cplus" model="uni.grade.letter">
+        <field name="name">C+</field>
+        <field name="code">C+</field>
+        <field name="sequence">70</field>
+        <field name="gpa_value">2.3</field>
+        <field name="percentage_min">77</field>
+        <field name="percentage_max">79.99</field>
+        <field name="color">5</field>
+    </record>
+    <record id="grade_letter_c" model="uni.grade.letter">
+        <field name="name">C</field>
+        <field name="code">C</field>
+        <field name="sequence">80</field>
+        <field name="gpa_value">2.0</field>
+        <field name="percentage_min">73</field>
+        <field name="percentage_max">76.99</field>
+        <field name="color">5</field>
+    </record>
+    <record id="grade_letter_cminus" model="uni.grade.letter">
+        <field name="name">C-</field>
+        <field name="code">C-</field>
+        <field name="sequence">90</field>
+        <field name="gpa_value">1.7</field>
+        <field name="percentage_min">70</field>
+        <field name="percentage_max">72.99</field>
+        <field name="color">5</field>
+    </record>
+    <record id="grade_letter_d" model="uni.grade.letter">
+        <field name="name">D</field>
+        <field name="code">D</field>
+        <field name="sequence">100</field>
+        <field name="gpa_value">1.0</field>
+        <field name="percentage_min">60</field>
+        <field name="percentage_max">69.99</field>
+        <field name="color">3</field>
+    </record>
+    <record id="grade_letter_f" model="uni.grade.letter">
+        <field name="name">F</field>
+        <field name="code">F</field>
+        <field name="sequence">110</field>
+        <field name="gpa_value">0.0</field>
+        <field name="percentage_min">0</field>
+        <field name="percentage_max">59.99</field>
+        <field name="color">2</field>
+    </record>
+
+    <!-- Default Grading System -->
+    <record id="grading_system_default_4" model="uni.grading.system">
+        <field name="name">Standard 4.0 GPA System</field>
+        <field name="code">GPA4</field>
+        <field name="description">Standard 4.0 GPA grading system used in most universities.</field>
+        <field name="scale_max">100.0</field>
+        <field name="passing_grade">60.0</field>
+        <field name="gpa_scale">4.0</field>
+        <field name="system_type">hybrid</field>
+        <field name="is_default">True</field>
+        <field name="grade_letter_ids" eval="[(6, 0, [
+            ref('grade_letter_aplus'), ref('grade_letter_a'), ref('grade_letter_aminus'),
+            ref('grade_letter_bplus'), ref('grade_letter_b'), ref('grade_letter_bminus'),
+            ref('grade_letter_cplus'), ref('grade_letter_c'), ref('grade_letter_cminus'),
+            ref('grade_letter_d'), ref('grade_letter_f')
+        ])]"/>
+    </record>
+
+    <!-- Grading Scale Lines for Default System -->
+    <record id="scale_line_aplus" model="uni.grading.scale.line">
+        <field name="grading_system_id" ref="grading_system_default_4"/>
+        <field name="grade_letter_id" ref="grade_letter_aplus"/>
+        <field name="percentage_min">97</field>
+        <field name="percentage_max">100</field>
+    </record>
+    <record id="scale_line_a" model="uni.grading.scale.line">
+        <field name="grading_system_id" ref="grading_system_default_4"/>
+        <field name="grade_letter_id" ref="grade_letter_a"/>
+        <field name="percentage_min">93</field>
+        <field name="percentage_max">96.99</field>
+    </record>
+    <record id="scale_line_aminus" model="uni.grading.scale.line">
+        <field name="grading_system_id" ref="grading_system_default_4"/>
+        <field name="grade_letter_id" ref="grade_letter_aminus"/>
+        <field name="percentage_min">90</field>
+        <field name="percentage_max">92.99</field>
+    </record>
+    <record id="scale_line_bplus" model="uni.grading.scale.line">
+        <field name="grading_system_id" ref="grading_system_default_4"/>
+        <field name="grade_letter_id" ref="grade_letter_bplus"/>
+        <field name="percentage_min">87</field>
+        <field name="percentage_max">89.99</field>
+    </record>
+    <record id="scale_line_b" model="uni.grading.scale.line">
+        <field name="grading_system_id" ref="grading_system_default_4"/>
+        <field name="grade_letter_id" ref="grade_letter_b"/>
+        <field name="percentage_min">83</field>
+        <field name="percentage_max">86.99</field>
+    </record>
+    <record id="scale_line_bminus" model="uni.grading.scale.line">
+        <field name="grading_system_id" ref="grading_system_default_4"/>
+        <field name="grade_letter_id" ref="grade_letter_bminus"/>
+        <field name="percentage_min">80</field>
+        <field name="percentage_max">82.99</field>
+    </record>
+    <record id="scale_line_cplus" model="uni.grading.scale.line">
+        <field name="grading_system_id" ref="grading_system_default_4"/>
+        <field name="grade_letter_id" ref="grade_letter_cplus"/>
+        <field name="percentage_min">77</field>
+        <field name="percentage_max">79.99</field>
+    </record>
+    <record id="scale_line_c" model="uni.grading.scale.line">
+        <field name="grading_system_id" ref="grading_system_default_4"/>
+        <field name="grade_letter_id" ref="grade_letter_c"/>
+        <field name="percentage_min">73</field>
+        <field name="percentage_max">76.99</field>
+    </record>
+    <record id="scale_line_cminus" model="uni.grading.scale.line">
+        <field name="grading_system_id" ref="grading_system_default_4"/>
+        <field name="grade_letter_id" ref="grade_letter_cminus"/>
+        <field name="percentage_min">70</field>
+        <field name="percentage_max">72.99</field>
+    </record>
+    <record id="scale_line_d" model="uni.grading.scale.line">
+        <field name="grading_system_id" ref="grading_system_default_4"/>
+        <field name="grade_letter_id" ref="grade_letter_d"/>
+        <field name="percentage_min">60</field>
+        <field name="percentage_max">69.99</field>
+    </record>
+    <record id="scale_line_f" model="uni.grading.scale.line">
+        <field name="grading_system_id" ref="grading_system_default_4"/>
+        <field name="grade_letter_id" ref="grade_letter_f"/>
+        <field name="percentage_min">0</field>
+        <field name="percentage_max">59.99</field>
+    </record>
+
+    <!-- 5.0 GPA System -->
+    <record id="grading_system_default_5" model="uni.grading.system">
+        <field name="name">Standard 5.0 GPA System</field>
+        <field name="code">GPA5</field>
+        <field name="description">5.0 GPA grading system used in some universities.</field>
+        <field name="scale_max">100.0</field>
+        <field name="passing_grade">60.0</field>
+        <field name="gpa_scale">5.0</field>
+        <field name="system_type">hybrid</field>
+        <field name="grade_letter_ids" eval="[(6, 0, [
+            ref('grade_letter_aplus'), ref('grade_letter_a'), ref('grade_letter_aminus'),
+            ref('grade_letter_bplus'), ref('grade_letter_b'), ref('grade_letter_bminus'),
+            ref('grade_letter_cplus'), ref('grade_letter_c'), ref('grade_letter_cminus'),
+            ref('grade_letter_d'), ref('grade_letter_f')
+        ])]"/>
+    </record>
+</odoo>

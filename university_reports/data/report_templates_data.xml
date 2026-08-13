@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- ============================================================ -->
+    <!-- Standard report templates — seeded on module install         -->
+    <!--                                                               -->
+    <!-- Each template references the technical model to report on and -->
+    <!-- the wizard model that collects parameters. Report action IDs  -->
+    <!-- are linked post-load via ``data/report_action_links.xml``.    -->
+    <!-- ============================================================ -->
+
+    <!-- Student List — list of students filtered by program/term -->
+    <record id="template_student_list" model="uni.report.template">
+        <field name="name">Student List</field>
+        <field name="code">STD-LIST</field>
+        <field name="report_type">student</field>
+        <field name="model_name">uni.student</field>
+        <field name="wizard_model">uni.report.wizard</field>
+        <field name="sequence">10</field>
+        <field name="is_standard" eval="True"/>
+        <field name="is_active" eval="True"/>
+        <field name="description">Lists all students filtered by university,
+            college, department, program or academic period. Outputs a
+            printable PDF or Excel file with student code, name, program
+            and contact information.
+
+            NOTE: This report requires the ``university_student`` module
+            to be installed in order to produce non-empty output. The
+            template itself installs cleanly without that dependency
+            because the target model name is stored as a free-text Char
+            field and resolved lazily at report-run time.</field>
+    </record>
+
+    <!-- Transcript Summary — batch transcript summary -->
+    <record id="template_transcript_summary" model="uni.report.template">
+        <field name="name">Transcript Summary</field>
+        <field name="code">TRN-SUMMARY</field>
+        <field name="report_type">academic</field>
+        <field name="model_name">uni.transcript</field>
+        <field name="wizard_model">uni.report.wizard</field>
+        <field name="sequence">20</field>
+        <field name="is_standard" eval="True"/>
+        <field name="is_active" eval="True"/>
+        <field name="description">Batch transcript summary showing issued
+            transcripts for the selected period. Includes student identity,
+            cumulative GPA, credits earned and academic standing.
+
+            NOTE: This report requires the ``university_gradebook`` module
+            to be installed in order to produce non-empty output. The
+            template itself installs cleanly without that dependency
+            because the target model name is stored as a free-text Char
+            field and resolved lazily at report-run time.</field>
+    </record>
+
+    <!-- Financial Summary — invoices / scholarships overview -->
+    <record id="template_financial_summary" model="uni.report.template">
+        <field name="name">Financial Summary</field>
+        <field name="code">FIN-SUMMARY</field>
+        <field name="report_type">financial</field>
+        <field name="model_name">uni.invoice.student</field>
+        <field name="wizard_model">uni.report.wizard</field>
+        <field name="sequence">30</field>
+        <field name="is_standard" eval="True"/>
+        <field name="is_active" eval="True"/>
+        <field name="description">Financial summary showing invoices,
+            amounts billed, paid and outstanding for the selected period
+            and scope.
+
+            NOTE: This report requires the ``university_finance`` module
+            to be installed in order to produce non-empty output. The
+            template itself installs cleanly without that dependency
+            because the target model name is stored as a free-text Char
+            field and resolved lazily at report-run time.</field>
+    </record>
+
+    <!-- Enrollment Statistics — enrollment counts by program/term -->
+    <record id="template_enrollment_statistics" model="uni.report.template">
+        <field name="name">Enrollment Statistics</field>
+        <field name="code">ENR-STATS</field>
+        <field name="report_type">statistical</field>
+        <field name="model_name">uni.student.enrollment</field>
+        <field name="wizard_model">uni.report.wizard</field>
+        <field name="sequence">40</field>
+        <field name="is_standard" eval="True"/>
+        <field name="is_active" eval="True"/>
+        <field name="description">Enrollment statistics by program,
+            academic term and level. Shows enrollment counts, total
+            credits attempted and average GPA per cohort.
+
+            NOTE: This report requires the ``university_student`` module
+            to be installed in order to produce non-empty output. The
+            template itself installs cleanly without that dependency
+            because the target model name is stored as a free-text Char
+            field and resolved lazily at report-run time.</field>
+    </record>
+
+    <!-- Academic Standing — distribution of academic standing -->
+    <record id="template_academic_standing" model="uni.report.template">
+        <field name="name">Academic Standing</field>
+        <field name="code">STD-STANDING</field>
+        <field name="report_type">academic</field>
+        <field name="model_name">uni.student</field>
+        <field name="wizard_model">uni.report.wizard</field>
+        <field name="sequence">50</field>
+        <field name="is_standard" eval="True"/>
+        <field name="is_active" eval="True"/>
+        <field name="description">Distribution of academic standing
+            (excellent / good / probation / dismissed) across the
+            selected scope. Highlights students at risk for academic
+            intervention.
+
+            NOTE: This report requires the ``university_student`` module
+            to be installed in order to produce non-empty output. The
+            template itself installs cleanly without that dependency
+            because the target model name is stored as a free-text Char
+            field and resolved lazily at report-run time.</field>
+    </record>
+</odoo>
